@@ -204,11 +204,23 @@
       <div class="logic-note">Three situations: strong score &rarr; weight it. No score &rarr; null (size signal). Low score &rarr; cross-reference first.</div>
     </div>
 
+    <div class="dim-card">
+      <div class="weight">15%</div>
+      <div class="step-num">Step 5b</div>
+      <h3>CMS Utilization &amp; Bundle Scoring</h3>
+      <div class="question">What does this provider actually do, and are there cost or volume red flags?</div>
+      <div class="data-sources">
+        <span class="src">Medicare Utilization</span>
+        <span class="src">Medicaid T-MSIS</span>
+        <span class="src">Bundle taxonomy (internal)</span>
+      </div>
+      <div class="logic-note">CPT-to-bundle mapping per specialty. Procedure volume = confidence signal. Cost pattern flags vs. peers. Enables bundle-level scoring with public data.</div>
+    </div>
+
     <div class="phase2-card" style="position:relative;overflow:hidden;">
       <div class="badge">Phase 2</div>
-      <div style="position:absolute;top:16px;right:16px;font-size:22px;font-weight:700;color:#d1d5db;">15%</div>
       <h3>Step 6. Clinical Outcomes</h3>
-      <div class="desc">Care journey, preventive care, readmissions. Requires live employer claims data. Gold standard, not needed for initial bar.</div>
+      <div class="desc">Care journey, preventive care, readmissions. Requires live employer claims data. Gold standard, unweighted until claims flow. Rebalances composite when live.</div>
     </div>
   </div>
 
@@ -223,7 +235,7 @@
       <div class="w"><span class="pct">25%</span><span class="lbl">Patient Exp.</span></div>
       <div class="w"><span class="pct">20%</span><span class="lbl">MIPS</span></div>
       <div class="w"><span class="pct">15%</span><span class="lbl">Access</span></div>
-      <div class="w"><span class="pct">15%</span><span class="lbl">Outcomes*</span></div>
+      <div class="w"><span class="pct">15%</span><span class="lbl">Utilization</span></div>
     </div>
   </div>
 
@@ -260,7 +272,8 @@
       <div class="date">By mid-May 2026</div>
       <ul>
         <li>MIPS notebook + 3-situation logic</li>
-        <li>Composite score v1</li>
+        <li>CMS utilization + bundle taxonomy notebook</li>
+        <li>Composite score v1 (bundle-level slicing)</li>
         <li>All dimensions productionised</li>
         <li>API endpoint live</li>
         <li>ERISA visible in product</li>
@@ -308,6 +321,8 @@
       <li>Review platform rights: Google API limits, Healthgrades/Doximity scraping legality. Partnership?</li>
       <li>MIPS low-volume: neutral signal or slight negative?</li>
       <li>Composite weights (25/25/20/15/15): validate against employer priorities or ship and adjust?</li>
+      <li>Medicaid Provider Spending dataset: currently unavailable on HHS Open Data portal. Monitor for access. Medicare-only fallback until then</li>
+      <li>Bundle taxonomy granularity: top 3-5 bundles per specialty, or comprehensive from day one?</li>
       <li>Safety gate refresh cadence: what interval satisfies the monitoring obligation?</li>
     </ul>
   </div>

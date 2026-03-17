@@ -110,17 +110,18 @@ const doc = new Document({
         heading1("Summary"),
         para("We\u2019re building a marketplace where employers direct contract with independent practices. For that to work, employers need confidence the providers meet a quality bar, legally and commercially. This doc sequences how we build that."),
         spacer(),
-        para("Six steps, in order:", { bold: true }),
+        para("Seven steps, in order:", { bold: true }),
         bullet("Safety gate: binary pass/fail per NPI using NPDB, state boards, and PECOS exclusion data. Fail = out of the marketplace entirely"),
         bullet("Credentials: board cert, med school, years in practice from NPPES, ABMS, and PECOS. Highest ERISA weight"),
         bullet("Patient experience: normalised review scores from Google, Healthgrades, and Doximity. Due diligence beyond paper qualifications"),
         bullet("Access & availability: practice-reported onboarding fields (hours, wait times, telehealth, languages). Employer proxy for value"),
         bullet("Clinical quality (MIPS): QPP scores where available, with three-situation logic for present/absent/low scores"),
+        bullet("CMS utilization & bundle scoring: Medicare + Medicaid procedure-level data mapped to clinical bundles per specialty. Enables bundle-level scoring with public data"),
         bullet("Clinical outcomes: claims-based metrics from employer data. Phase 2, not required for initial bar"),
         spacer(),
         para("Timeline:", { bold: true }),
         bullet("30 days (mid-April): steps 1-4 delivered as notebooks to eng. Clara delivers ERISA methodology"),
-        bullet("60 days (mid-May): step 5 delivered. Composite score v1. Eng productionises all dimensions. API endpoint live"),
+        bullet("60 days (mid-May): steps 5 and 5b delivered. Bundle taxonomy defined. Composite score v1. Eng productionises all dimensions. API endpoint live"),
         bullet("90 days (mid-June): clinical outcomes schema designed. Safety gate monitoring automated. Score validation complete. Slack agent live"),
         spacer(),
         para("Clara\u2019s parallel workstream defines what quality evidence satisfies ERISA fiduciary duty, documents the methodology for the employer-facing product, and identifies legal thresholds that gate marketplace inclusion."),
@@ -136,7 +137,7 @@ const doc = new Document({
 
         // ═══ 2. THE WORKSTREAM ═══
         heading1("2. The workstream"),
-        para("Six steps. Ordered by dependency and priority. Steps 1-4 are the 30-day target. Step 5 follows at 60 days. Step 6 is Phase 2."),
+        para("Seven steps. Ordered by dependency and priority. Steps 1-4 are the 30-day target. Steps 5 and 5b follow at 60 days. Step 6 is Phase 2."),
         spacer(),
 
         // STEP 1
@@ -264,9 +265,33 @@ const doc = new Document({
         para("Eng handoff: notebook with NPI-level QPP score, threshold flag (above/below low-volume), and the three-situation decision logic as documented rules."),
         spacer(),
 
+        // STEP 5b
+        heading2("Step 5b. CMS utilization & bundle scoring"),
+        para("Per-CPT procedure volume, cost patterns, and clinical bundle mapping per NPI. Weight: 15% of composite score.", { bold: true }),
+        spacer(),
+        para("What it answers: what does this provider actually do, how much of it, and are there cost or volume red flags at the bundle level?"),
+        spacer(),
+        para("Business logic:"),
+        bullet("pull per-NPI procedure-level data from Medicare Provider Utilization files and Medicaid Provider Spending (T-MSIS): CPT/HCPCS codes billed, service counts, average charges, beneficiary counts"),
+        bullet("map CPT codes to clinical bundles by specialty (e.g., OB/GYN: maternity CPTs to Maternity bundle, surgical CPTs to GYN Surgery, screening CPTs to Preventive)"),
+        bullet("this is what enables bundle-level scoring with public data. Instead of one flat composite per NPI, you can slice the score by clinical service line"),
+        bullet("cost pattern flags: compare provider utilization against specialty peers. Lab over-ordering, unusual billing concentration, outlier charge ratios. Cost signals for employers, not quality penalties"),
+        bullet("procedure volume is a confidence signal per bundle. High volume = reliable score. Low volume = flag for transparency, not a penalty"),
+        bullet("combining Medicare + Medicaid gives a much fuller picture, especially for specialties with heavy Medicaid populations (OB/GYN, pediatrics, primary care)"),
+        spacer(),
+        para("Structural caveat: both datasets are still government-payer only. Providers whose patients are mostly commercially insured will still look thin. We can\u2019t engineer around this, but we can be transparent about it."),
+        spacer(),
+        para("Data sources:"),
+        bullet("Medicare Physician & Other Practitioners: per-NPI, per-HCPCS line items. Service count, beneficiary count, average submitted/allowed charges. CMS bulk download. Annual"),
+        bullet("Medicaid Provider Spending (T-MSIS via HHS Open Data): provider-level spending by procedure code and month. FFS, managed care, and CHIP. 2018-2024. Currently temporarily unavailable on HHS portal, monitor for access"),
+        bullet("Bundle taxonomy (internal): CPT-to-bundle mapping per specialty. Starts with top specialties on the marketplace. Defined jointly by Antoine, Othmane, and Clara"),
+        spacer(),
+        para("Eng handoff: notebook with per-NPI procedure profile across Medicare + Medicaid, CPT-to-bundle mapping, peer comparison flags, and cost pattern signals. Schema supports slicing composite score by bundle."),
+        spacer(),
+
         // STEP 6
         heading2("Step 6. Clinical outcomes (Phase 2)"),
-        para("Care journey, preventive care, readmissions. Weight: 15% of composite score. Not required for initial bar.", { bold: true }),
+        para("Care journey, preventive care, readmissions. Weight: unweighted until employer claims data is live. Not required for initial bar.", { bold: true }),
         spacer(),
         para("What it answers: what are the actual health results for patients treated by this provider?"),
         spacer(),
@@ -292,7 +317,8 @@ const doc = new Document({
 
         para("60 days (by mid-May 2026)", { bold: true }),
         bullet("step 5, MIPS / clinical quality: QPP score per NPI with three-situation logic, cross-referenced against credentials and reviews. Notebook to eng. (Othmane + Antoine)"),
-        bullet("composite score v1: first full composite combining steps 1-5. Weighting validated against sample NPI cohort. (Antoine)"),
+        bullet("step 5b, CMS utilization & bundle scoring: Medicare + Medicaid procedure-level data mapped to clinical bundles. Bundle taxonomy defined. Notebook to eng. (Antoine + Othmane + Clara)"),
+        bullet("composite score v1: first full composite combining steps 1-5b. Weighting validated against sample NPI cohort. Bundle-level slicing enabled. (Antoine)"),
         bullet("eng integration: all dimension notebooks productionised. API endpoint serving NPI-level quality data. (Eng team)"),
         bullet("ERISA integration: methodology visible in product. Legal thresholds for marketplace inclusion defined. (Clara + Product)"),
         spacer(),
@@ -362,6 +388,8 @@ const doc = new Document({
         bullet("review platform data rights: Google Places API has usage limits. Healthgrades and Doximity scraping has legal considerations. Partnership path?"),
         bullet("MIPS threshold logic: do we treat the low-volume exclusion as a neutral signal or a slight negative? The original doc says neutral. Confirm"),
         bullet("composite score weights: the current weights (25/25/20/15/15) came from the first treasure map. Do we validate against employer priorities, or ship as-is and adjust?"),
+        bullet("Medicaid Provider Spending dataset: currently temporarily unavailable on HHS Open Data portal. Monitor for access. Fallback is Medicare-only utilization until it returns"),
+        bullet("bundle taxonomy: how granular do we go per specialty? Start with top 3-5 bundles per specialty, or comprehensive from day one?"),
         bullet("refresh cadence for the safety gate: what interval satisfies the monitoring obligation? Hecht v. Cigna says \"stale\" is a liability, but doesn\u2019t define a threshold"),
       ]
     }
