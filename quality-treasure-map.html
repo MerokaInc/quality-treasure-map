@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quality Workstream Treasure Map</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f9fb; color: #1a1a2e; line-height: 1.5; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+  /* Header */
+  .header { margin-bottom: 48px; }
+  .header h1 { font-size: 28px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+  .header .subtitle { font-size: 18px; color: #6b7280; font-weight: 400; }
+
+  /* Section titles */
+  .section-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #9ca3af; margin-bottom: 16px; margin-top: 48px; }
+
+  /* Flow: Safety Gate */
+  .gate-card {
+    background: #fff; border: 2px solid #ef4444; border-radius: 12px; padding: 24px;
+    margin-bottom: 12px; position: relative;
+  }
+  .gate-card .badge { background: #fef2f2; color: #dc2626; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 8px; }
+  .gate-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .gate-card .desc { font-size: 14px; color: #6b7280; }
+  .gate-card .logic { font-size: 13px; color: #374151; margin-top: 12px; }
+  .gate-card .logic strong { color: #dc2626; }
+
+  .gate-data {
+    display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .gate-data .tag { background: #fef2f2; color: #991b1b; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 6px; }
+
+  /* Arrow connector */
+  .connector { display: flex; align-items: center; justify-content: center; padding: 8px 0; }
+  .connector .arrow { width: 2px; height: 28px; background: #d1d5db; position: relative; }
+  .connector .arrow::after { content: ''; position: absolute; bottom: -4px; left: -4px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #d1d5db; }
+  .connector .label { font-size: 11px; color: #9ca3af; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; margin-left: 12px; }
+
+  /* Scored dimensions */
+  .dimensions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 700px) { .dimensions-grid { grid-template-columns: 1fr; } }
+
+  .dim-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;
+    position: relative; transition: box-shadow 0.15s;
+  }
+  .dim-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .dim-card .weight { position: absolute; top: 16px; right: 16px; font-size: 22px; font-weight: 700; color: #d1d5db; }
+  .dim-card .step-num { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+  .dim-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .dim-card .question { font-size: 13px; color: #6b7280; font-style: italic; margin-bottom: 10px; }
+  .dim-card .data-sources { display: flex; gap: 6px; flex-wrap: wrap; }
+  .dim-card .data-sources .src { background: #f3f4f6; color: #374151; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 100px; }
+  .dim-card .logic-note { font-size: 12px; color: #6b7280; margin-top: 10px; border-top: 1px solid #f3f4f6; padding-top: 8px; }
+
+  /* Phase 2 card */
+  .phase2-card {
+    background: #fff; border: 1px dashed #d1d5db; border-radius: 12px; padding: 20px;
+    grid-column: 1 / -1; opacity: 0.7;
+  }
+  .phase2-card .badge { background: #f3f4f6; color: #6b7280; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 6px; }
+  .phase2-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #6b7280; }
+  .phase2-card .desc { font-size: 13px; color: #9ca3af; }
+
+  /* Composite score */
+  .composite-card {
+    background: #1a1a2e; color: #fff; border-radius: 12px; padding: 28px; text-align: center;
+    margin-bottom: 12px;
+  }
+  .composite-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .composite-card .desc { font-size: 14px; color: #9ca3af; }
+  .composite-card .weights {
+    display: flex; justify-content: center; gap: 16px; margin-top: 16px; flex-wrap: wrap;
+  }
+  .composite-card .weights .w { text-align: center; }
+  .composite-card .weights .w .pct { font-size: 20px; font-weight: 700; color: #60a5fa; }
+  .composite-card .weights .w .lbl { font-size: 11px; color: #9ca3af; display: block; margin-top: 2px; }
+
+  /* Pipeline */
+  .pipeline {
+    display: flex; align-items: center; gap: 0; margin: 12px 0; flex-wrap: wrap; justify-content: center;
+  }
+  .pipeline .step {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 16px;
+    font-size: 13px; font-weight: 500; text-align: center; min-width: 120px;
+  }
+  .pipeline .step .sub { font-size: 11px; color: #9ca3af; font-weight: 400; display: block; }
+  .pipeline .pipe-arrow { color: #d1d5db; font-size: 18px; padding: 0 4px; flex-shrink: 0; }
+
+  /* Timeline */
+  .timeline { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 700px) { .timeline { grid-template-columns: 1fr; } }
+
+  .tl-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;
+  }
+  .tl-card .period { font-size: 13px; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .tl-card .date { font-size: 12px; color: #9ca3af; margin-bottom: 10px; }
+  .tl-card ul { list-style: none; padding: 0; }
+  .tl-card ul li { font-size: 13px; color: #374151; padding: 3px 0; padding-left: 14px; position: relative; }
+  .tl-card ul li::before { content: ''; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; border-radius: 50%; background: #d1d5db; }
+  .tl-card.t30 { border-top: 3px solid #22c55e; }
+  .tl-card.t60 { border-top: 3px solid #3b82f6; }
+  .tl-card.t90 { border-top: 3px solid #8b5cf6; }
+
+  /* Clara */
+  .clara-card {
+    background: #fefce8; border: 1px solid #fde68a; border-radius: 12px; padding: 20px; margin-bottom: 12px;
+  }
+  .clara-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #92400e; }
+  .clara-card .items { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) { .clara-card .items { grid-template-columns: 1fr; } }
+  .clara-card .item { font-size: 13px; color: #78350f; }
+  .clara-card .item strong { display: block; font-size: 14px; margin-bottom: 4px; color: #92400e; }
+
+  /* Open questions */
+  .questions { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
+  .questions ul { list-style: none; padding: 0; }
+  .questions ul li { font-size: 13px; color: #374151; padding: 6px 0; padding-left: 16px; position: relative; border-bottom: 1px solid #f9fafb; }
+  .questions ul li:last-child { border-bottom: none; }
+  .questions ul li::before { content: '?'; position: absolute; left: 0; top: 6px; font-weight: 700; color: #d97706; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Quality Workstream Treasure Map</h1>
+    <div class="subtitle">30-60-90 Day Sprint &middot; March 2026</div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="section-title">The flow: NPI enters, quality score comes out</div>
+
+  <!-- Safety Gate -->
+  <div class="gate-card">
+    <div class="badge">Pre-check gate</div>
+    <h3>Step 1. Safety Gate</h3>
+    <div class="desc">Should this provider be in the marketplace at all?</div>
+    <div class="logic">Binary check: <strong>pass = scored</strong>, <strong>fail = excluded</strong>. No weighting, no partial credit.</div>
+    <div class="gate-data">
+      <span class="tag">NPDB</span>
+      <span class="tag">State medical boards</span>
+      <span class="tag">PECOS / OIG exclusion list</span>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div><span class="label">Pass &rarr; proceed to scoring</span></div>
+
+  <!-- Scored Dimensions -->
+  <div class="dimensions-grid">
+    <div class="dim-card">
+      <div class="weight">25%</div>
+      <div class="step-num">Step 2</div>
+      <h3>Credentials &amp; Training</h3>
+      <div class="question">Is this provider qualified in their claimed specialty?</div>
+      <div class="data-sources">
+        <span class="src">NPPES</span>
+        <span class="src">ABMS</span>
+        <span class="src">PECOS</span>
+      </div>
+      <div class="logic-note">Board cert is primary signal. Highest ERISA weight (duty of prudence).</div>
+    </div>
+
+    <div class="dim-card">
+      <div class="weight">25%</div>
+      <div class="step-num">Step 3</div>
+      <h3>Patient Experience</h3>
+      <div class="question">What do patients actually say about this provider?</div>
+      <div class="data-sources">
+        <span class="src">Google</span>
+        <span class="src">Healthgrades</span>
+        <span class="src">Doximity</span>
+        <span class="src">RateMDs</span>
+      </div>
+      <div class="logic-note">Normalised to 0-100. Review volume = confidence signal, not score input. No reviews = null, not penalty.</div>
+    </div>
+
+    <div class="dim-card">
+      <div class="weight">15%</div>
+      <div class="step-num">Step 4</div>
+      <h3>Access &amp; Availability</h3>
+      <div class="question">Can patients actually get seen?</div>
+      <div class="data-sources">
+        <span class="src">Practice onboarding (self-report)</span>
+      </div>
+      <div class="logic-note">Hours, wait times, telehealth, languages. Additive bonuses. Schema is the 30-day deliverable.</div>
+    </div>
+
+    <div class="dim-card">
+      <div class="weight">20%</div>
+      <div class="step-num">Step 5</div>
+      <h3>Clinical Quality (MIPS)</h3>
+      <div class="question">Has the government assessed this provider's quality?</div>
+      <div class="data-sources">
+        <span class="src">CMS QPP</span>
+        <span class="src">Care Compare</span>
+        <span class="src">Part B claims</span>
+      </div>
+      <div class="logic-note">Three situations: strong score &rarr; weight it. No score &rarr; null (size signal). Low score &rarr; cross-reference first.</div>
+    </div>
+
+    <div class="phase2-card" style="position:relative;overflow:hidden;">
+      <div class="badge">Phase 2</div>
+      <div style="position:absolute;top:16px;right:16px;font-size:22px;font-weight:700;color:#d1d5db;">15%</div>
+      <h3>Step 6. Clinical Outcomes</h3>
+      <div class="desc">Care journey, preventive care, readmissions. Requires live employer claims data. Gold standard, not needed for initial bar.</div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="arrow"></div><span class="label">All dimensions combine</span></div>
+
+  <!-- Composite Score -->
+  <div class="composite-card">
+    <h3>Composite Quality Score</h3>
+    <div class="desc">One score per NPI. Explainable to a non-technical employer.</div>
+    <div class="weights">
+      <div class="w"><span class="pct">25%</span><span class="lbl">Credentials</span></div>
+      <div class="w"><span class="pct">25%</span><span class="lbl">Patient Exp.</span></div>
+      <div class="w"><span class="pct">20%</span><span class="lbl">MIPS</span></div>
+      <div class="w"><span class="pct">15%</span><span class="lbl">Access</span></div>
+      <div class="w"><span class="pct">15%</span><span class="lbl">Outcomes*</span></div>
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="section-title">Our pipeline (data science handoff)</div>
+  <div class="pipeline">
+    <div class="step">Pull raw data<span class="sub">CMS, NPPES, APIs, scraping</span></div>
+    <span class="pipe-arrow">&rarr;</span>
+    <div class="step">Build logic<span class="sub">Business rules per dimension</span></div>
+    <span class="pipe-arrow">&rarr;</span>
+    <div class="step">Validate locally<span class="sub">End-to-end in notebooks</span></div>
+    <span class="pipe-arrow">&rarr;</span>
+    <div class="step">Document<span class="sub">Sources, caveats, output schema</span></div>
+    <span class="pipe-arrow">&rarr;</span>
+    <div class="step">Ship to GitHub<span class="sub">One notebook per dimension</span></div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section-title">Timeline</div>
+  <div class="timeline">
+    <div class="tl-card t30">
+      <div class="period">30 days</div>
+      <div class="date">By mid-April 2026</div>
+      <ul>
+        <li>Safety gate notebook (Othmane + Antoine)</li>
+        <li>Credentials notebook (Othmane)</li>
+        <li>Patient experience notebook (Antoine)</li>
+        <li>Access schema + rubric (Antoine)</li>
+        <li>ERISA methodology doc (Clara)</li>
+      </ul>
+    </div>
+    <div class="tl-card t60">
+      <div class="period">60 days</div>
+      <div class="date">By mid-May 2026</div>
+      <ul>
+        <li>MIPS notebook + 3-situation logic (Othmane + Antoine)</li>
+        <li>Composite score v1 (Antoine)</li>
+        <li>All dimensions productionised (Eng)</li>
+        <li>API endpoint live (Eng)</li>
+        <li>ERISA visible in product (Clara + Product)</li>
+      </ul>
+    </div>
+    <div class="tl-card t90">
+      <div class="period">90 days</div>
+      <div class="date">By mid-June 2026</div>
+      <ul>
+        <li>Clinical outcomes schema (Antoine + Othmane)</li>
+        <li>Safety gate auto-monitoring (Eng)</li>
+        <li>Score validation + back-testing (Antoine + Clara)</li>
+        <li>Slack agent #m-alpha-agent (Eng)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Clara -->
+  <div class="section-title">Clara's parallel workstream (ERISA)</div>
+  <div class="clara-card">
+    <h3>ERISA &amp; Fiduciary Duty</h3>
+    <div class="items">
+      <div class="item">
+        <strong>Quality evidence</strong>
+        Define what employers need to satisfy fiduciary duty. Map our six dimensions to the legal prudence standard.
+      </div>
+      <div class="item">
+        <strong>Methodology doc</strong>
+        Employer-facing description of how we evaluate providers. Visible in product, not buried in a PDF. The defensibility test.
+      </div>
+      <div class="item">
+        <strong>Legal thresholds</strong>
+        Which signals are hard gates vs. scored dimensions? Monitoring obligations? Need for external validation (NCQA-style)?
+      </div>
+    </div>
+  </div>
+
+  <!-- Open questions -->
+  <div class="section-title">Open questions</div>
+  <div class="questions">
+    <ul>
+      <li>NPDB access: query directly or through an authorized agent? Gates the safety gate timeline</li>
+      <li>ABMS access: API vs. batch verification. Cost and turnaround TBD</li>
+      <li>State board coverage: start with states where we have practices, or solve nationally?</li>
+      <li>Review platform rights: Google API limits, Healthgrades/Doximity scraping legality. Partnership?</li>
+      <li>MIPS low-volume: neutral signal or slight negative?</li>
+      <li>Composite weights (25/25/20/15/15): validate against employer priorities or ship and adjust?</li>
+      <li>Safety gate refresh cadence: what interval satisfies the monitoring obligation?</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
