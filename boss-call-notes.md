@@ -56,20 +56,3 @@ The sequence:
 
 We're not skipping the hard problem. We're sequencing to it. The pipeline is designed so claims scoring drops into the same bundle structure we're building now.
 
----
-
-## The Medicaid angle
-
-One data source I found that strengthens this: the **Medicaid Provider Spending dataset** from HHS Open Data (T-MSIS). It gives us provider-level spending by procedure code for Medicaid FFS, managed care, and CHIP, going back to 2018.
-
-This matters because the biggest caveat with CMS data is that it's Medicare-only. Providers who mostly see commercially insured or Medicaid patients look thin. Adding Medicaid utilization data gives us a much fuller picture, especially for OB/GYN, pediatrics, and primary care where Medicaid is a huge share of patients.
-
-One flag: the dataset is currently listed as "temporarily unavailable" on the HHS portal. We can start with Medicare-only and add Medicaid when it comes back online.
-
----
-
-## What I need from you
-
-- Does the bundle taxonomy per specialty need to come from us, or do you have a view on how bundles should be defined? Right now the plan is Antoine + Othmane + Clara jointly.
-- How granular do we go? Top 3-5 bundles per specialty to start, or comprehensive?
-- The composite weights are 25/25/20/15/15. Do we validate against employer priorities before shipping, or ship and adjust?
