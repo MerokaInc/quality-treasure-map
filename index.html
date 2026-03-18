@@ -34,10 +34,10 @@
     width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
     font-size: 11px; font-weight: 700; flex-shrink: 0;
   }
-  .nav-item.gate .nav-icon { background: #fef2f2; color: #dc2626; }
+  .nav-item.gate .nav-icon { background: #dcfce7; color: #15803d; }
   .nav-item.step .nav-icon { background: rgba(99,102,241,0.2); color: #818cf8; }
   .nav-item.phase2 .nav-icon { background: rgba(255,255,255,0.06); color: #6b7280; }
-  .nav-item.active.gate .nav-icon { background: #fee2e2; }
+  .nav-item.active.gate .nav-icon { background: #bbf7d0; }
   .nav-item.active.step .nav-icon { background: rgba(99,102,241,0.35); color: #a5b4fc; }
 
   .nav-item .nav-weight { margin-left: auto; font-size: 10px; color: #4b5563; font-weight: 600; }
@@ -61,16 +61,17 @@
 
   /* Gate card */
   .gate-card {
-    background: #fff; border: 2px solid #ef4444; border-radius: 12px; padding: 24px;
+    background: #fff; border: 2px solid #16a34a; border-radius: 12px; padding: 24px;
     margin-bottom: 12px;
   }
-  .gate-card .badge { background: #fef2f2; color: #dc2626; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 8px; }
+  .gate-card .badge { background: #f0fdf4; color: #15803d; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 8px; }
   .gate-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
   .gate-card .desc { font-size: 14px; color: #6b7280; }
   .gate-card .logic { font-size: 13px; color: #374151; margin-top: 12px; }
-  .gate-card .logic strong { color: #dc2626; }
+  .gate-card .logic strong { color: #15803d; }
   .gate-data { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .gate-data .tag { background: #fef2f2; color: #991b1b; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 6px; }
+  .gate-data .tag { background: #f0f0ff; color: #4338ca; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 6px; }
+  .gate-data .tag.done { background: #dcfce7; color: #15803d; }
 
   /* Connector */
   .connector { display: flex; align-items: center; padding: 8px 0; }
@@ -166,18 +167,18 @@
     width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center;
     justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0;
   }
-  .step-header .step-badge.gate { background: #fef2f2; color: #dc2626; border: 2px solid #fca5a5; }
+  .step-header .step-badge.gate { background: #eef2ff; color: #4f46e5; border: 2px solid #a5b4fc; }
   .step-header .step-meta h2 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
   .step-header .step-meta .tagline { font-size: 14px; color: #6b7280; font-style: italic; }
-  .step-header .gate-badge { margin-left: auto; background: #fef2f2; color: #dc2626; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 12px; border-radius: 100px; white-space: nowrap; }
+  .step-header .gate-badge { margin-left: auto; background: #eef2ff; color: #4f46e5; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 12px; border-radius: 100px; white-space: nowrap; }
 
   .logic-box {
-    background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px 20px; margin-bottom: 32px;
+    background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px; padding: 16px 20px; margin-bottom: 32px;
   }
   .logic-box ul { list-style: none; padding: 0; }
   .logic-box ul li { font-size: 13px; color: #374151; padding: 4px 0; padding-left: 16px; position: relative; }
-  .logic-box ul li::before { content: ''; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; border-radius: 50%; background: #dc2626; }
-  .logic-box ul li strong { color: #991b1b; }
+  .logic-box ul li::before { content: ''; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; border-radius: 50%; background: #6366f1; }
+  .logic-box ul li strong { color: #4338ca; }
 
   .source-card {
     background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; margin-bottom: 16px;
@@ -197,7 +198,7 @@
   }
   .access-badge.free { background: #f0fdf4; color: #15803d; }
   .access-badge.paid { background: #fef3c7; color: #92400e; }
-  .access-badge.restricted { background: #fef2f2; color: #dc2626; }
+  .access-badge.restricted { background: #fef9f0; color: #92400e; }
 
   .source-card p { font-size: 13px; color: #374151; margin-bottom: 10px; line-height: 1.6; }
   .source-card p:last-child { margin-bottom: 0; }
@@ -214,7 +215,7 @@
   .detail-table tr:last-child td { border-bottom: none; }
   .detail-table .tag-free { color: #15803d; font-weight: 600; }
   .detail-table .tag-paid { color: #92400e; font-weight: 600; }
-  .detail-table .tag-restricted { color: #dc2626; font-weight: 600; }
+  .detail-table .tag-restricted { color: #92400e; font-weight: 600; }
 
   .path-card {
     background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; margin: 12px 0;
@@ -349,20 +350,22 @@
         <div class="desc">Should this provider be in the marketplace at all?</div>
         <div class="logic">Binary check: <strong>pass = scored</strong>, <strong>fail = excluded</strong>. No weighting, no partial credit.</div>
         <div class="gate-data">
-          <span class="tag">OIG LEIE exclusion list</span>
-          <span class="tag" style="background:#f0f9ff;color:#1e40af;">PECOS &mdash; informational only</span>
-          <span class="tag">State medical boards (WV + MA)</span>
+          <span class="tag done">OIG LEIE exclusion list &#10003;</span>
+          <span class="tag done">PECOS &mdash; informational only &#10003;</span>
+          <span class="tag done">State medical board (WV) &#10003;</span>
+          <span class="tag" style="background:#fef9f0;color:#92400e;">State medical board (MA) &mdash; pending</span>
           <span class="tag" style="background:#fef9f0;color:#92400e;">NPDB &mdash; future sprint</span>
+          <span class="tag" style="background:#f5f5f5;color:#6b7280;">FSMB &mdash; deferred (post sprint)</span>
         </div>
         <div class="logic" style="margin-top:10px;font-size:12px;color:#6b7280;">
-          LEIE gate done. PECOS informational. WV state board done. MA pending records request. FSMB test pending.
+          LEIE gate done. PECOS informational. WV state board done. MA pending records request. FSMB deferred (no contract).
         </div>
         <div class="progress-wrap">
           <div class="progress-label">
             <span class="pl-text">LEIE done. PECOS evaluated. WV state board done. MA pending records request. NPDB deferred.</span>
-            <span class="pl-pct" style="color:#dc2626;">60%</span>
+            <span class="pl-pct" style="color:#16a34a;">80%</span>
           </div>
-          <div class="progress-bar"><div class="fill" style="width:60%;background:#ef4444;"></div></div>
+          <div class="progress-bar"><div class="fill" style="width:80%;background:#16a34a;"></div></div>
         </div>
       </div>
 
@@ -582,14 +585,14 @@
       </div>
 
       <!-- Overall progress -->
-      <div class="section-title">Progress: 2 of 4 data sources checked</div>
-      <div class="source-card" style="border-left:3px solid #6366f1;">
+      <div class="section-title">Progress: 3 of 4 data sources checked</div>
+      <div class="source-card" style="border-left:3px solid #16a34a;">
         <div class="progress-wrap" style="margin-top:0;">
           <div class="progress-label">
-            <span class="pl-text">LEIE done (98.9% coverage). PECOS evaluated. WV state board done (87.5% NPI match). MA pending records request. NPDB deferred.</span>
-            <span class="pl-pct" style="color:#6366f1;">60%</span>
+            <span class="pl-text">LEIE done (98.9% coverage). PECOS evaluated (informational). WV state board done (87.5% NPI match). MA pending records request. NPDB deferred. FSMB on hold.</span>
+            <span class="pl-pct" style="color:#16a34a;">80%</span>
           </div>
-          <div class="progress-bar" style="height:8px;"><div class="fill" style="width:60%;background:#6366f1;"></div></div>
+          <div class="progress-bar" style="height:8px;"><div class="fill" style="width:80%;background:#16a34a;"></div></div>
         </div>
         <div style="margin-top:12px;font-size:13px;">
           <strong>Notebooks:</strong>
@@ -602,7 +605,7 @@
       <div class="section-title">
         <span style="display:inline-flex;align-items:center;gap:8px;">
           Data source 1: NPDB
-          <span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">Not started</span>
+          <span style="background:#fef9f0;color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">Not started</span>
         </span>
       </div>
       <div class="source-card" style="border-left:3px solid #e5e7eb;">
@@ -759,7 +762,7 @@
         </table>
 
         <div class="highlight">
-          <strong>FSMB Physician Data Center</strong> aggregates all 70+ medical and osteopathic boards. One contract solves the 50-state problem. Paid enterprise service.
+          <strong>FSMB Physician Data Center</strong> aggregates all 70+ medical and osteopathic boards. One contract solves the 50-state problem. Paid enterprise service. <strong>On hold</strong> until we prove the pipeline works with direct state pulls. No enterprise contract in place. Revisit post 60-day sprint.
         </div>
 
         <!-- WV: Done -->
@@ -798,8 +801,8 @@
 
           <p style="font-size:12px;font-weight:600;color:#1a1a2e;margin-top:12px;margin-bottom:8px;">Remaining limitations</p>
           <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:4px;">
-            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span><strong>No action type in discipline file.</strong> We know when someone was disciplined but not what happened. Either scrape the board's website or use FSMB.</li>
-            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span><strong>Removed providers invisible.</strong> Fully revoked physicians drop off the active roster. Need historical roster snapshots or FSMB to catch these.</li>
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span><strong>No action type in discipline file.</strong> We know when someone was disciplined but not what happened. Either scrape the board's website or use FSMB (deferred, post sprint).</li>
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span><strong>Removed providers invisible.</strong> Fully revoked physicians drop off the active roster. Need historical roster snapshots or FSMB (deferred, post sprint) to catch these.</li>
             <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span><strong>POC sample, not full run.</strong> Queried 312 providers via API. In production, eng uses the NPPES bulk file.</li>
           </ul>
 
@@ -842,7 +845,7 @@
             <div><strong>FSMB Physician Data Center</strong></div>
             <div>All 50 states, one feed</div>
             <div class="tag-paid">Enterprise contract</div>
-            <div class="rec">In scope (test)</div>
+            <div class="rec">On hold (post 60-day sprint)</div>
           </div>
           <div class="path-row">
             <div><strong>State-by-state scraping</strong></div>
@@ -1109,9 +1112,9 @@
 
         <p style="font-size:12px;font-weight:600;color:#1a1a2e;margin-bottom:10px;">Remaining limitations</p>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <p><strong>No action type in WV discipline file.</strong> Dates and names but not what happened (probation vs. suspension vs. revocation). Either scrape the board's website or use FSMB.</p>
-          <p><strong>Removed providers invisible.</strong> Fully revoked physicians drop off the active roster. Need historical roster snapshots or FSMB to catch these.</p>
-          <p><strong>Each state is different.</strong> WV has bulk downloads. MA does not. FSMB is the national production path.</p>
+          <p><strong>No action type in WV discipline file.</strong> Dates and names but not what happened (probation vs. suspension vs. revocation). Either scrape the board's website or use FSMB (deferred, post sprint).</p>
+          <p><strong>Removed providers invisible.</strong> Fully revoked physicians drop off the active roster. Need historical roster snapshots or FSMB (deferred, post sprint) to catch these.</p>
+          <p><strong>Each state is different.</strong> WV has bulk downloads. MA does not. FSMB is the national production path but deferred to post 60-day sprint (no enterprise contract).</p>
           <p><strong>NPDB deferred.</strong> Malpractice settlements and adverse actions. Access requires registration (weeks to months). Three paths documented in the Step 1 detail page.</p>
         </div>
       </div>
@@ -1180,35 +1183,35 @@
           <tr>
             <td><strong>NPI</strong></td>
             <td>10-digit string</td>
-            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><span style="background:#eef2ff;color:#4f46e5;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
             <td><strong>Yes</strong></td>
             <td>Primary identifier. Matches against LEIE exclusion list (Tier 1). Also used for PECOS enrollment lookup (informational, not a gate input). Every licensed provider has one.</td>
           </tr>
           <tr>
             <td><strong>Legal last name</strong></td>
             <td>String</td>
-            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><span style="background:#eef2ff;color:#4f46e5;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
             <td><strong>Yes</strong></td>
             <td>Must be the name on their license, not a preferred or married name. LEIE uses the name from the original exclusion filing. Without it, Tier 2 matching can't run.</td>
           </tr>
           <tr>
             <td><strong>Legal first name</strong></td>
             <td>String</td>
-            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><span style="background:#eef2ff;color:#4f46e5;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
             <td><strong>Yes</strong></td>
             <td>Same rule as last name. No nicknames. "William" not "Bill." "Robert" not "Bob."</td>
           </tr>
           <tr>
             <td><strong>Date of birth</strong></td>
             <td>YYYYMMDD</td>
-            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><span style="background:#eef2ff;color:#4f46e5;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
             <td><strong>Yes</strong></td>
             <td>The key field for Tier 2 matching. Turns a common name into a near-unique key. Without DOB, we can only check against 10% of the LEIE exclusion list instead of 98.9%.</td>
           </tr>
           <tr>
             <td><strong>State license number</strong></td>
             <td>String</td>
-            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><span style="background:#eef2ff;color:#4f46e5;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
             <td><strong>Yes</strong></td>
             <td>State medical board license number. Used to match against state discipline records and as a secondary key for NPPES matching (via "Other Provider Identifier" field). Improves NPI resolution for common names.</td>
           </tr>
