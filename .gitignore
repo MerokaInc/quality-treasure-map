@@ -1,1 +1,16 @@
+# Large data files - download links in README.md
+LEIE_UPDATED.csv
+PECOS_Enrollment.csv
+
+# Executed notebook backup
+step1_safety_gate_executed.ipynb
+
+# Node
 node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Unpacked docx artifacts
+unpacked_new_docx/
