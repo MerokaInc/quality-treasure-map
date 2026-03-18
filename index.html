@@ -313,6 +313,14 @@
         <span class="nav-weight" style="color:#4b5563;">Ph.2</span>
       </button>
     </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Reports</div>
+      <button class="nav-item" onclick="showTab('s1report', this)">
+        <span class="nav-icon" style="background:rgba(34,197,94,0.15);color:#22c55e;">&#10003;</span>
+        S1 Report
+      </button>
+    </div>
   </nav>
 
   <!-- Main -->
@@ -878,6 +886,141 @@
         <div class="gate-badge" style="background:#f3f4f6;color:#6b7280;">Phase 2</div>
       </div>
       <p style="font-size:14px;color:#6b7280;">Phase 2. Requires live employer claims data. Not required for initial bar. See the main treasure map doc for methodology.</p>
+    </div>
+
+    <!-- ==================== S1 REPORT ==================== -->
+    <div id="tab-s1report" class="tab-panel">
+      <div class="page-header">
+        <h1>Step 1 Report: Safety Gate</h1>
+        <div class="subtitle">OIG LEIE + PECOS exclusion check &middot; Completed March 2026</div>
+      </div>
+
+      <!-- 1 -->
+      <div class="section-title">1. What we set out to do</div>
+      <div class="source-card">
+        <p>Build the first layer of the safety gate: check whether a provider should be allowed into the Meroka marketplace at all. Binary pass/fail. We focused on two freely available federal datasets (LEIE and PECOS) because NPDB requires registration and state boards are a separate workstream.</p>
+      </div>
+
+      <!-- 2 -->
+      <div class="section-title">2. What we downloaded</div>
+      <div class="source-card">
+        <p><strong>OIG LEIE</strong> (exclusions.oig.hhs.gov): the federal government's master list of every individual or entity banned from participating in Medicare, Medicaid, and CHIP. 82,749 records. Free, public, updated monthly.</p>
+        <p><strong>PECOS</strong> (data.cms.gov): CMS's enrollment file for every provider who bills Medicare. 2.96 million enrollment rows covering 2.54 million unique providers. Free, public, updated monthly.</p>
+      </div>
+
+      <!-- 3 -->
+      <div class="section-title">3. What we built</div>
+      <div class="source-card">
+        <p>A Jupyter notebook that takes a list of provider NPIs, runs them against both datasets, and produces a pass/fail result per provider. We tested it on 210 NPIs: 200 clean providers from PECOS and 10 providers we knew were on the exclusion list.</p>
+      </div>
+
+      <!-- 4 -->
+      <div class="section-title">4. First finding: the NPI gap</div>
+      <div class="source-card">
+        <p>Only 10.3% of LEIE records have a usable NPI. The other 89.7% are from before 2007 when the NPI system was introduced. Those older records have the provider's name and address but no NPI. If we only match on NPI, we can only check incoming providers against 10% of the banned list. That's too big a gap for a vetting context.</p>
+      </div>
+
+      <!-- 5 -->
+      <div class="section-title">5. The solution: two-tier matching</div>
+      <div class="source-card">
+        <p>We looked at what fields the old LEIE records DO have. Every individual record includes last name, first name, and date of birth. Name alone would be too ambiguous ("John Smith" matches too many people). But name + date of birth is near-deterministic. "John Smith born April 15, 1965" is almost certainly one specific person. So we built two matching tiers:</p>
+
+        <div style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="background:#f0fdf4;color:#15803d;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;flex-shrink:0;">Tier 1</div>
+            <div style="font-size:13px;color:#374151;"><strong>Exact NPI match (high confidence).</strong> Covers 8,306 exclusions. No ambiguity. Auto-fail in production.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="background:#fef9f0;color:#92400e;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;flex-shrink:0;">Tier 2</div>
+            <div style="font-size:13px;color:#374151;"><strong>Last name + first name + DOB match (medium confidence).</strong> Covers 70,543 additional exclusions. Near-deterministic but can miss if a provider changed their name. Flagged for review, not auto-fail.</div>
+          </div>
+        </div>
+
+        <p><strong>Combined coverage: 98.9%</strong> of individual exclusions on the list. Only 865 records are uncoverable (businesses without individual names, or records missing DOB).</p>
+      </div>
+
+      <!-- 6 -->
+      <div class="section-title">6. What we decided about PECOS</div>
+      <div class="source-card">
+        <p>PECOS tells us whether a provider is actively enrolled in Medicare. All 10 of our excluded test providers were absent from PECOS, which makes sense: if you're federally banned, you're not billing Medicare.</p>
+        <p>But a provider NOT in PECOS isn't necessarily bad. They might just not bill Medicare (cash-pay, concierge, commercial insurance only). So we made PECOS informational, not a gate blocker. We flag the absence but don't fail on it.</p>
+      </div>
+
+      <!-- 7 -->
+      <div class="section-title">7. Validation results</div>
+      <div class="source-card">
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 10 known-excluded NPIs correctly flagged as FAIL (Tier 1)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 200 clean PECOS providers correctly passed</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> 5 name+DOB test cases (excluded individuals with no NPI) correctly caught (Tier 2)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> A fabricated name correctly passed (no false positive)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> Spot-checked one excluded provider against raw LEIE data: name, exclusion type, and date all matched exactly</li>
+        </ul>
+      </div>
+
+      <!-- 8 -->
+      <div class="section-title">8. More data we could pull but chose not to for the POC</div>
+      <div class="source-card">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <p><strong>NPPES</strong> (free, CMS): the full national registry of every active NPI in the US. We could do a bulk pre-screen of all providers in WV and MA instead of just a sample. Decided not to because the POC only needs to prove the logic works, not scan at scale. Eng handles that.</p>
+          </div>
+          <div>
+            <p><strong>NPDB</strong> (restricted, paid): the federal database for malpractice settlements and adverse actions. The only place where malpractice payments are aggregated nationally. Out of scope because access requires registration as an eligible entity, which could take weeks to months. Three paths documented for a future sprint: CVO partnership ($1-5/NPI), direct registration as a health plan, or partner through an employer/TPA.</p>
+          </div>
+          <div>
+            <p><strong>State medical boards</strong> (varies): license status and disciplinary actions. No single national database. 50 separate state systems. Plan is to test WV and MA directly, plus test FSMB Physician Data Center as the national production path.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="section-title">9. What we need from the provider onboarding profile</div>
+      <div class="source-card">
+        <p>For the safety gate to run both matching tiers, the onboarding form must collect these four fields:</p>
+        <table class="detail-table" style="margin:16px 0;">
+          <tr><th>Field</th><th>Format</th><th>Why</th></tr>
+          <tr><td><strong>NPI</strong></td><td>10-digit number</td><td>Primary identifier. Every licensed provider has one. Required for Tier 1 matching and the PECOS enrollment check.</td></tr>
+          <tr><td><strong>Legal last name</strong></td><td>String</td><td>Must be the name on their license, not a preferred or married name. LEIE uses the name from the original exclusion filing.</td></tr>
+          <tr><td><strong>Legal first name</strong></td><td>String</td><td>Same rule. No nicknames. "William" not "Bill."</td></tr>
+          <tr><td><strong>Date of birth</strong></td><td>YYYYMMDD</td><td>The key field that makes Tier 2 work. Turns a common name into a near-unique identifier.</td></tr>
+        </table>
+
+        <div class="highlight">
+          <strong>NPI alone</strong> gets you Tier 1 only (checks against 10% of the exclusion list). <strong>NPI + legal name + DOB</strong> gets you both tiers (98.9% coverage). If a provider doesn't supply DOB, they still get checked on NPI. They just won't be checked against the 70K+ older exclusion records. Document this as a coverage limitation, not a pass.
+        </div>
+
+        <p style="margin-top:12px;"><strong>Fields we do NOT need from onboarding</strong> (we get them from the federal datasets): exclusion status, Medicare enrollment status, specialty, address, practice name.</p>
+      </div>
+
+      <!-- 10 -->
+      <div class="section-title">10. What we shipped</div>
+      <div class="source-card">
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> Executed Jupyter notebook with all outputs visible, pushed to <a href="https://github.com/MerokaInc/quality-treasure-map/tree/ds/step1-safety-gate-leie-pecos" style="color:#4f46e5;">ds/step1-safety-gate-leie-pecos</a> on GitHub</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> README with business question, data source links, output schema, and caveats</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> Updated HTML treasure map with progress bars, findings per data source, and output schema for eng</li>
+        </ul>
+      </div>
+
+      <!-- 11 -->
+      <div class="section-title">11. Output schema (what eng gets per provider)</div>
+      <div class="source-card">
+        <table class="schema-table">
+          <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+          <tr><td><code>NPI</code></td><td>string</td><td>10-digit provider identifier</td></tr>
+          <tr><td><code>gate_result</code></td><td>string</td><td>PASS or FAIL</td></tr>
+          <tr><td><code>match_method</code></td><td>string</td><td>"npi" (Tier 1), "name_dob" (Tier 2), or "no_match"</td></tr>
+          <tr><td><code>confidence</code></td><td>string</td><td>"high" (NPI match) or "medium" (name+DOB match)</td></tr>
+          <tr><td><code>leie_npi_match</code></td><td>boolean</td><td>True if NPI matched LEIE directly</td></tr>
+          <tr><td><code>leie_name_dob_match</code></td><td>boolean</td><td>True if name+DOB matched LEIE (pre-2007 records)</td></tr>
+          <tr><td><code>pecos_enrolled</code></td><td>boolean</td><td>True if found in PECOS Medicare enrollment</td></tr>
+          <tr><td><code>leie_excl_type</code></td><td>string</td><td>OIG exclusion type code</td></tr>
+          <tr><td><code>leie_excl_date</code></td><td>string</td><td>Date of exclusion (YYYYMMDD)</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Eng sets the confidence threshold in production. Both match paths are exposed so they can decide: auto-fail on high confidence, flag-for-review on medium.</p>
+      </div>
+
     </div>
 
   </main>
