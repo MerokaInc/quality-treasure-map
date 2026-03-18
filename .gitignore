@@ -1,6 +1,8 @@
 # Large data files - download links in README.md
 LEIE_UPDATED.csv
 PECOS_Enrollment.csv
+wv_md_roster.xlsx
+wv_discipline.xlsx
 
 # Executed notebook backup
 step1_safety_gate_executed.ipynb
