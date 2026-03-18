@@ -990,236 +990,176 @@
     <div id="tab-s1report" class="tab-panel">
       <div class="page-header">
         <h1>Step 1 Report: Safety Gate</h1>
-        <div class="subtitle">OIG LEIE exclusion check &middot; PECOS evaluated, kept as informational &middot; Completed March 2026</div>
+        <div class="subtitle">Federal exclusion check + state board disciplinary check &middot; March 2026</div>
       </div>
 
       <!-- 1 -->
       <div class="section-title">1. What we set out to do</div>
       <div class="source-card">
-        <p>Build the first layer of the safety gate: check whether a provider should be allowed into the Meroka marketplace at all. Binary pass/fail. We started with two freely available federal datasets (LEIE and PECOS) because NPDB requires registration and state boards are a separate workstream. After evaluation, LEIE became the gate driver and PECOS was scoped as informational context only.</p>
+        <p>Build the safety gate: check whether a provider should be allowed into the Meroka marketplace at all. Binary pass/fail. The gate checks two things: (1) is this provider on a federal exclusion list, and (2) does their state medical board have disciplinary actions on file. A hit on either one is a flag. No weighting, no partial credit.</p>
+        <p style="margin-top:8px;">We also evaluated PECOS (Medicare enrollment) as a potential gate input and decided against it. It's kept as informational context for downstream steps.</p>
       </div>
 
       <!-- 2 -->
-      <div class="section-title">2. What we downloaded</div>
+      <div class="section-title">2. Data sources</div>
       <div class="source-card">
-        <p><strong>OIG LEIE</strong> (exclusions.oig.hhs.gov): the federal government's master list of every individual or entity banned from participating in Medicare, Medicaid, and CHIP. 82,749 records. Free, public, updated monthly.</p>
-        <p><strong>PECOS</strong> (data.cms.gov): CMS's enrollment file for every provider who bills Medicare. 2.96 million enrollment rows covering 2.54 million unique providers. Free, public, updated monthly.</p>
+        <table class="detail-table">
+          <tr><th>Source</th><th>What it tells us</th><th>Records</th><th>Access</th></tr>
+          <tr><td><strong>OIG LEIE</strong></td><td>Federally excluded from Medicare/Medicaid/CHIP</td><td>82,749</td><td class="tag-free">Free, monthly CSV</td></tr>
+          <tr><td><strong>WV Board of Medicine roster</strong></td><td>Active license holders in West Virginia</td><td>10,276 MDs</td><td class="tag-free">Free, monthly Excel</td></tr>
+          <tr><td><strong>WV discipline spreadsheet</strong></td><td>All board actions going back to 1953</td><td>1,367 MD actions (1,055 unique)</td><td class="tag-free">Free, Excel</td></tr>
+          <tr><td><strong>NPPES API</strong></td><td>Bridges names to NPI numbers</td><td>National registry</td><td class="tag-free">Free, real-time</td></tr>
+          <tr><td><strong>PECOS</strong></td><td>Medicare enrollment status (informational only)</td><td>2.54M unique NPIs</td><td class="tag-free">Free, monthly CSV</td></tr>
+        </table>
       </div>
 
       <!-- 3 -->
-      <div class="section-title">3. What we built</div>
+      <div class="section-title">3. Federal check: LEIE exclusion matching</div>
       <div class="source-card">
-        <p>A Jupyter notebook that takes a list of provider NPIs, runs them against the LEIE exclusion list, and produces a pass/fail result per provider. PECOS is loaded for informational context but does not affect the gate decision. We tested it on 210 NPIs: 200 clean providers sourced from PECOS and 10 providers we knew were on the exclusion list.</p>
-      </div>
-
-      <!-- 4 -->
-      <div class="section-title">4. First finding: the NPI gap</div>
-      <div class="source-card">
-        <p>Only 10.3% of LEIE records have a usable NPI. The other 89.7% are from before 2007 when the NPI system was introduced. Those older records have the provider's name and address but no NPI. If we only match on NPI, we can only check incoming providers against 10% of the banned list. That's too big a gap for a vetting context.</p>
-      </div>
-
-      <!-- 5 -->
-      <div class="section-title">5. The solution: two-tier matching</div>
-      <div class="source-card">
-        <p>We looked at what fields the old LEIE records DO have. Every individual record includes last name, first name, and date of birth. Name alone would be too ambiguous ("John Smith" matches too many people). But name + date of birth is near-deterministic. "John Smith born April 15, 1965" is almost certainly one specific person. So we built two matching tiers:</p>
+        <p>The LEIE is the federal government's list of every provider banned from Medicare, Medicaid, and CHIP. The problem: only 10.3% of records have a usable NPI. The rest are from before 2007. We solved this with two matching tiers:</p>
 
         <div style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
           <div style="display:flex;gap:12px;align-items:flex-start;">
             <div style="background:#f0fdf4;color:#15803d;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;flex-shrink:0;">Tier 1</div>
-            <div style="font-size:13px;color:#374151;"><strong>Exact NPI match (high confidence).</strong> Covers 8,306 exclusions. No ambiguity. Auto-fail in production.</div>
+            <div style="font-size:13px;color:#374151;"><strong>Exact NPI match (high confidence).</strong> Covers 8,306 exclusions. Auto-fail in production.</div>
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start;">
             <div style="background:#fef9f0;color:#92400e;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;flex-shrink:0;">Tier 2</div>
-            <div style="font-size:13px;color:#374151;"><strong>Last name + first name + DOB match (medium confidence).</strong> Covers 70,543 additional exclusions. Near-deterministic but can miss if a provider changed their name. Flagged for review, not auto-fail.</div>
+            <div style="font-size:13px;color:#374151;"><strong>Last name + first name + DOB match (medium confidence).</strong> Covers 70,543 additional exclusions. Flagged for review, not auto-fail.</div>
           </div>
         </div>
 
-        <p><strong>Combined coverage: 98.9%</strong> of individual exclusions on the list. Only 865 records are uncoverable (businesses without individual names, or records missing DOB).</p>
+        <p><strong>Combined coverage: 98.9%</strong> of individual exclusions. Only 865 records uncoverable (businesses without individual names, or missing DOB).</p>
+      </div>
+
+      <!-- 4 -->
+      <div class="section-title">4. State check: WV board disciplinary matching</div>
+      <div class="source-card">
+        <p>State boards track license status, disciplinary actions, consent orders, and practice restrictions. We started with WV because it had bulk downloads available. The WV roster has license numbers but no NPI, so we bridge through the NPPES API by querying (first name, last name, state).</p>
+
+        <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="background:#f0fdf4;color:#15803d;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">High</div>
+            <div style="font-size:13px;color:#374151;"><strong>Name + state unique (69.9%):</strong> one result in NPPES for that name in WV. Deterministic.</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="background:#fef9f0;color:#92400e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">Medium</div>
+            <div style="font-size:13px;color:#374151;"><strong>Fallback match (17.6%):</strong> name-only search returns 1 MD nationally. Covers cross-state providers.</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="background:#fef2f2;color:#dc2626;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">None</div>
+            <div style="font-size:13px;color:#374151;"><strong>Ambiguous (12.5%):</strong> common names. Resolved in production by collecting state license number at onboarding.</div>
+          </div>
+        </div>
+
+        <p><strong>Result:</strong> 292 active WV MDs flagged with disciplinary history. 87.5% NPI match rate on the POC sample (312 providers).</p>
+      </div>
+
+      <!-- 5 -->
+      <div class="section-title">5. Why PECOS was removed from the gate</div>
+      <div class="source-card">
+        <p>Absence from PECOS doesn't indicate a problem. Many legitimate independent practices don't bill Medicare: concierge, cash-pay, commercial-only. Failing them on PECOS absence would knock out the exact providers Meroka is trying to serve.</p>
+        <p style="margin-top:8px;">We kept a <code>pecos_enrolled</code> informational flag (does not affect pass/fail) plus a cross-reference check: if a provider is LEIE-excluded but still PECOS-enrolled, that's a data integrity flag. PECOS is a real input for Steps 2 and 5b, not for safety.</p>
       </div>
 
       <!-- 6 -->
-      <div class="section-title">6. Why we removed PECOS from the gate</div>
+      <div class="section-title">6. Validation results</div>
       <div class="source-card">
-        <p>We initially evaluated PECOS as a potential gate input. PECOS tells us whether a provider is actively enrolled in Medicare, and CMS does revoke enrollment for serious reasons (felony convictions, license loss, billing abuse). On the surface, it looks like a safety signal.</p>
-
-        <p style="margin-top:12px;"><strong>Why it doesn't work as a gate:</strong> Absence from PECOS doesn't indicate a problem. Many legitimate independent practices don't bill Medicare: concierge, cash-pay, commercial-only. These are exactly the providers Meroka is trying to serve. Failing them on PECOS absence would knock out good providers for no reason.</p>
-
-        <p style="margin-top:12px;">There's also a data limitation. The public PECOS extract only contains currently enrolled providers. We can't distinguish "never enrolled" (fine) from "was enrolled but got revoked" (bad) without historical snapshots or the separate CMS revocation files.</p>
-
-        <p style="margin-top:12px;"><strong>What we kept:</strong></p>
-        <ul style="margin-top:8px;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
-          <li style="font-size:13px;color:#374151;">A <code>pecos_enrolled</code> informational flag in the output. Does not affect pass/fail.</li>
-          <li style="font-size:13px;color:#374151;">A cross-reference check: if a provider is LEIE-excluded but still shows as PECOS-enrolled, we flag that as a data integrity issue. It means CMS enrollment hasn't caught up to OIG's exclusion.</li>
+        <p style="font-size:12px;font-weight:600;color:#1a1a2e;margin-bottom:10px;">Federal (LEIE)</p>
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> 10 known-excluded NPIs correctly flagged as FAIL (Tier 1)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> 200 clean providers correctly passed</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> 5 name+DOB test cases correctly caught (Tier 2)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> Fabricated name correctly passed (no false positive)</li>
         </ul>
-
-        <p style="margin-top:12px;"><strong>Where PECOS goes from here:</strong> It's a real input for <strong>Step 2</strong> (specialty validation, enrollment history, practice affiliations) and <strong>Step 5b</strong> (Medicare billing patterns mapped to clinical bundles). PECOS earns its keep in quality, not in safety.</p>
+        <p style="font-size:12px;font-weight:600;color:#1a1a2e;margin-bottom:10px;">State (WV)</p>
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;">
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> Rohrbough: active roster + discipline records. NPI resolved correctly, flagged. PASS.</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> Galang: in discipline records, removed from active roster. NPI resolved via standalone lookup. PASS.</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> 16 clean providers correctly unflagged</li>
+        </ul>
       </div>
 
       <!-- 7 -->
-      <div class="section-title">7. Validation results</div>
+      <div class="section-title">7. What we need from the provider onboarding profile</div>
       <div class="source-card">
-        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 10 known-excluded NPIs correctly flagged as FAIL (Tier 1)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 200 clean providers (sourced from PECOS) correctly passed</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> 5 name+DOB test cases (excluded individuals with no NPI) correctly caught (Tier 2)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> A fabricated name correctly passed (no false positive)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> Spot-checked one excluded provider against raw LEIE data: name, exclusion type, and date all matched exactly</li>
-        </ul>
+        <table class="detail-table" style="margin-bottom:16px;">
+          <tr><th>Field</th><th>Format</th><th>Why</th></tr>
+          <tr><td><strong>NPI</strong></td><td>10-digit number</td><td>Primary identifier. LEIE Tier 1 match + PECOS lookup.</td></tr>
+          <tr><td><strong>Legal first name</strong></td><td>String</td><td>LEIE Tier 2 match. Name on their license, not a nickname.</td></tr>
+          <tr><td><strong>Legal last name</strong></td><td>String</td><td>Same. "William" not "Bill."</td></tr>
+          <tr><td><strong>Date of birth</strong></td><td>YYYYMMDD</td><td>LEIE Tier 2 match + disambiguates common names in state board matching.</td></tr>
+          <tr><td><strong>State license number</strong></td><td>String</td><td>Deterministic match against state board roster. Also maps to NPPES "Other Provider Identifier" field, eliminating name-based ambiguity.</td></tr>
+        </table>
+
+        <div class="highlight">
+          <strong>NPI alone</strong> gets LEIE Tier 1 only (10% of exclusion list). <strong>NPI + name + DOB + license number</strong> gets full coverage: 98.9% of LEIE plus deterministic state board matching.
+        </div>
       </div>
 
       <!-- 8 -->
-      <div class="section-title">8. More data we could pull but chose not to for the POC</div>
+      <div class="section-title">8. Resolved by onboarding vs. remaining limitations</div>
       <div class="source-card">
-        <div style="display:flex;flex-direction:column;gap:16px;">
-          <div>
-            <p><strong>NPPES</strong> (free, CMS): the full national registry of every active NPI in the US. We could do a bulk pre-screen of all providers in WV and MA instead of just a sample. Decided not to because the POC only needs to prove the logic works, not scan at scale. Eng handles that.</p>
-          </div>
-          <div>
-            <p><strong>NPDB</strong> (restricted, paid): the federal database for malpractice settlements and adverse actions. The only place where malpractice payments are aggregated nationally. Out of scope because access requires registration as an eligible entity, which could take weeks to months. Three paths documented for a future sprint: CVO partnership ($1-5/NPI), direct registration as a health plan, or partner through an employer/TPA.</p>
-          </div>
-          <div>
-            <p><strong>State medical boards</strong> (varies): license status and disciplinary actions. No single national database. 50 separate state systems. Plan is to test WV and MA directly, plus test FSMB Physician Data Center as the national production path.</p>
-          </div>
+        <p style="font-size:12px;font-weight:600;color:#15803d;margin-bottom:10px;">Resolved by onboarding fields</p>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+          <div style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>NPI ambiguity from name matching.</strong> State license number matches deterministically. Eliminates the 12.5% ambiguous rate.</div>
+          <div style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>DOB as tiebreaker.</strong> Already collected for LEIE. Disambiguates any remaining fuzzy NPPES results.</div>
+          <div style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>Cross-state providers.</strong> License number doesn't depend on NPPES address state.</div>
+        </div>
+
+        <p style="font-size:12px;font-weight:600;color:#1a1a2e;margin-bottom:10px;">Remaining limitations</p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <p><strong>No action type in WV discipline file.</strong> Dates and names but not what happened (probation vs. suspension vs. revocation). Either scrape the board's website or use FSMB.</p>
+          <p><strong>Removed providers invisible.</strong> Fully revoked physicians drop off the active roster. Need historical roster snapshots or FSMB to catch these.</p>
+          <p><strong>Each state is different.</strong> WV has bulk downloads. MA does not. FSMB is the national production path.</p>
+          <p><strong>NPDB deferred.</strong> Malpractice settlements and adverse actions. Access requires registration (weeks to months). Three paths documented in the Step 1 detail page.</p>
         </div>
       </div>
 
       <!-- 9 -->
-      <div class="section-title">9. What we need from the provider onboarding profile</div>
+      <div class="section-title">9. Massachusetts: pending records request</div>
       <div class="source-card">
-        <p>For the safety gate to run both matching tiers, the onboarding form must collect these four fields:</p>
-        <table class="detail-table" style="margin:16px 0;">
-          <tr><th>Field</th><th>Format</th><th>Why</th></tr>
-          <tr><td><strong>NPI</strong></td><td>10-digit number</td><td>Primary identifier. Every licensed provider has one. Required for Tier 1 matching and the PECOS enrollment check.</td></tr>
-          <tr><td><strong>Legal last name</strong></td><td>String</td><td>Must be the name on their license, not a preferred or married name. LEIE uses the name from the original exclusion filing.</td></tr>
-          <tr><td><strong>Legal first name</strong></td><td>String</td><td>Same rule. No nicknames. "William" not "Bill."</td></tr>
-          <tr><td><strong>Date of birth</strong></td><td>YYYYMMDD</td><td>The key field that makes Tier 2 work. Turns a common name into a near-unique identifier.</td></tr>
-        </table>
-
-        <div class="highlight">
-          <strong>NPI alone</strong> gets you Tier 1 only (checks against 10% of the exclusion list). <strong>NPI + legal name + DOB</strong> gets you both tiers (98.9% coverage). If a provider doesn't supply DOB, they still get checked on NPI. They just won't be checked against the 70K+ older exclusion records. Document this as a coverage limitation, not a pass.
-        </div>
-
-        <p style="margin-top:12px;"><strong>Fields we do NOT need from onboarding</strong> (we get them from the federal datasets): exclusion status, Medicare enrollment status, specialty, address, practice name.</p>
+        <p>MA does not offer a bulk download. Physician profiles are on <a href="https://findmydoctor.mass.gov/" style="color:#4f46e5;text-decoration:none;">FindMyDoctor.mass.gov</a> but only searchable one at a time. Getting bulk data requires a formal public records request to BORIM.</p>
+        <p style="margin-top:8px;"><strong>Contact:</strong> Tara Douglas, Primary Records Access Officer, BORIM.RAO@state.ma.us, 781-876-8200. Draft request email in the README.</p>
       </div>
 
       <!-- 10 -->
-      <div class="section-title">10. What we shipped</div>
+      <div class="section-title">10. Output schema (what eng gets per provider)</div>
       <div class="source-card">
-        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> Executed Jupyter notebook with all outputs visible, pushed to <a href="https://github.com/MerokaInc/quality-treasure-map/tree/ds/step1-safety-gate-leie-pecos" style="color:#4f46e5;">ds/step1-safety-gate-leie-pecos</a> on GitHub</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> README with business question, data source links, output schema, and caveats</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> Updated HTML treasure map with progress bars, findings per data source, and output schema for eng</li>
-        </ul>
+        <p style="font-size:12px;font-weight:600;color:#1a1a2e;margin-bottom:10px;">From LEIE notebook</p>
+        <table class="schema-table" style="margin-bottom:20px;">
+          <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+          <tr><td><code>NPI</code></td><td>string</td><td>10-digit provider identifier</td></tr>
+          <tr><td><code>gate_result</code></td><td>string</td><td>PASS or FAIL</td></tr>
+          <tr><td><code>leie_npi_match</code></td><td>boolean</td><td>Tier 1: NPI matched LEIE directly</td></tr>
+          <tr><td><code>leie_name_dob_match</code></td><td>boolean</td><td>Tier 2: name+DOB matched LEIE</td></tr>
+          <tr><td><code>pecos_enrolled</code></td><td>boolean</td><td>Informational only. Does not affect gate.</td></tr>
+          <tr><td><code>confidence</code></td><td>string</td><td>high or medium</td></tr>
+        </table>
+
+        <p style="font-size:12px;font-weight:600;color:#1a1a2e;margin-bottom:10px;">From WV state board notebook</p>
+        <table class="schema-table">
+          <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+          <tr><td><code>npi</code></td><td>string</td><td>Resolved via NPPES API</td></tr>
+          <tr><td><code>wv_license_number</code></td><td>string</td><td>WV Board of Medicine license number</td></tr>
+          <tr><td><code>disciplinary_flag</code></td><td>boolean</td><td>True if any board action on record</td></tr>
+          <tr><td><code>most_recent_discipline_date</code></td><td>date</td><td>Date of most recent action</td></tr>
+          <tr><td><code>discipline_action_count</code></td><td>integer</td><td>Total board actions on record</td></tr>
+          <tr><td><code>match_method</code></td><td>string</td><td>How NPI was resolved</td></tr>
+          <tr><td><code>confidence</code></td><td>string</td><td>high, medium, or none</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">In production, eng joins both outputs on NPI. A provider fails the gate if they hit on either LEIE or state board discipline.</p>
       </div>
 
       <!-- 11 -->
-      <div class="section-title">11. Output schema (what eng gets per provider)</div>
-      <div class="source-card">
-        <table class="schema-table">
-          <tr><th>Column</th><th>Type</th><th>Description</th></tr>
-          <tr><td><code>NPI</code></td><td>string</td><td>10-digit provider identifier</td></tr>
-          <tr><td><code>gate_result</code></td><td>string</td><td>PASS or FAIL (driven by LEIE match only)</td></tr>
-          <tr><td><code>match_method</code></td><td>string</td><td>"npi" (Tier 1), "name_dob" (Tier 2), or "no_match"</td></tr>
-          <tr><td><code>confidence</code></td><td>string</td><td>"high" (NPI match) or "medium" (name+DOB match)</td></tr>
-          <tr><td><code>leie_npi_match</code></td><td>boolean</td><td>True if NPI matched LEIE directly</td></tr>
-          <tr><td><code>leie_name_dob_match</code></td><td>boolean</td><td>True if name+DOB matched LEIE (pre-2007 records)</td></tr>
-          <tr><td><code>pecos_enrolled</code></td><td>boolean</td><td>Informational only. True if found in PECOS. Does not affect gate. Absence is normal for non-Medicare practices.</td></tr>
-          <tr><td><code>leie_excl_type</code></td><td>string</td><td>OIG exclusion type code</td></tr>
-          <tr><td><code>leie_excl_date</code></td><td>string</td><td>Date of exclusion (YYYYMMDD)</td></tr>
-        </table>
-        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Eng sets the confidence threshold in production. Both match paths are exposed so they can decide: auto-fail on high confidence, flag-for-review on medium. Do not gate on <code>pecos_enrolled</code>.</p>
-      </div>
-
-      <!-- 12: State boards -->
-      <div class="section-title">12. State medical boards: WV done, MA pending</div>
-      <div class="source-card">
-        <p>The safety gate extends beyond federal data (LEIE) to state-level enforcement actions. We started with WV and MA as POC states. WV had bulk downloads available; MA required a public records request.</p>
-      </div>
-
-      <div class="section-title">13. WV: what we downloaded</div>
-      <div class="source-card">
-        <p><strong>WV Active MD Roster</strong> (<a href="https://wvbom.wv.gov/Rosters.asp" style="color:#4f46e5;text-decoration:none;">wvbom.wv.gov/Rosters.asp</a>): Excel file with all active MDs, updated monthly. 10,276 active license holders. Fields: first name, middle name, last name, suffix, license number, license expiration date.</p>
-        <p style="margin-top:8px;"><strong>WV Public Discipline Spreadsheet</strong> (<a href="https://wvbom.wv.gov/public/board-actions.asp" style="color:#4f46e5;text-decoration:none;">wvbom.wv.gov/public/board-actions.asp</a>): Excel file with all board actions going back to 1953. 1,440 records total, 1,367 for MDs (1,055 unique physicians).</p>
-        <p style="margin-top:8px;"><strong>NPPES NPI Registry API</strong> (<a href="https://npiregistry.cms.hhs.gov/api/" style="color:#4f46e5;text-decoration:none;">npiregistry.cms.hhs.gov</a>): Free, real-time lookup. Used to bridge WV roster names to NPI numbers since the roster has no NPI column.</p>
-      </div>
-
-      <div class="section-title">14. WV: the NPI bridge problem</div>
-      <div class="source-card">
-        <p>The WV roster has license numbers but no NPI. The NPPES API is the bridge: we query by (first name, last name, state=WV) and see how many results come back.</p>
-        <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
-          <div style="display:flex;gap:10px;align-items:flex-start;">
-            <div style="background:#f0fdf4;color:#15803d;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">High</div>
-            <div style="font-size:13px;color:#374151;"><strong>Name + state unique (69.9%):</strong> NPPES returns exactly 1 result for this name in WV. Deterministic match.</div>
-          </div>
-          <div style="display:flex;gap:10px;align-items:flex-start;">
-            <div style="background:#fef9f0;color:#92400e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">Medium</div>
-            <div style="font-size:13px;color:#374151;"><strong>Fallback match (17.6%):</strong> no WV result, but name-only search returns 1 MD nationally. Covers cross-state providers.</div>
-          </div>
-          <div style="display:flex;gap:10px;align-items:flex-start;">
-            <div style="background:#fef2f2;color:#dc2626;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">None</div>
-            <div style="font-size:13px;color:#374151;"><strong>Ambiguous or not found (12.5%):</strong> common names return multiple results. Can't pick one without DOB or license number as tiebreaker.</div>
-          </div>
-        </div>
-        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;">
-          <div style="font-size:13px;color:#374151;"><strong>Overall: 87.5% NPI match rate.</strong> 273 of 312 providers resolved. The 12.5% gap is mostly common names.</div>
-        </div>
-      </div>
-
-      <div class="section-title">15. WV: validation results</div>
+      <div class="section-title">11. What we shipped</div>
       <div class="source-card">
         <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>Test case 1 (Rohrbough):</strong> on active roster + discipline records. NPI 1750886933 resolved correctly, disciplinary flag = True. PASS.</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>Test case 2 (Galang):</strong> in discipline records but NOT on active roster (removed after board action). NPI 1104813922 resolved correctly via standalone lookup. PASS.</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 16 clean providers with resolved NPIs correctly unflagged (disciplinary_flag = False)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> <a href="https://github.com/MerokaInc/quality-treasure-map/blob/main/step1_safety_gate.ipynb" style="color:#4f46e5;">step1_safety_gate.ipynb</a>: LEIE exclusion check + PECOS informational flag</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> <a href="https://github.com/MerokaInc/quality-treasure-map/tree/ds/step2-state-board-disciplinary" style="color:#4f46e5;">step2_wv_board_disciplinary.ipynb</a>: WV state board roster + discipline matching</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> README with data source links, MA records request draft, and output schemas</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> HTML treasure map updated with findings, caveats, and progress</li>
         </ul>
-      </div>
-
-      <div class="section-title">16. WV: resolved by onboarding form</div>
-      <div class="source-card">
-        <p style="margin-bottom:12px;">Three of the POC's matching limitations are solved by fields we already collect (or will collect) at provider registration:</p>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
-          <div style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>NPI ambiguity from name matching.</strong> We collect state license number at registration. License number matches deterministically against the roster and NPPES "Other Provider Identifier" field. Eliminates the 12.5% ambiguous rate.</div>
-          <div style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>DOB as tiebreaker.</strong> We already collect DOB for the LEIE check. Can disambiguate any remaining fuzzy NPPES results. Available, just not wired up in this POC.</div>
-          <div style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>Cross-state providers.</strong> License number match doesn't depend on NPPES address state. Deterministic regardless of where the provider lists their practice.</div>
-        </div>
-      </div>
-
-      <div class="section-title">17. WV: remaining limitations</div>
-      <div class="source-card">
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div>
-            <p><strong>No action type in discipline file.</strong> The public spreadsheet has dates and names but not what happened (probation, suspension, revocation, fine). The board's website has this detail but it's not in the downloadable file. Either scrape the site or use FSMB.</p>
-          </div>
-          <div>
-            <p><strong>Removed providers are invisible.</strong> Physicians whose licenses were fully revoked drop off the active roster. Our pipeline only catches disciplined providers who are still active. Galang (test case 2) illustrates this: he was disciplined and removed. Need historical roster snapshots (monthly diffs) or FSMB to catch these.</p>
-          </div>
-          <div>
-            <p><strong>Each state is different.</strong> WV has bulk downloads. MA does not (requires a records request). This notebook is WV-specific. Each new state requires its own data acquisition and field mapping.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="section-title">18. WV: output schema (what eng gets per provider)</div>
-      <div class="source-card">
-        <table class="schema-table">
-          <tr><th>Column</th><th>Type</th><th>Description</th></tr>
-          <tr><td><code>npi</code></td><td>string</td><td>10-digit NPI, resolved via NPPES API</td></tr>
-          <tr><td><code>first_name</code></td><td>string</td><td>Provider first name (uppercase)</td></tr>
-          <tr><td><code>last_name</code></td><td>string</td><td>Provider last name (uppercase)</td></tr>
-          <tr><td><code>wv_license_number</code></td><td>string</td><td>WV Board of Medicine license number</td></tr>
-          <tr><td><code>license_expiration</code></td><td>date</td><td>License expiration date</td></tr>
-          <tr><td><code>disciplinary_flag</code></td><td>boolean</td><td>True if provider has any board action on record</td></tr>
-          <tr><td><code>most_recent_discipline_date</code></td><td>date</td><td>Date of most recent board action (if flagged)</td></tr>
-          <tr><td><code>discipline_action_count</code></td><td>integer</td><td>Total number of board actions on record</td></tr>
-          <tr><td><code>match_method</code></td><td>string</td><td>How the NPI was resolved (name_state_unique, name_match_no_state, etc.)</td></tr>
-          <tr><td><code>confidence</code></td><td>string</td><td>high, medium, or none. Eng sets the threshold in production.</td></tr>
-        </table>
-      </div>
-
-      <div class="section-title">19. Massachusetts: pending records request</div>
-      <div class="source-card">
-        <p>MA does not offer a bulk download. Physician profiles are on <a href="https://findmydoctor.mass.gov/" style="color:#4f46e5;text-decoration:none;">FindMyDoctor.mass.gov</a> but only searchable one at a time. Getting bulk data requires a formal public records request to BORIM (Board of Registration in Medicine).</p>
-        <p style="margin-top:8px;"><strong>Contact:</strong> Tara Douglas, Primary Records Access Officer, BORIM.RAO@state.ma.us, 781-876-8200. Draft request email in the README.</p>
       </div>
 
     </div>
