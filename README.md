@@ -1,61 +1,87 @@
-# Step 1 — Safety Gate: OIG LEIE Exclusion Check
+# Quality Treasure Map
 
-## Business question
+Data science POC notebooks for Meroka's quality scoring pipeline. Each step produces a per-provider signal that feeds into the final composite score.
 
-Should this provider be in the Meroka marketplace at all?
+## Steps
 
-This is a binary gate. Pass = proceed to quality scoring. Fail = excluded from the marketplace. No partial credit, no weighting.
+### Step 1 — Safety Gate: OIG LEIE Exclusion Check
 
-If a provider is on the federal exclusion list (LEIE), any entity that pays them for federally reimbursable services faces civil monetary penalties. An employer directing employees to an excluded provider has real legal exposure.
+**Notebook:** `step1_safety_gate.ipynb`
 
-## What this notebook does
+Binary pass/fail gate. Checks each provider NPI against the federal exclusion list (OIG LEIE) and Medicare enrollment (PECOS, informational only). A provider who fails here is excluded from the marketplace entirely.
 
-Takes a list of provider NPIs and checks each one against:
-1. **OIG LEIE** — is this provider federally excluded? This is the gate.
-2. **PECOS** — is this provider actively enrolled in Medicare? **Informational only, not a gate blocker.** Many legitimate independent practices (concierge, cash-pay, commercial-only) don't bill Medicare.
+**Data sources:**
+| Dataset | Source | URL |
+|---------|--------|-----|
+| LEIE | OIG/HHS | https://oig.hhs.gov/exclusions/exclusions_list.asp |
+| PECOS | CMS | https://data.cms.gov/provider-characteristics/medicare-provider-supplier-enrollment/medicare-fee-for-service-public-provider-enrollment |
 
-Produces a `gate_result` column: PASS or FAIL (driven by LEIE match only).
+### Step 2 — State Medical Board Disciplinary Check: West Virginia
 
-## Data sources
+**Notebook:** `step2_wv_board_disciplinary.ipynb`
 
-| Dataset | Source | URL | Size | Refresh |
-|---------|--------|-----|------|---------|
-| LEIE (List of Excluded Individuals/Entities) | OIG/HHS | https://oig.hhs.gov/exclusions/exclusions_list.asp | ~83K records | Monthly |
-| PECOS Medicare Enrollment | CMS | https://data.cms.gov/provider-characteristics/medicare-provider-supplier-enrollment/medicare-fee-for-service-public-provider-enrollment | ~2.96M enrollment rows, ~2.54M unique NPIs | Monthly |
+Matches WV Board of Medicine roster and disciplinary records to NPI numbers via the NPPES API. Produces a per-provider disciplinary flag.
 
-**Note:** The CSV files are too large for GitHub. Download them directly:
-- LEIE: https://oig.hhs.gov/exclusions/downloadables/UPDATED.csv
-- PECOS: Download from the CMS data.gov page above (Jan 2026 extract, 318 MB)
+**Data sources:**
+| Dataset | Source | URL |
+|---------|--------|-----|
+| WV Active MD Roster | WV Board of Medicine | https://wvbom.wv.gov/Rosters.asp |
+| WV Public Discipline Spreadsheet | WV Board of Medicine | https://wvbom.wv.gov/public/board-actions.asp |
+| NPI Registry API | CMS/NPPES | https://npiregistry.cms.hhs.gov/api/ |
 
-## Output schema
+**Match strategy:**
+- WV roster has no NPI column. We use NPPES API to resolve (first_name, last_name, state) to NPI.
+- High confidence: unique match in NPPES for name + state. Medium: unique match without state filter. No match: ambiguous or not found.
+- Discipline records joined to roster by name, then bridged to NPI through the NPPES lookup.
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `NPI` | str | 10-digit National Provider Identifier |
-| `FIRST_NAME` | str | Provider first name |
-| `LAST_NAME` | str | Provider last name |
-| `STATE` | str | State code |
-| `PROVIDER_TYPE` | str | Provider type description |
-| `leie_excluded` | bool | True if NPI is on the active LEIE exclusion list |
-| `gate_result` | str | PASS or FAIL (driven by LEIE match only) |
-| `pecos_enrolled` | bool | Informational: True if NPI appears in PECOS Medicare enrollment. Not used in gate logic. |
-| `leie_excl_type` | str | OIG exclusion type code (if excluded) |
-| `leie_excl_date` | str | Date of exclusion, YYYYMMDD (if excluded) |
+**Output columns:** `npi`, `first_name`, `last_name`, `wv_license_number`, `license_expiration`, `disciplinary_flag`, `most_recent_discipline_date`, `discipline_action_count`, `match_method`, `confidence`
 
-## Known caveats
+## Massachusetts — Pending Public Records Request
 
-- **NPDB is absent.** The National Practitioner Data Bank (malpractice settlements, adverse actions) requires registration that could take weeks to months. Out of scope for this sprint.
-- **~90% of LEIE records lack an NPI.** These are older records from before the NPI system (pre-2007). Matching them requires name + address logic, which is not implemented here. This is a gap that underestimates the true exclusion count.
-- **State medical boards are a separate workstream.** License revocations and disciplinary actions from state boards are checked in a different step.
-- **PECOS enrollment is informational, not a gate blocker.** A provider not in PECOS may just not bill Medicare (cash-pay, commercial-only, etc.).
+MA does not offer a bulk download of physician profiles. The data exists (profiles include NPI, license status, disciplinary actions, malpractice history) but access requires a formal public records request to BORIM.
+
+**Draft request email:**
+
+> To: BORIM.RAO@state.ma.us
+> Subject: Public Records Request — Physician Profile Data Export
+>
+> Hi,
+>
+> I'm requesting a bulk export of physician profile data under the Massachusetts Public Records Law (M.G.L. Chapter 66, Section 10).
+>
+> Specifically, I'm looking for all records from the Physician Profiles database (FindMyDoctor.mass.gov) in a structured format (CSV or Excel preferred), including these fields:
+> - License number
+> - NPI (National Provider Identifier)
+> - First name, last name, date of birth
+> - License status (active, expired, revoked, suspended)
+> - Disciplinary action flag and details (if any)
+> - Malpractice payment history (if available in the export)
+>
+> This data is for a healthcare analytics platform focused on provider quality scoring. We need the bulk dataset to match against federal provider registries (NPPES, LEIE) at scale.
+>
+> Happy to narrow the scope if needed, or to discuss format options. What's the typical turnaround for a request like this?
+>
+> Thanks,
+> Antoine Bertrand
+
+**Contact:** Tara Douglas, Primary Records Access Officer, BORIM.RAO@state.ma.us, 781-876-8200
+
+**Why MA matters:** MA profiles are richer than WV. They include NPI natively (no NPPES bridge needed), malpractice history, hospital privilege suspensions, and criminal convictions. Once the data lands, the notebook will be simpler and more accurate.
+
+## West Virginia Board — Notes
+
+WV turned out to have better data availability than expected:
+- Monthly roster downloads (Excel) with active MDs, PAs, DPMs
+- Public discipline spreadsheet going back to 1953
+- But no NPI in the source data, and no action type in the discipline file (just dates and names)
 
 ## How to reproduce
 
-1. Download the LEIE and PECOS CSVs (links above) into the project root
-2. `pip install pandas numpy plotly`
-3. Run `step1_safety_gate.ipynb` from top to bottom
-4. The validation cells at the end confirm the gate logic works
+1. Clone this repo
+2. Download the large CSV files (links above) into the project root. They're gitignored.
+3. `pip install pandas numpy plotly requests openpyxl`
+4. Run each notebook top to bottom
 
 ## Workstream context
 
-This is Step 1 of the Quality Treasure Map. The safety gate runs before any quality scoring. A provider who fails here never receives a composite score and is not listed in the marketplace.
+This is the Quality dimension of the Meroka treasure map. Each step produces a provider-level signal. Steps run independently but feed into the same composite score downstream. The safety gate (Step 1) is a hard pass/fail. State board checks (Step 2+) produce flags that inform scoring but don't automatically exclude.

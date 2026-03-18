@@ -355,14 +355,14 @@
           <span class="tag" style="background:#fef9f0;color:#92400e;">NPDB &mdash; future sprint</span>
         </div>
         <div class="logic" style="margin-top:10px;font-size:12px;color:#6b7280;">
-          This sprint: OIG LEIE (gate) + PECOS (informational context only) &middot; State boards direct for WV &amp; MA + FSMB test
+          LEIE gate done. PECOS informational. WV state board done. MA pending records request. FSMB test pending.
         </div>
         <div class="progress-wrap">
           <div class="progress-label">
-            <span class="pl-text">LEIE (two-tier matching) done. PECOS evaluated, kept as informational. NPDB + state boards pending</span>
-            <span class="pl-pct" style="color:#dc2626;">40%</span>
+            <span class="pl-text">LEIE done. PECOS evaluated. WV state board done. MA pending records request. NPDB deferred.</span>
+            <span class="pl-pct" style="color:#dc2626;">60%</span>
           </div>
-          <div class="progress-bar"><div class="fill" style="width:40%;background:#ef4444;"></div></div>
+          <div class="progress-bar"><div class="fill" style="width:60%;background:#ef4444;"></div></div>
         </div>
       </div>
 
@@ -600,13 +600,15 @@
       <div class="source-card" style="border-left:3px solid #6366f1;">
         <div class="progress-wrap" style="margin-top:0;">
           <div class="progress-label">
-            <span class="pl-text">LEIE (two-tier matching, 98.9% coverage) done. PECOS evaluated, kept as informational. NPDB + state boards pending</span>
-            <span class="pl-pct" style="color:#6366f1;">40%</span>
+            <span class="pl-text">LEIE done (98.9% coverage). PECOS evaluated. WV state board done (87.5% NPI match). MA pending records request. NPDB deferred.</span>
+            <span class="pl-pct" style="color:#6366f1;">60%</span>
           </div>
-          <div class="progress-bar" style="height:8px;"><div class="fill" style="width:40%;background:#6366f1;"></div></div>
+          <div class="progress-bar" style="height:8px;"><div class="fill" style="width:60%;background:#6366f1;"></div></div>
         </div>
         <div style="margin-top:12px;font-size:13px;">
-          <strong>Notebook:</strong> <a href="https://github.com/MerokaInc/quality-treasure-map/tree/ds/step1-safety-gate-leie-pecos" style="color:#4f46e5;text-decoration:none;">ds/step1-safety-gate-leie-pecos</a> on GitHub
+          <strong>Notebooks:</strong>
+          <a href="https://github.com/MerokaInc/quality-treasure-map/blob/main/step1_safety_gate.ipynb" style="color:#4f46e5;text-decoration:none;">step1_safety_gate.ipynb</a> (LEIE + PECOS) &middot;
+          <a href="https://github.com/MerokaInc/quality-treasure-map/tree/ds/step2-state-board-disciplinary" style="color:#4f46e5;text-decoration:none;">step2_wv_board_disciplinary.ipynb</a> (WV state board)
         </div>
       </div>
 
@@ -749,10 +751,10 @@
       <div class="section-title">
         <span style="display:inline-flex;align-items:center;gap:8px;">
           Data source 4: State medical boards
-          <span style="background:#fef9f0;color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">Not started</span>
+          <span style="background:#fef9f0;color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">In progress</span>
         </span>
       </div>
-      <div class="source-card" style="border-left:3px solid #e5e7eb;">
+      <div class="source-card" style="border-left:3px solid #f59e0b;">
         <div class="source-header">
           <div class="source-num">4</div>
           <div>
@@ -774,8 +776,66 @@
           <strong>FSMB Physician Data Center</strong> aggregates all 70+ medical and osteopathic boards. One contract solves the 50-state problem. Paid enterprise service.
         </div>
 
-        <div class="highlight" style="background:#f0fdf4;border-left-color:#22c55e;">
-          <strong style="color:#15803d;">This sprint: two parallel tests.</strong> (1) Pull directly from WV and MA state boards. (2) Test FSMB against the same two states. If FSMB matches, it becomes the production path.
+        <!-- WV: Done -->
+        <div style="background:#f0fdf4;border-radius:8px;padding:16px;margin-top:16px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span style="background:#dcfce7;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;">WV: Done</span>
+            <span style="font-size:12px;color:#6b7280;">Notebook on GitHub</span>
+          </div>
+          <p style="font-size:13px;color:#374151;margin-bottom:10px;">West Virginia turned out to have good data availability. Monthly roster downloads (Excel) with all active MDs, plus a public discipline spreadsheet going back to 1953.</p>
+
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span>
+              <span style="font-size:13px;color:#374151;"><strong>10,276 active MDs</strong> on roster, <strong>1,367 discipline records</strong> (1,055 unique physicians)</span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span>
+              <span style="font-size:13px;color:#374151;"><strong>292 active MDs flagged</strong> with disciplinary history on current roster</span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span>
+              <span style="font-size:13px;color:#374151;"><strong>87.5% NPI match rate</strong> via NPPES API (69.9% high confidence, 17.6% medium)</span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span>
+              <span style="font-size:13px;color:#374151;">Two known disciplinary cases validated end-to-end (Rohrbough, Galang)</span>
+            </div>
+          </div>
+
+          <p style="font-size:12px;font-weight:600;color:#15803d;margin-bottom:8px;">Resolved by onboarding form</p>
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:4px;">
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;color:#15803d;">&#10003;</span><strong>NPI ambiguity from name matching.</strong> In production, we collect state license number at registration. Matches deterministically against the roster and NPPES "Other Provider Identifier" field. Eliminates the 12.5% ambiguous rate.</li>
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;color:#15803d;">&#10003;</span><strong>DOB as tiebreaker.</strong> We already collect DOB for LEIE. Can disambiguate any remaining fuzzy NPPES results. Available, just not wired up in this POC.</li>
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;color:#15803d;">&#10003;</span><strong>Cross-state providers.</strong> License number match doesn't depend on NPPES address state.</li>
+          </ul>
+
+          <p style="font-size:12px;font-weight:600;color:#1a1a2e;margin-top:12px;margin-bottom:8px;">Remaining limitations</p>
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:4px;">
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span><strong>No action type in discipline file.</strong> We know when someone was disciplined but not what happened. Either scrape the board's website or use FSMB.</li>
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span><strong>Removed providers invisible.</strong> Fully revoked physicians drop off the active roster. Need historical roster snapshots or FSMB to catch these.</li>
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span><strong>POC sample, not full run.</strong> Queried 312 providers via API. In production, eng uses the NPPES bulk file.</li>
+          </ul>
+
+          <p style="font-size:12px;font-weight:600;color:#1a1a2e;margin-top:12px;margin-bottom:8px;">For production (eng handoff)</p>
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:4px;">
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span>Use NPPES bulk file instead of API calls</li>
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span>Use NPPES "Other Provider Identifier" field (state license numbers) as secondary match key</li>
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span>Automate monthly pulls of WV roster + discipline files</li>
+            <li style="font-size:12px;color:#6b7280;padding-left:12px;position:relative;"><span style="position:absolute;left:0;">&#8226;</span>Build a state adapter pattern: each state module outputs the same schema</li>
+          </ul>
+        </div>
+
+        <!-- MA: Pending -->
+        <div style="background:#fef9f0;border-radius:8px;padding:16px;margin-top:12px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <span style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;">MA: Pending records request</span>
+          </div>
+          <p style="font-size:13px;color:#374151;margin-bottom:10px;">Massachusetts does not offer bulk downloads of physician profiles. The data exists on <a href="https://findmydoctor.mass.gov/" style="color:#4f46e5;text-decoration:none;">FindMyDoctor.mass.gov</a> (profiles include NPI, license status, disciplinary actions, malpractice history), but access requires a formal public records request to BORIM.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:10px;"><strong>Why MA matters:</strong> MA profiles are richer than WV. They include NPI natively (no NPPES bridge needed), malpractice payment history, hospital privilege suspensions, and criminal convictions. Once the data lands, the notebook will be simpler and more accurate.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:4px;"><strong>Next step:</strong> Send the public records request to BORIM.RAO@state.ma.us (draft in README). Typical turnaround is weeks.</p>
         </div>
 
         <div class="path-card" style="margin-top:12px;">
@@ -783,16 +843,22 @@
             <div>Path</div><div>Coverage</div><div>Cost</div><div>Speed</div>
           </div>
           <div class="path-row">
-            <div><strong>WV + MA direct</strong></div>
-            <div>2 states</div>
-            <div class="tag-free">Low</div>
-            <div class="rec">In scope now</div>
+            <div><strong>WV direct</strong></div>
+            <div>1 state (done)</div>
+            <div class="tag-free">Free</div>
+            <div class="rec">Done</div>
+          </div>
+          <div class="path-row">
+            <div><strong>MA direct</strong></div>
+            <div>1 state (pending)</div>
+            <div class="tag-free">Free (records request)</div>
+            <div class="rec">Waiting on BORIM</div>
           </div>
           <div class="path-row">
             <div><strong>FSMB Physician Data Center</strong></div>
             <div>All 50 states, one feed</div>
             <div class="tag-paid">Enterprise contract</div>
-            <div class="rec">In scope now (test)</div>
+            <div class="rec">In scope (test)</div>
           </div>
           <div class="path-row">
             <div><strong>State-by-state scraping</strong></div>
@@ -1080,6 +1146,99 @@
         <p style="margin-top:12px;font-size:13px;color:#6b7280;">Eng sets the confidence threshold in production. Both match paths are exposed so they can decide: auto-fail on high confidence, flag-for-review on medium. Do not gate on <code>pecos_enrolled</code>.</p>
       </div>
 
+      <!-- 12: State boards -->
+      <div class="section-title">12. State medical boards: WV done, MA pending</div>
+      <div class="source-card">
+        <p>The safety gate extends beyond federal data (LEIE) to state-level enforcement actions. We started with WV and MA as POC states. WV had bulk downloads available; MA required a public records request.</p>
+      </div>
+
+      <div class="section-title">13. WV: what we downloaded</div>
+      <div class="source-card">
+        <p><strong>WV Active MD Roster</strong> (<a href="https://wvbom.wv.gov/Rosters.asp" style="color:#4f46e5;text-decoration:none;">wvbom.wv.gov/Rosters.asp</a>): Excel file with all active MDs, updated monthly. 10,276 active license holders. Fields: first name, middle name, last name, suffix, license number, license expiration date.</p>
+        <p style="margin-top:8px;"><strong>WV Public Discipline Spreadsheet</strong> (<a href="https://wvbom.wv.gov/public/board-actions.asp" style="color:#4f46e5;text-decoration:none;">wvbom.wv.gov/public/board-actions.asp</a>): Excel file with all board actions going back to 1953. 1,440 records total, 1,367 for MDs (1,055 unique physicians).</p>
+        <p style="margin-top:8px;"><strong>NPPES NPI Registry API</strong> (<a href="https://npiregistry.cms.hhs.gov/api/" style="color:#4f46e5;text-decoration:none;">npiregistry.cms.hhs.gov</a>): Free, real-time lookup. Used to bridge WV roster names to NPI numbers since the roster has no NPI column.</p>
+      </div>
+
+      <div class="section-title">14. WV: the NPI bridge problem</div>
+      <div class="source-card">
+        <p>The WV roster has license numbers but no NPI. The NPPES API is the bridge: we query by (first name, last name, state=WV) and see how many results come back.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="background:#f0fdf4;color:#15803d;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">High</div>
+            <div style="font-size:13px;color:#374151;"><strong>Name + state unique (69.9%):</strong> NPPES returns exactly 1 result for this name in WV. Deterministic match.</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="background:#fef9f0;color:#92400e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">Medium</div>
+            <div style="font-size:13px;color:#374151;"><strong>Fallback match (17.6%):</strong> no WV result, but name-only search returns 1 MD nationally. Covers cross-state providers.</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="background:#fef2f2;color:#dc2626;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">None</div>
+            <div style="font-size:13px;color:#374151;"><strong>Ambiguous or not found (12.5%):</strong> common names return multiple results. Can't pick one without DOB or license number as tiebreaker.</div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;">
+          <div style="font-size:13px;color:#374151;"><strong>Overall: 87.5% NPI match rate.</strong> 273 of 312 providers resolved. The 12.5% gap is mostly common names.</div>
+        </div>
+      </div>
+
+      <div class="section-title">15. WV: validation results</div>
+      <div class="source-card">
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>Test case 1 (Rohrbough):</strong> on active roster + discipline records. NPI 1750886933 resolved correctly, disciplinary flag = True. PASS.</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>Test case 2 (Galang):</strong> in discipline records but NOT on active roster (removed after board action). NPI 1104813922 resolved correctly via standalone lookup. PASS.</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 16 clean providers with resolved NPIs correctly unflagged (disciplinary_flag = False)</li>
+        </ul>
+      </div>
+
+      <div class="section-title">16. WV: resolved by onboarding form</div>
+      <div class="source-card">
+        <p style="margin-bottom:12px;">Three of the POC's matching limitations are solved by fields we already collect (or will collect) at provider registration:</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+          <div style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>NPI ambiguity from name matching.</strong> We collect state license number at registration. License number matches deterministically against the roster and NPPES "Other Provider Identifier" field. Eliminates the 12.5% ambiguous rate.</div>
+          <div style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>DOB as tiebreaker.</strong> We already collect DOB for the LEIE check. Can disambiguate any remaining fuzzy NPPES results. Available, just not wired up in this POC.</div>
+          <div style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> <strong>Cross-state providers.</strong> License number match doesn't depend on NPPES address state. Deterministic regardless of where the provider lists their practice.</div>
+        </div>
+      </div>
+
+      <div class="section-title">17. WV: remaining limitations</div>
+      <div class="source-card">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <p><strong>No action type in discipline file.</strong> The public spreadsheet has dates and names but not what happened (probation, suspension, revocation, fine). The board's website has this detail but it's not in the downloadable file. Either scrape the site or use FSMB.</p>
+          </div>
+          <div>
+            <p><strong>Removed providers are invisible.</strong> Physicians whose licenses were fully revoked drop off the active roster. Our pipeline only catches disciplined providers who are still active. Galang (test case 2) illustrates this: he was disciplined and removed. Need historical roster snapshots (monthly diffs) or FSMB to catch these.</p>
+          </div>
+          <div>
+            <p><strong>Each state is different.</strong> WV has bulk downloads. MA does not (requires a records request). This notebook is WV-specific. Each new state requires its own data acquisition and field mapping.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">18. WV: output schema (what eng gets per provider)</div>
+      <div class="source-card">
+        <table class="schema-table">
+          <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+          <tr><td><code>npi</code></td><td>string</td><td>10-digit NPI, resolved via NPPES API</td></tr>
+          <tr><td><code>first_name</code></td><td>string</td><td>Provider first name (uppercase)</td></tr>
+          <tr><td><code>last_name</code></td><td>string</td><td>Provider last name (uppercase)</td></tr>
+          <tr><td><code>wv_license_number</code></td><td>string</td><td>WV Board of Medicine license number</td></tr>
+          <tr><td><code>license_expiration</code></td><td>date</td><td>License expiration date</td></tr>
+          <tr><td><code>disciplinary_flag</code></td><td>boolean</td><td>True if provider has any board action on record</td></tr>
+          <tr><td><code>most_recent_discipline_date</code></td><td>date</td><td>Date of most recent board action (if flagged)</td></tr>
+          <tr><td><code>discipline_action_count</code></td><td>integer</td><td>Total number of board actions on record</td></tr>
+          <tr><td><code>match_method</code></td><td>string</td><td>How the NPI was resolved (name_state_unique, name_match_no_state, etc.)</td></tr>
+          <tr><td><code>confidence</code></td><td>string</td><td>high, medium, or none. Eng sets the threshold in production.</td></tr>
+        </table>
+      </div>
+
+      <div class="section-title">19. Massachusetts: pending records request</div>
+      <div class="source-card">
+        <p>MA does not offer a bulk download. Physician profiles are on <a href="https://findmydoctor.mass.gov/" style="color:#4f46e5;text-decoration:none;">FindMyDoctor.mass.gov</a> but only searchable one at a time. Getting bulk data requires a formal public records request to BORIM (Board of Registration in Medicine).</p>
+        <p style="margin-top:8px;"><strong>Why MA is worth the wait:</strong> MA profiles include NPI natively (no NPPES bridge needed), malpractice payment history, hospital privilege suspensions, and criminal convictions. The notebook will be simpler and the match rate higher.</p>
+        <p style="margin-top:8px;"><strong>Contact:</strong> Tara Douglas, Primary Records Access Officer, BORIM.RAO@state.ma.us, 781-876-8200. Draft request email in the README.</p>
+      </div>
+
     </div>
 
     <!-- ==================== ONBOARDING REQUIREMENTS ==================== -->
@@ -1122,6 +1281,13 @@
             <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
             <td><strong>Yes</strong></td>
             <td>The key field for Tier 2 matching. Turns a common name into a near-unique key. Without DOB, we can only check against 10% of the LEIE exclusion list instead of 98.9%.</td>
+          </tr>
+          <tr>
+            <td><strong>State license number</strong></td>
+            <td>String</td>
+            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><strong>Yes</strong></td>
+            <td>State medical board license number. Used to match against state discipline records and as a secondary key for NPPES matching (via "Other Provider Identifier" field). Improves NPI resolution for common names.</td>
           </tr>
           <tr style="color:#9ca3af;">
             <td>Office hours</td>
