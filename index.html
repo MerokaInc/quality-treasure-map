@@ -665,14 +665,30 @@
         </table>
 
         <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-top:16px;">
-          <div style="font-size:12px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;">What we found</div>
-          <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px;color:#374151;">
-            <div style="font-weight:600;">Records:</div><div>82,749 excluded individuals and entities</div>
-            <div style="font-weight:600;">Tier 1 (NPI):</div><div>8,306 exclusions matchable by NPI (10%). High confidence, exact match.</div>
-            <div style="font-weight:600;">Tier 2 (name+DOB):</div><div>70,543 additional exclusions matchable by last name + first name + date of birth (89%). Medium confidence, near-deterministic. Can miss name changes.</div>
-            <div style="font-weight:600;">Combined:</div><div><strong>98.9% of individual exclusions covered.</strong> Only 865 records uncoverable (businesses without names, missing DOB).</div>
-            <div style="font-weight:600;">Validation:</div><div>All 10 NPI test cases caught. 5 name+DOB test cases caught. Fake name correctly passed. Logic confirmed end-to-end.</div>
+          <div style="font-size:12px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;">What we found</div>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">The file has <strong>82,749 banned providers</strong>. Our job is to check whether any provider joining our marketplace appears on this list. The problem: each provider on our marketplace has an NPI (their unique ID number), but only 10% of LEIE records have an NPI. The other 90% are from before 2007 when the NPI system started.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">What those old records DO have: the person's <strong>last name, first name, and date of birth</strong>. "John Smith" alone would match too many people. But "John Smith born April 15, 1965" is almost certainly one specific person. That's why we built two matching tiers:</p>
+
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="background:#f0fdf4;color:#15803d;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">Tier 1</div>
+              <div style="font-size:13px;color:#374151;"><strong>NPI match (high confidence):</strong> exact NPI lookup. Covers 8,306 exclusions (10%). No ambiguity, auto-fail.</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="background:#fef9f0;color:#92400e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">Tier 2</div>
+              <div style="font-size:13px;color:#374151;"><strong>Name + date of birth match (medium confidence):</strong> catches the 70,543 older exclusions that have no NPI (89%). Near-deterministic, but can miss if a provider changed their name. Flagged for review, not auto-fail.</div>
+            </div>
           </div>
+
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:13px;color:#374151;"><strong>Combined coverage: 98.9%</strong> of individual exclusions on the list. Only 865 records uncoverable (businesses without individual names, or missing DOB).</div>
+          </div>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:8px;"><strong>What this requires from the onboarding form:</strong> NPI alone gets Tier 1 only. To run both tiers, the provider onboarding profile must also collect <strong>legal first name, legal last name, and date of birth</strong>. Without DOB, we can only check against 10% of the exclusion list.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>Validation:</strong> 10 NPI test cases caught, 5 name+DOB test cases caught, fabricated names correctly passed. Logic confirmed end-to-end.</p>
         </div>
       </div>
 
@@ -699,12 +715,13 @@
         </table>
 
         <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-top:16px;">
-          <div style="font-size:12px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;">What we found</div>
-          <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px;color:#374151;">
-            <div style="font-weight:600;">Records:</div><div>2,957,262 enrollment rows covering 2,542,195 unique NPIs</div>
-            <div style="font-weight:600;">Validation:</div><div>All 200 PECOS-sourced sample NPIs correctly passed the gate (100% PASS rate)</div>
-            <div style="font-weight:600;">Design decision:</div><div>PECOS is informational, not a gate blocker. A provider not in PECOS may just not bill Medicare (cash-pay, commercial-only). We flag it but don't fail on it.</div>
-          </div>
+          <div style="font-size:12px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;">What we found</div>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">The file has <strong>2,957,262 enrollment rows</strong> covering <strong>2,542,195 unique providers</strong>. This is essentially every provider who bills Medicare in the US. We use it as a cross-reference: if a provider is actively enrolled in PECOS, it's a signal they're known to CMS and in good standing.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">We tested 200 NPIs pulled from PECOS against the gate. All 200 passed (100% PASS rate), which is what we'd expect for actively enrolled providers.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>Design decision:</strong> PECOS is informational, not a gate blocker. A provider not found in PECOS isn't necessarily a problem. They might just not bill Medicare (cash-pay practices, commercial insurance only, etc.). We flag the absence for context, but we don't fail a provider on it. The LEIE exclusion check is what drives the pass/fail decision.</p>
         </div>
       </div>
 
