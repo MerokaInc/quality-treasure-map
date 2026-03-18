@@ -321,6 +321,14 @@
         S1 Report
       </button>
     </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Cross-cutting</div>
+      <button class="nav-item" onclick="showTab('onboarding', this)">
+        <span class="nav-icon" style="background:rgba(99,102,241,0.2);color:#818cf8;">&#9998;</span>
+        Onboarding Req.
+      </button>
+    </div>
   </nav>
 
   <!-- Main -->
@@ -1021,6 +1029,129 @@
         <p style="margin-top:12px;font-size:13px;color:#6b7280;">Eng sets the confidence threshold in production. Both match paths are exposed so they can decide: auto-fail on high confidence, flag-for-review on medium.</p>
       </div>
 
+    </div>
+
+    <!-- ==================== ONBOARDING REQUIREMENTS ==================== -->
+    <div id="tab-onboarding" class="tab-panel">
+      <div class="page-header">
+        <h1>Onboarding &amp; Marketplace Requirements</h1>
+        <div class="subtitle">What we need from the provider profile to run each step. Updated as we complete workstreams.</div>
+      </div>
+
+      <!-- Summary table -->
+      <div class="section-title">Required fields (all steps)</div>
+      <div class="source-card">
+        <p style="margin-bottom:12px;">This is the running list of what the provider onboarding form and marketplace profile need to collect. Each field is tagged with which step needs it and why. As we complete more steps, new fields will be added here.</p>
+        <table class="schema-table">
+          <tr><th>Field</th><th>Format</th><th>Needed by</th><th>Required?</th><th>Why</th></tr>
+          <tr>
+            <td><strong>NPI</strong></td>
+            <td>10-digit string</td>
+            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><strong>Yes</strong></td>
+            <td>Primary identifier. Matches against LEIE exclusion list (Tier 1) and PECOS enrollment. Every licensed provider has one.</td>
+          </tr>
+          <tr>
+            <td><strong>Legal last name</strong></td>
+            <td>String</td>
+            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><strong>Yes</strong></td>
+            <td>Must be the name on their license, not a preferred or married name. LEIE uses the name from the original exclusion filing. Without it, Tier 2 matching can't run.</td>
+          </tr>
+          <tr>
+            <td><strong>Legal first name</strong></td>
+            <td>String</td>
+            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><strong>Yes</strong></td>
+            <td>Same rule as last name. No nicknames. "William" not "Bill." "Robert" not "Bob."</td>
+          </tr>
+          <tr>
+            <td><strong>Date of birth</strong></td>
+            <td>YYYYMMDD</td>
+            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><strong>Yes</strong></td>
+            <td>The key field for Tier 2 matching. Turns a common name into a near-unique key. Without DOB, we can only check against 10% of the LEIE exclusion list instead of 98.9%.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Office hours</td>
+            <td>Structured</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>New patient wait time</td>
+            <td>Integer (days)</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Telehealth available</td>
+            <td>Boolean</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Languages spoken</td>
+            <td>Array of strings</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Accepting new patients</td>
+            <td>Boolean</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Wheelchair accessible</td>
+            <td>Boolean</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Detail per step -->
+      <div class="section-title">Step 1: Safety Gate</div>
+      <div class="source-card" style="border-left:3px solid #22c55e;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="background:#f0fdf4;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;">Confirmed</span>
+          <span style="font-size:12px;color:#6b7280;">Validated in notebook, pushed to GitHub</span>
+        </div>
+        <p>The safety gate needs four fields. NPI is the baseline. Legal name + DOB unlock the second matching tier, which jumps exclusion list coverage from 10% to 98.9%.</p>
+        <div class="highlight" style="margin-top:12px;">
+          <strong>If a provider doesn't supply DOB:</strong> they still get checked on NPI (Tier 1). But they won't be checked against the 70,543 older exclusion records that lack NPIs. This is a coverage limitation, not a pass. Document it and flag it in the provider profile.
+        </div>
+      </div>
+
+      <div class="section-title">Step 4: Access &amp; Availability</div>
+      <div class="source-card" style="border-left:3px solid #e5e7eb;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="background:#f3f4f6;color:#6b7280;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;">Not yet implemented</span>
+          <span style="font-size:12px;color:#6b7280;">Fields from the treasure map doc, pending validation</span>
+        </div>
+        <p>Step 4 is the only other step that requires provider-reported data. The schema is defined in the treasure map but hasn't been validated yet. Fields listed above are preliminary.</p>
+      </div>
+
+      <div class="section-title">Fields we do NOT need from onboarding</div>
+      <div class="source-card">
+        <p>These are things we get from the federal datasets directly. The provider doesn't need to tell us any of this:</p>
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-top:10px;">
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Exclusion status (that's what we're checking via LEIE)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Medicare enrollment status (PECOS gives us this)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Board certification (ABMS, Step 2)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Specialty and taxonomy code (NPPES, Step 2)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> MIPS / clinical quality scores (CMS QPP, Step 5)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Utilization and procedure volume (CMS, Step 5b)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Patient reviews and ratings (Google, Healthgrades, Step 3)</li>
+        </ul>
+      </div>
     </div>
 
   </main>
