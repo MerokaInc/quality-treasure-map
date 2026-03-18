@@ -11,7 +11,7 @@ We're building a marketplace where employers direct contract with independent pr
 
 | Step | Dimension | What it does | Weight |
 |------|-----------|-------------|--------|
-| 1 | Safety gate | Binary pass/fail per NPI using NPDB, state boards, PECOS exclusion data. Fail = out | Gate |
+| 1 | Safety gate | Binary pass/fail per NPI using NPDB, state boards, OIG LEIE. PECOS is informational context only. Fail = out | Gate |
 | 2 | Credentials & training | Board cert, med school, years in practice from NPPES, ABMS, PECOS | 25% |
 | 3 | Patient experience | Normalised review scores from Google, Healthgrades, Doximity | 25% |
 | 4 | Access & availability | Practice-reported onboarding fields (hours, wait times, telehealth, languages) | 15% |
@@ -56,8 +56,9 @@ Seven steps. Ordered by dependency and priority. Steps 1-4 are the 30-day target
 What it answers: should this provider be in the marketplace at all?
 
 **Business logic:**
-- Query each NPI against NPDB, state medical board records, and the PECOS/OIG exclusion list
-- If any of the three returns an active sanction, unresolved adverse action, or exclusion, the provider fails the gate
+- Query each NPI against NPDB, state medical board records, and the OIG LEIE exclusion list
+- If any of those returns an active sanction, unresolved adverse action, or exclusion, the provider fails the gate
+- PECOS enrollment is checked as informational context (who bills Medicare) but does not affect pass/fail
 - This is not a score. It's a binary check. No weighting, no partial credit
 - A provider who fails the gate does not receive a composite quality score and is not listed
 - Refresh cadence matters. Hecht v. Cigna settled for $5.7M because provider data went stale. We need a monitoring interval, not just a one-time check
@@ -68,7 +69,8 @@ What it answers: should this provider be in the marketplace at all?
 |--------|-----------------|--------|---------|
 | NPDB | Malpractice payments, adverse actions | NPDB query (requires registration as eligible entity). Continuous query enrollment available | Continuous |
 | State medical boards | License status, disciplinary actions, suspensions | State-by-state APIs or scraping (varies widely) | Quarterly min |
-| PECOS / OIG exclusion list | CMS exclusions from Medicare billing | CMS bulk download (LEIE + PECOS) | Monthly |
+| OIG LEIE | Federal exclusions from healthcare programs | OIG bulk download | Monthly |
+| PECOS | Medicare enrollment status (informational, not a gate blocker) | CMS bulk download | Monthly |
 
 **Eng handoff:** Notebook with NPI-level pass/fail output, source documentation, and refresh logic.
 
@@ -234,7 +236,7 @@ Phase 2. We can't build it until we have employer claims data flowing, which req
 
 | Deliverable | Owner |
 |------------|-------|
-| Step 1, safety gate: NPI-level pass/fail from NPDB + PECOS + state boards. Notebook to eng | Othmane + Antoine |
+| Step 1, safety gate: NPI-level pass/fail from NPDB + OIG LEIE + state boards (PECOS as informational context). Notebook to eng | Othmane + Antoine |
 | Step 2, credentials: NPI-level structured fields from NPPES + ABMS + PECOS. Notebook to eng | Othmane |
 | Step 3, patient experience: normalised composite score from Google / Healthgrades / Doximity. Notebook to eng | Antoine |
 | Step 4, access & availability: onboarding form schema, sample output, scoring rubric | Antoine |

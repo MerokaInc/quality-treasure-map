@@ -103,6 +103,14 @@
   .phase2-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #6b7280; }
   .phase2-card .desc { font-size: 13px; color: #9ca3af; }
 
+  /* Progress bars */
+  .progress-wrap { margin-top: 12px; }
+  .progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .progress-label .pl-text { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+  .progress-label .pl-pct { font-size: 11px; font-weight: 700; }
+  .progress-bar { width: 100%; height: 6px; background: #f3f4f6; border-radius: 100px; overflow: hidden; }
+  .progress-bar .fill { height: 100%; border-radius: 100px; transition: width 0.4s ease; }
+
   /* Composite */
   .composite-card {
     background: #1a1a2e; color: #fff; border-radius: 12px; padding: 28px; text-align: center; margin-bottom: 12px;
@@ -305,6 +313,22 @@
         <span class="nav-weight" style="color:#4b5563;">Ph.2</span>
       </button>
     </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Reports</div>
+      <button class="nav-item" onclick="showTab('s1report', this)">
+        <span class="nav-icon" style="background:rgba(34,197,94,0.15);color:#22c55e;">&#10003;</span>
+        S1 Report
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Cross-cutting</div>
+      <button class="nav-item" onclick="showTab('onboarding', this)">
+        <span class="nav-icon" style="background:rgba(99,102,241,0.2);color:#818cf8;">&#9998;</span>
+        Onboarding Req.
+      </button>
+    </div>
   </nav>
 
   <!-- Main -->
@@ -325,12 +349,20 @@
         <div class="desc">Should this provider be in the marketplace at all?</div>
         <div class="logic">Binary check: <strong>pass = scored</strong>, <strong>fail = excluded</strong>. No weighting, no partial credit.</div>
         <div class="gate-data">
-          <span class="tag">PECOS / OIG exclusion list</span>
+          <span class="tag">OIG LEIE exclusion list</span>
+          <span class="tag" style="background:#f0f9ff;color:#1e40af;">PECOS &mdash; informational only</span>
           <span class="tag">State medical boards (WV + MA)</span>
           <span class="tag" style="background:#fef9f0;color:#92400e;">NPDB &mdash; future sprint</span>
         </div>
         <div class="logic" style="margin-top:10px;font-size:12px;color:#6b7280;">
-          This sprint: OIG LEIE + PECOS (free bulk downloads, no blockers) &middot; State boards direct for WV &amp; MA + FSMB test
+          This sprint: OIG LEIE (gate) + PECOS (informational context only) &middot; State boards direct for WV &amp; MA + FSMB test
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span class="pl-text">LEIE (two-tier matching) done. PECOS evaluated, kept as informational. NPDB + state boards pending</span>
+            <span class="pl-pct" style="color:#dc2626;">40%</span>
+          </div>
+          <div class="progress-bar"><div class="fill" style="width:40%;background:#ef4444;"></div></div>
         </div>
       </div>
 
@@ -346,6 +378,13 @@
             <span class="src">NPPES</span><span class="src">ABMS</span><span class="src">PECOS</span>
           </div>
           <div class="logic-note">Board cert is primary signal. Highest ERISA weight (duty of prudence).</div>
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span class="pl-text">Not started</span>
+              <span class="pl-pct" style="color:#9ca3af;">0%</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width:0%;background:#6366f1;"></div></div>
+          </div>
         </div>
 
         <div class="dim-card" onclick="showTab('step3', document.querySelectorAll('.nav-item.step')[1])">
@@ -357,6 +396,13 @@
             <span class="src">Google</span><span class="src">Healthgrades</span><span class="src">Doximity</span><span class="src">RateMDs</span>
           </div>
           <div class="logic-note">Normalised to 0-100. Review volume = confidence signal, not score input. No reviews = null, not penalty.</div>
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span class="pl-text">Not started</span>
+              <span class="pl-pct" style="color:#9ca3af;">0%</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width:0%;background:#6366f1;"></div></div>
+          </div>
         </div>
 
         <div class="dim-card" onclick="showTab('step4', document.querySelectorAll('.nav-item.step')[2])">
@@ -368,6 +414,13 @@
             <span class="src">Practice onboarding (self-report)</span>
           </div>
           <div class="logic-note">Hours, wait times, telehealth, languages. Additive bonuses. Schema is the 30-day deliverable.</div>
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span class="pl-text">Not started</span>
+              <span class="pl-pct" style="color:#9ca3af;">0%</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width:0%;background:#6366f1;"></div></div>
+          </div>
         </div>
 
         <div class="dim-card" onclick="showTab('step5', document.querySelectorAll('.nav-item.step')[3])">
@@ -379,6 +432,13 @@
             <span class="src">CMS QPP</span><span class="src">Care Compare</span><span class="src">Part B claims</span>
           </div>
           <div class="logic-note">Three situations: strong score &rarr; weight it. No score &rarr; null (size signal). Low score &rarr; cross-reference first.</div>
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span class="pl-text">Not started</span>
+              <span class="pl-pct" style="color:#9ca3af;">0%</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width:0%;background:#6366f1;"></div></div>
+          </div>
         </div>
 
         <div class="dim-card" onclick="showTab('step5b', document.querySelectorAll('.nav-item.step')[4])">
@@ -387,15 +447,29 @@
           <h3>CMS Utilization &amp; Bundle Scoring</h3>
           <div class="question">What does this provider actually do, and are there cost or volume red flags?</div>
           <div class="data-sources">
-            <span class="src">Medicare Utilization</span><span class="src">Medicaid T-MSIS</span><span class="src">Bundle taxonomy (internal)</span>
+            <span class="src">Medicare Utilization</span><span class="src">Medicaid T-MSIS</span><span class="src">PECOS</span><span class="src">Bundle taxonomy (internal)</span>
           </div>
           <div class="logic-note">CPT-to-bundle mapping per specialty. Procedure volume = confidence signal. Cost pattern flags vs. peers.</div>
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span class="pl-text">Not started</span>
+              <span class="pl-pct" style="color:#9ca3af;">0%</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width:0%;background:#6366f1;"></div></div>
+          </div>
         </div>
 
         <div class="phase2-card">
           <div class="badge">Phase 2</div>
           <h3>Step 6. Clinical Outcomes</h3>
           <div class="desc">Care journey, preventive care, readmissions. Requires live employer claims data. Gold standard, unweighted until claims flow.</div>
+          <div class="progress-wrap" style="margin-top:12px;">
+            <div class="progress-label">
+              <span class="pl-text">Phase 2</span>
+              <span class="pl-pct" style="color:#9ca3af;">&mdash;</span>
+            </div>
+            <div class="progress-bar"><div class="fill" style="width:0%;background:#d1d5db;"></div></div>
+          </div>
         </div>
       </div>
 
@@ -509,35 +583,41 @@
         <div class="gate-badge">Pre-check &middot; Not scored</div>
       </div>
 
-      <div class="section-title">Immediate next steps</div>
-      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px 20px;margin-bottom:32px;">
-        <ol style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
-          <li style="display:flex;gap:12px;font-size:13px;color:#374151;">
-            <span style="font-weight:700;color:#15803d;flex-shrink:0;">1.</span>
-            <span><strong>OIG LEIE + PECOS</strong> &mdash; both are free bulk downloads, no blockers. Pull the files, match against a sample NPI list, confirm pass/fail logic works end-to-end.</span>
-          </li>
-          <li style="display:flex;gap:12px;font-size:13px;color:#374151;">
-            <span style="font-weight:700;color:#15803d;flex-shrink:0;">2.</span>
-            <span><strong>State boards</strong> &mdash; pull WV and MA board data directly. In parallel, test FSMB Physician Data Center against the same two states to compare coverage and quality.</span>
-          </li>
-        </ol>
-        <p style="font-size:12px;color:#6b7280;margin-top:10px;padding-top:10px;border-top:1px solid #dcfce7;">NPDB is out of scope for this sprint.</p>
-      </div>
-
       <div class="section-title">Business logic</div>
       <div class="logic-box">
         <ul>
-          <li>Query each NPI against NPDB, state medical boards, and the PECOS/OIG exclusion list</li>
+          <li>Query each NPI against NPDB, state medical boards, and the OIG LEIE exclusion list</li>
           <li>If any source returns an active sanction, unresolved adverse action, or exclusion &rarr; provider fails</li>
+          <li>PECOS enrollment is checked as informational context (who bills Medicare) but does not affect pass/fail. Many legitimate independent practices don't bill Medicare</li>
           <li><strong>Not a score.</strong> Binary check only. No weighting, no partial credit</li>
           <li>A provider who fails is not listed and receives no composite quality score</li>
           <li>Refresh cadence matters: <strong>Hecht v. Cigna settled for $5.7M</strong> because provider data went stale. We need monitoring, not just a one-time check</li>
         </ul>
       </div>
 
-      <!-- NPDB -->
-      <div class="section-title">Data source 1: NPDB</div>
-      <div class="source-card">
+      <!-- Overall progress -->
+      <div class="section-title">Progress: 2 of 4 data sources checked</div>
+      <div class="source-card" style="border-left:3px solid #6366f1;">
+        <div class="progress-wrap" style="margin-top:0;">
+          <div class="progress-label">
+            <span class="pl-text">LEIE (two-tier matching, 98.9% coverage) done. PECOS evaluated, kept as informational. NPDB + state boards pending</span>
+            <span class="pl-pct" style="color:#6366f1;">40%</span>
+          </div>
+          <div class="progress-bar" style="height:8px;"><div class="fill" style="width:40%;background:#6366f1;"></div></div>
+        </div>
+        <div style="margin-top:12px;font-size:13px;">
+          <strong>Notebook:</strong> <a href="https://github.com/MerokaInc/quality-treasure-map/tree/ds/step1-safety-gate-leie-pecos" style="color:#4f46e5;text-decoration:none;">ds/step1-safety-gate-leie-pecos</a> on GitHub
+        </div>
+      </div>
+
+      <!-- Source 1: NPDB -->
+      <div class="section-title">
+        <span style="display:inline-flex;align-items:center;gap:8px;">
+          Data source 1: NPDB
+          <span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">Not started</span>
+        </span>
+      </div>
+      <div class="source-card" style="border-left:3px solid #e5e7eb;">
         <div class="source-header">
           <div class="source-num">1</div>
           <div>
@@ -546,16 +626,12 @@
           </div>
           <span class="access-badge restricted">Restricted access</span>
         </div>
-        <p>The government's central repository for adverse actions against healthcare providers. The only place where malpractice settlements are aggregated nationally. A provider could have paid out multiple claims across different states and nothing would show on any single state board. NPDB captures it all.</p>
+        <p>The government's central repository for adverse actions against healthcare providers. The only place where malpractice settlements are aggregated nationally. A provider could have paid out multiple claims across different states and nothing would show on any single state board.</p>
 
-        <p><strong>What gets reported:</strong> malpractice payments, adverse licensure actions (revocations, suspensions, restrictions), clinical privilege actions (hospitals restricting hospital privileges), DEA actions.</p>
-
-        <div class="highlight">
-          <strong>Continuous Query:</strong> enroll an NPI for 12 months at $2.50. Get the initial query immediately, then receive automatic alerts for any new reports filed during the year. This is the monitoring mechanism that satisfies our refresh obligation.
-        </div>
+        <p><strong>What gets reported:</strong> malpractice payments, adverse licensure actions (revocations, suspensions, restrictions), clinical privilege actions, DEA actions.</p>
 
         <div class="highlight" style="background:#fef9f0;border-left-color:#f59e0b;">
-          <strong style="color:#b45309;">Out of scope for this sprint.</strong> NPDB access requires resolving a registration question that could take weeks to months. We will revisit in a future sprint. The three paths below are documented for when we return to it.
+          <strong style="color:#b45309;">Out of scope for this sprint.</strong> NPDB access requires resolving a registration question that could take weeks to months. Three paths documented below for when we return to it.
         </div>
 
         <p style="margin-top:16px;font-weight:600;font-size:13px;color:#1a1a2e;">Access paths (future sprint)</p>
@@ -565,28 +641,33 @@
           </div>
           <div class="path-row">
             <div><strong>CVO (Verisys, symplr, CAQH)</strong></div>
-            <div>CVOs are already registered NPDB entities and query on our behalf. No registration required from Meroka.</div>
+            <div>Already registered NPDB entities. Query on our behalf.</div>
             <div>$1-5/NPI</div>
             <div>Fast once contracted</div>
           </div>
           <div class="path-row">
             <div><strong>Direct registration as health plan</strong></div>
-            <div>Requires Clara to evaluate whether Meroka fits the statutory definition (42 U.S.C. &sect;11151) &mdash; specifically the "panel of providers" / PPO-adjacent language once we have employer contracts.</div>
+            <div>Requires Clara to evaluate statutory definition (42 U.S.C. &sect;11151).</div>
             <div>Free per query</div>
             <div>Weeks to months</div>
           </div>
           <div class="path-row">
             <div><strong>Partner with employer/TPA</strong></div>
-            <div>Self-insured employers qualify as health plans and can run queries on our behalf.</div>
+            <div>Self-insured employers qualify as health plans.</div>
             <div>Depends on contract</div>
             <div>Depends on deal flow</div>
           </div>
         </div>
       </div>
 
-      <!-- OIG LEIE -->
-      <div class="section-title">Data source 2: OIG LEIE</div>
-      <div class="source-card">
+      <!-- Source 2: OIG LEIE -->
+      <div class="section-title">
+        <span style="display:inline-flex;align-items:center;gap:8px;">
+          Data source 2: OIG LEIE
+          <span style="background:#f0fdf4;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">Done</span>
+        </span>
+      </div>
+      <div class="source-card" style="border-left:3px solid #22c55e;">
         <div class="source-header">
           <div class="source-num">2</div>
           <div>
@@ -595,42 +676,83 @@
           </div>
           <span class="access-badge free">Free &middot; Public</span>
         </div>
-        <p>Every individual or entity excluded from participating in federal healthcare programs (Medicare, Medicaid, CHIP). Reasons include fraud convictions, patient abuse, license revocation, and billing violations. Some exclusions are mandatory (conviction = automatic), others are permissive (OIG discretion).</p>
-        <p><strong>Why it matters:</strong> If a provider is on this list, any entity that pays them for federally reimbursable services faces civil monetary penalties. An employer directing employees to an excluded provider has direct legal exposure.</p>
-        <div class="highlight">
-          Full CSV download at <strong>exclusions.oig.hhs.gov</strong>. Monthly supplement file for new additions only. NPI included for most records; name + address for older records. No registration, no API key.
-        </div>
+        <p>Every individual or entity excluded from participating in federal healthcare programs (Medicare, Medicaid, CHIP). If a provider is on this list, any entity that pays them for federally reimbursable services faces civil monetary penalties.</p>
         <table class="detail-table" style="margin-top:12px;">
           <tr><th>Access</th><th>Format</th><th>Refresh</th><th>Cost</th></tr>
           <tr><td>exclusions.oig.hhs.gov</td><td>CSV bulk download</td><td>Monthly full + supplement</td><td class="tag-free">Free</td></tr>
         </table>
+
+        <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-top:16px;">
+          <div style="font-size:12px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;">What we found</div>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">The file has <strong>82,749 banned providers</strong>. Our job is to check whether any provider joining our marketplace appears on this list. The problem: each provider on our marketplace has an NPI (their unique ID number), but only 10% of LEIE records have an NPI. The other 90% are from before 2007 when the NPI system started.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">What those old records DO have: the person's <strong>last name, first name, and date of birth</strong>. "John Smith" alone would match too many people. But "John Smith born April 15, 1965" is almost certainly one specific person. That's why we built two matching tiers:</p>
+
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="background:#f0fdf4;color:#15803d;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">Tier 1</div>
+              <div style="font-size:13px;color:#374151;"><strong>NPI match (high confidence):</strong> exact NPI lookup. Covers 8,306 exclusions (10%). No ambiguity, auto-fail.</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="background:#fef9f0;color:#92400e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px;">Tier 2</div>
+              <div style="font-size:13px;color:#374151;"><strong>Name + date of birth match (medium confidence):</strong> catches the 70,543 older exclusions that have no NPI (89%). Near-deterministic, but can miss if a provider changed their name. Flagged for review, not auto-fail.</div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;margin-bottom:12px;">
+            <div style="font-size:13px;color:#374151;"><strong>Combined coverage: 98.9%</strong> of individual exclusions on the list. Only 865 records uncoverable (businesses without individual names, or missing DOB).</div>
+          </div>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:8px;"><strong>What this requires from the onboarding form:</strong> NPI alone gets Tier 1 only. To run both tiers, the provider onboarding profile must also collect <strong>legal first name, legal last name, and date of birth</strong>. Without DOB, we can only check against 10% of the exclusion list.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>Validation:</strong> 10 NPI test cases caught, 5 name+DOB test cases caught, fabricated names correctly passed. Logic confirmed end-to-end.</p>
+        </div>
       </div>
 
-      <!-- PECOS -->
-      <div class="section-title">Data source 3: PECOS</div>
-      <div class="source-card">
+      <!-- Source 3: PECOS -->
+      <div class="section-title">
+        <span style="display:inline-flex;align-items:center;gap:8px;">
+          Data source 3: PECOS
+          <span style="background:#f0f9ff;color:#1e40af;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">Evaluated &mdash; informational only</span>
+        </span>
+      </div>
+      <div class="source-card" style="border-left:3px solid #3b82f6;">
         <div class="source-header">
           <div class="source-num">3</div>
           <div>
-            <h4>PECOS — Provider Enrollment, Chain and Ownership System</h4>
-            <div class="source-sub">CMS &middot; Medicare enrollment registry</div>
+            <h4>PECOS &mdash; Provider Enrollment, Chain and Ownership System</h4>
+            <div class="source-sub">CMS &middot; Medicare enrollment registry &middot; <strong>Not a gate input</strong></div>
           </div>
           <span class="access-badge free">Free &middot; Public extract</span>
         </div>
-        <p>CMS's enrollment system for providers who bill Medicare. Active enrollment in PECOS is a baseline signal that the provider is known to CMS and in good standing. A revocation is a serious flag — CMS revokes for felony convictions, license loss, OIG exclusion, or billing abuse.</p>
-        <p><strong>What we check:</strong> enrollment status (active vs. inactive/revoked/deactivated), specialty alignment, practice location.</p>
-        <div class="highlight">
-          CMS publishes the <strong>Medicare Fee-for-Service Public Provider Enrollment</strong> file on data.cms.gov. Free bulk download, updated monthly. No registration required.
-        </div>
+        <p>CMS's enrollment system for providers who bill Medicare. We evaluated PECOS as a potential gate input and decided against it. It's kept as informational context for this step and as a real input for Steps 2 and 5b.</p>
         <table class="detail-table" style="margin-top:12px;">
           <tr><th>Access</th><th>Format</th><th>Refresh</th><th>Cost</th></tr>
           <tr><td>data.cms.gov</td><td>CSV bulk download</td><td>Monthly</td><td class="tag-free">Free</td></tr>
         </table>
+
+        <div style="background:#f0f9ff;border-radius:8px;padding:16px;margin-top:16px;">
+          <div style="font-size:12px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;">Why we removed it from the gate</div>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">The file has <strong>2,957,262 enrollment rows</strong> covering <strong>2,542,195 unique providers</strong>. This is every provider who bills Medicare in the US. We initially considered using PECOS enrollment as a gate signal.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">The problem: absence from PECOS doesn't indicate anything wrong. Plenty of good independent practices don't bill Medicare: concierge, cash-pay, commercial-only. Failing providers on PECOS absence would knock out the exact providers Meroka is trying to serve.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">We also can't use the public PECOS extract to detect revocations. It only contains currently enrolled providers, so we can't distinguish "never enrolled" from "was enrolled, got revoked" without historical snapshots or the separate CMS revocation files.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>What we kept:</strong> A <code>pecos_enrolled</code> informational flag (does not affect pass/fail), plus a cross-reference check: if a provider is LEIE-excluded but still shows as PECOS-enrolled, that's a data integrity flag suggesting CMS hasn't caught up to OIG's exclusion. PECOS remains a real input for <strong>Step 2</strong> (specialty validation, enrollment history) and <strong>Step 5b</strong> (Medicare billing patterns).</p>
+        </div>
       </div>
 
-      <!-- State boards -->
-      <div class="section-title">Data source 4: State medical boards</div>
-      <div class="source-card">
+      <!-- Source 4: State boards -->
+      <div class="section-title">
+        <span style="display:inline-flex;align-items:center;gap:8px;">
+          Data source 4: State medical boards
+          <span style="background:#fef9f0;color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">Not started</span>
+        </span>
+      </div>
+      <div class="source-card" style="border-left:3px solid #e5e7eb;">
         <div class="source-header">
           <div class="source-num">4</div>
           <div>
@@ -639,39 +761,36 @@
           </div>
           <span class="access-badge paid">Varies by state</span>
         </div>
-        <p>License status, disciplinary actions (suspensions, revocations, probation, reprimands), consent orders, and practice restrictions. No single national database equivalent to LEIE or PECOS. Each state runs its own board with its own data infrastructure.</p>
+        <p>License status, disciplinary actions, consent orders, and practice restrictions. No single national database. Each of 50 states runs its own board with its own data infrastructure.</p>
 
         <table class="detail-table">
           <tr><th>Tier</th><th>States</th><th>What's available</th></tr>
           <tr><td><strong>Good</strong></td><td>~15 states</td><td>Bulk download or clean API (CA, TX, NY)</td></tr>
-          <tr><td><strong>Okay</strong></td><td>~20 states</td><td>Individual lookup pages, scrapeable with effort</td></tr>
+          <tr><td><strong>Okay</strong></td><td>~20 states</td><td>Individual lookup pages, scrapeable</td></tr>
           <tr><td><strong>Bad</strong></td><td>~15 states</td><td>PDF-only, manual lookup only</td></tr>
         </table>
 
-        <p style="margin-top:8px;">No standardized format. Many boards use license number rather than NPI, requiring a crosswalk.</p>
-
         <div class="highlight">
-          <strong>FSMB Physician Data Center</strong> aggregates data from all 70+ medical and osteopathic boards in the US. License status, disciplinary history, board certifications. This is what hospitals and health plans use. One contract solves the 50-state problem. Paid enterprise service. DocInfo.org is FSMB's free public lookup (one provider at a time, not useful at scale).
+          <strong>FSMB Physician Data Center</strong> aggregates all 70+ medical and osteopathic boards. One contract solves the 50-state problem. Paid enterprise service.
         </div>
 
         <div class="highlight" style="background:#f0fdf4;border-left-color:#22c55e;">
-          <strong style="color:#15803d;">This sprint: two parallel tests.</strong> (1) Pull directly from West Virginia and Massachusetts state boards to prove per-state logic. (2) Test FSMB Physician Data Center against the same two states to validate coverage and data quality. If FSMB matches, it becomes the production path for national expansion.
+          <strong style="color:#15803d;">This sprint: two parallel tests.</strong> (1) Pull directly from WV and MA state boards. (2) Test FSMB against the same two states. If FSMB matches, it becomes the production path.
         </div>
 
-        <p style="margin-top:16px;font-weight:600;font-size:13px;color:#1a1a2e;">Access paths</p>
-        <div class="path-card">
+        <div class="path-card" style="margin-top:12px;">
           <div class="path-row header">
             <div>Path</div><div>Coverage</div><div>Cost</div><div>Speed</div>
           </div>
           <div class="path-row">
             <div><strong>WV + MA direct</strong></div>
-            <div>2 states &mdash; this sprint</div>
+            <div>2 states</div>
             <div class="tag-free">Low</div>
             <div class="rec">In scope now</div>
           </div>
           <div class="path-row">
             <div><strong>FSMB Physician Data Center</strong></div>
-            <div>All 50 states, one feed &mdash; test this sprint</div>
+            <div>All 50 states, one feed</div>
             <div class="tag-paid">Enterprise contract</div>
             <div class="rec">In scope now (test)</div>
           </div>
@@ -682,6 +801,24 @@
             <div>Slow, fragile</div>
           </div>
         </div>
+      </div>
+
+      <!-- Output schema -->
+      <div class="section-title">Output schema (what eng gets per NPI)</div>
+      <div class="source-card">
+        <table class="schema-table">
+          <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+          <tr><td><code>NPI</code></td><td>string</td><td>10-digit National Provider Identifier</td></tr>
+          <tr><td><code>gate_result</code></td><td>string</td><td>PASS or FAIL (driven by LEIE match only)</td></tr>
+          <tr><td><code>match_method</code></td><td>string</td><td>"npi" (Tier 1), "name_dob" (Tier 2), or "no_match"</td></tr>
+          <tr><td><code>confidence</code></td><td>string</td><td>"high" (NPI match) or "medium" (name+DOB). Eng sets the threshold in prod</td></tr>
+          <tr><td><code>leie_npi_match</code></td><td>boolean</td><td>True if NPI matched LEIE directly</td></tr>
+          <tr><td><code>leie_name_dob_match</code></td><td>boolean</td><td>True if name+DOB matched LEIE (pre-2007 records)</td></tr>
+          <tr><td><code>pecos_enrolled</code></td><td>boolean</td><td>Informational only. True if NPI appears in PECOS. Does not affect gate result. Absence is normal for non-Medicare practices.</td></tr>
+          <tr><td><code>leie_excl_type</code></td><td>string</td><td>OIG exclusion type code (if excluded)</td></tr>
+          <tr><td><code>leie_excl_date</code></td><td>string</td><td>Date of exclusion, YYYYMMDD (if excluded)</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Do not gate on <code>pecos_enrolled</code>. It's context for downstream steps (S2, S5b), not a safety signal.</p>
       </div>
 
     </div>
@@ -696,7 +833,29 @@
         </div>
         <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">25% of composite</div>
       </div>
-      <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
+
+      <div class="section-title">Data sources</div>
+      <div class="source-card">
+        <table class="detail-table">
+          <tr><th>Source</th><th>What it gives us</th><th>Access</th><th>Refresh</th></tr>
+          <tr><td><strong>NPPES</strong></td><td>NPI, taxonomy code, practice address, enrollment date</td><td>CMS bulk download</td><td>Weekly</td></tr>
+          <tr><td><strong>ABMS</strong></td><td>Board certification status, specialty, expiration</td><td>ABMS API or verification service</td><td>Annual cert cycle</td></tr>
+          <tr><td><strong>PECOS</strong></td><td>Medicare enrollment status, specialty, practice affiliations. Cross-reference for specialty alignment with NPPES taxonomy</td><td>CMS bulk download</td><td>Monthly</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">PECOS was evaluated as a gate input in Step 1 and scoped out (absence from PECOS ≠ problem). Here it's a real input: specialty validation, enrollment history, and practice group affiliations.</p>
+      </div>
+
+      <div class="section-title">Business logic</div>
+      <div class="source-card">
+        <ul style="padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+          <li style="font-size:13px;color:#374151;">Board certification from ABMS is the primary signal. Active cert = full credit. Expired or never certified = flag, not automatic zero (some specialties have low cert rates)</li>
+          <li style="font-size:13px;color:#374151;">NPPES gives us taxonomy code, practice address, and enrollment date as validation</li>
+          <li style="font-size:13px;color:#374151;">PECOS cross-reference confirms Medicare enrollment status and specialty alignment</li>
+          <li style="font-size:13px;color:#374151;">Years in practice is a context variable, not a quality signal. We include it for employer transparency, not scoring</li>
+        </ul>
+      </div>
+
+      <p style="font-size:14px;color:#6b7280;margin-top:16px;">Full detail coming soon. See the main treasure map doc for additional context.</p>
     </div>
 
     <!-- ==================== STEP 3 (stub) ==================== -->
@@ -748,7 +907,20 @@
         </div>
         <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">15% of composite</div>
       </div>
-      <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
+
+      <div class="section-title">Data sources</div>
+      <div class="source-card">
+        <table class="detail-table">
+          <tr><th>Source</th><th>What it gives us</th><th>Access</th><th>Refresh</th></tr>
+          <tr><td><strong>Medicare Utilization</strong></td><td>Procedure-level data (CPT codes, volumes, charges) per provider</td><td>CMS bulk download</td><td>Annual</td></tr>
+          <tr><td><strong>Medicaid T-MSIS</strong></td><td>State-level Medicaid claims and utilization</td><td>CMS / state portals</td><td>Varies</td></tr>
+          <tr><td><strong>PECOS</strong></td><td>Medicare billing patterns, enrollment type, practice affiliations. Cross-reference for provider-level Medicare participation context</td><td>CMS bulk download</td><td>Monthly</td></tr>
+          <tr><td><strong>Bundle taxonomy</strong></td><td>CPT-to-bundle mapping per specialty (internal)</td><td>Internal</td><td>As needed</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">PECOS was evaluated as a gate input in Step 1 and scoped out. Here it provides Medicare participation context for bundle-level scoring: which providers bill Medicare, what specialties they enrolled under, and how that maps to utilization patterns.</p>
+      </div>
+
+      <p style="font-size:14px;color:#6b7280;margin-top:16px;">Full detail coming soon. See the main treasure map doc for additional context.</p>
     </div>
 
     <!-- ==================== STEP 6 (stub) ==================== -->
@@ -762,6 +934,275 @@
         <div class="gate-badge" style="background:#f3f4f6;color:#6b7280;">Phase 2</div>
       </div>
       <p style="font-size:14px;color:#6b7280;">Phase 2. Requires live employer claims data. Not required for initial bar. See the main treasure map doc for methodology.</p>
+    </div>
+
+    <!-- ==================== S1 REPORT ==================== -->
+    <div id="tab-s1report" class="tab-panel">
+      <div class="page-header">
+        <h1>Step 1 Report: Safety Gate</h1>
+        <div class="subtitle">OIG LEIE exclusion check &middot; PECOS evaluated, kept as informational &middot; Completed March 2026</div>
+      </div>
+
+      <!-- 1 -->
+      <div class="section-title">1. What we set out to do</div>
+      <div class="source-card">
+        <p>Build the first layer of the safety gate: check whether a provider should be allowed into the Meroka marketplace at all. Binary pass/fail. We started with two freely available federal datasets (LEIE and PECOS) because NPDB requires registration and state boards are a separate workstream. After evaluation, LEIE became the gate driver and PECOS was scoped as informational context only.</p>
+      </div>
+
+      <!-- 2 -->
+      <div class="section-title">2. What we downloaded</div>
+      <div class="source-card">
+        <p><strong>OIG LEIE</strong> (exclusions.oig.hhs.gov): the federal government's master list of every individual or entity banned from participating in Medicare, Medicaid, and CHIP. 82,749 records. Free, public, updated monthly.</p>
+        <p><strong>PECOS</strong> (data.cms.gov): CMS's enrollment file for every provider who bills Medicare. 2.96 million enrollment rows covering 2.54 million unique providers. Free, public, updated monthly.</p>
+      </div>
+
+      <!-- 3 -->
+      <div class="section-title">3. What we built</div>
+      <div class="source-card">
+        <p>A Jupyter notebook that takes a list of provider NPIs, runs them against the LEIE exclusion list, and produces a pass/fail result per provider. PECOS is loaded for informational context but does not affect the gate decision. We tested it on 210 NPIs: 200 clean providers sourced from PECOS and 10 providers we knew were on the exclusion list.</p>
+      </div>
+
+      <!-- 4 -->
+      <div class="section-title">4. First finding: the NPI gap</div>
+      <div class="source-card">
+        <p>Only 10.3% of LEIE records have a usable NPI. The other 89.7% are from before 2007 when the NPI system was introduced. Those older records have the provider's name and address but no NPI. If we only match on NPI, we can only check incoming providers against 10% of the banned list. That's too big a gap for a vetting context.</p>
+      </div>
+
+      <!-- 5 -->
+      <div class="section-title">5. The solution: two-tier matching</div>
+      <div class="source-card">
+        <p>We looked at what fields the old LEIE records DO have. Every individual record includes last name, first name, and date of birth. Name alone would be too ambiguous ("John Smith" matches too many people). But name + date of birth is near-deterministic. "John Smith born April 15, 1965" is almost certainly one specific person. So we built two matching tiers:</p>
+
+        <div style="display:flex;flex-direction:column;gap:12px;margin:16px 0;">
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="background:#f0fdf4;color:#15803d;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;flex-shrink:0;">Tier 1</div>
+            <div style="font-size:13px;color:#374151;"><strong>Exact NPI match (high confidence).</strong> Covers 8,306 exclusions. No ambiguity. Auto-fail in production.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="background:#fef9f0;color:#92400e;font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;flex-shrink:0;">Tier 2</div>
+            <div style="font-size:13px;color:#374151;"><strong>Last name + first name + DOB match (medium confidence).</strong> Covers 70,543 additional exclusions. Near-deterministic but can miss if a provider changed their name. Flagged for review, not auto-fail.</div>
+          </div>
+        </div>
+
+        <p><strong>Combined coverage: 98.9%</strong> of individual exclusions on the list. Only 865 records are uncoverable (businesses without individual names, or records missing DOB).</p>
+      </div>
+
+      <!-- 6 -->
+      <div class="section-title">6. Why we removed PECOS from the gate</div>
+      <div class="source-card">
+        <p>We initially evaluated PECOS as a potential gate input. PECOS tells us whether a provider is actively enrolled in Medicare, and CMS does revoke enrollment for serious reasons (felony convictions, license loss, billing abuse). On the surface, it looks like a safety signal.</p>
+
+        <p style="margin-top:12px;"><strong>Why it doesn't work as a gate:</strong> Absence from PECOS doesn't indicate a problem. Many legitimate independent practices don't bill Medicare: concierge, cash-pay, commercial-only. These are exactly the providers Meroka is trying to serve. Failing them on PECOS absence would knock out good providers for no reason.</p>
+
+        <p style="margin-top:12px;">There's also a data limitation. The public PECOS extract only contains currently enrolled providers. We can't distinguish "never enrolled" (fine) from "was enrolled but got revoked" (bad) without historical snapshots or the separate CMS revocation files.</p>
+
+        <p style="margin-top:12px;"><strong>What we kept:</strong></p>
+        <ul style="margin-top:8px;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+          <li style="font-size:13px;color:#374151;">A <code>pecos_enrolled</code> informational flag in the output. Does not affect pass/fail.</li>
+          <li style="font-size:13px;color:#374151;">A cross-reference check: if a provider is LEIE-excluded but still shows as PECOS-enrolled, we flag that as a data integrity issue. It means CMS enrollment hasn't caught up to OIG's exclusion.</li>
+        </ul>
+
+        <p style="margin-top:12px;"><strong>Where PECOS goes from here:</strong> It's a real input for <strong>Step 2</strong> (specialty validation, enrollment history, practice affiliations) and <strong>Step 5b</strong> (Medicare billing patterns mapped to clinical bundles). PECOS earns its keep in quality, not in safety.</p>
+      </div>
+
+      <!-- 7 -->
+      <div class="section-title">7. Validation results</div>
+      <div class="source-card">
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 10 known-excluded NPIs correctly flagged as FAIL (Tier 1)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 200 clean providers (sourced from PECOS) correctly passed</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> 5 name+DOB test cases (excluded individuals with no NPI) correctly caught (Tier 2)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> A fabricated name correctly passed (no false positive)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> Spot-checked one excluded provider against raw LEIE data: name, exclusion type, and date all matched exactly</li>
+        </ul>
+      </div>
+
+      <!-- 8 -->
+      <div class="section-title">8. More data we could pull but chose not to for the POC</div>
+      <div class="source-card">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <p><strong>NPPES</strong> (free, CMS): the full national registry of every active NPI in the US. We could do a bulk pre-screen of all providers in WV and MA instead of just a sample. Decided not to because the POC only needs to prove the logic works, not scan at scale. Eng handles that.</p>
+          </div>
+          <div>
+            <p><strong>NPDB</strong> (restricted, paid): the federal database for malpractice settlements and adverse actions. The only place where malpractice payments are aggregated nationally. Out of scope because access requires registration as an eligible entity, which could take weeks to months. Three paths documented for a future sprint: CVO partnership ($1-5/NPI), direct registration as a health plan, or partner through an employer/TPA.</p>
+          </div>
+          <div>
+            <p><strong>State medical boards</strong> (varies): license status and disciplinary actions. No single national database. 50 separate state systems. Plan is to test WV and MA directly, plus test FSMB Physician Data Center as the national production path.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="section-title">9. What we need from the provider onboarding profile</div>
+      <div class="source-card">
+        <p>For the safety gate to run both matching tiers, the onboarding form must collect these four fields:</p>
+        <table class="detail-table" style="margin:16px 0;">
+          <tr><th>Field</th><th>Format</th><th>Why</th></tr>
+          <tr><td><strong>NPI</strong></td><td>10-digit number</td><td>Primary identifier. Every licensed provider has one. Required for Tier 1 matching and the PECOS enrollment check.</td></tr>
+          <tr><td><strong>Legal last name</strong></td><td>String</td><td>Must be the name on their license, not a preferred or married name. LEIE uses the name from the original exclusion filing.</td></tr>
+          <tr><td><strong>Legal first name</strong></td><td>String</td><td>Same rule. No nicknames. "William" not "Bill."</td></tr>
+          <tr><td><strong>Date of birth</strong></td><td>YYYYMMDD</td><td>The key field that makes Tier 2 work. Turns a common name into a near-unique identifier.</td></tr>
+        </table>
+
+        <div class="highlight">
+          <strong>NPI alone</strong> gets you Tier 1 only (checks against 10% of the exclusion list). <strong>NPI + legal name + DOB</strong> gets you both tiers (98.9% coverage). If a provider doesn't supply DOB, they still get checked on NPI. They just won't be checked against the 70K+ older exclusion records. Document this as a coverage limitation, not a pass.
+        </div>
+
+        <p style="margin-top:12px;"><strong>Fields we do NOT need from onboarding</strong> (we get them from the federal datasets): exclusion status, Medicare enrollment status, specialty, address, practice name.</p>
+      </div>
+
+      <!-- 10 -->
+      <div class="section-title">10. What we shipped</div>
+      <div class="source-card">
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> Executed Jupyter notebook with all outputs visible, pushed to <a href="https://github.com/MerokaInc/quality-treasure-map/tree/ds/step1-safety-gate-leie-pecos" style="color:#4f46e5;">ds/step1-safety-gate-leie-pecos</a> on GitHub</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> README with business question, data source links, output schema, and caveats</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">&bull;</span> Updated HTML treasure map with progress bars, findings per data source, and output schema for eng</li>
+        </ul>
+      </div>
+
+      <!-- 11 -->
+      <div class="section-title">11. Output schema (what eng gets per provider)</div>
+      <div class="source-card">
+        <table class="schema-table">
+          <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+          <tr><td><code>NPI</code></td><td>string</td><td>10-digit provider identifier</td></tr>
+          <tr><td><code>gate_result</code></td><td>string</td><td>PASS or FAIL (driven by LEIE match only)</td></tr>
+          <tr><td><code>match_method</code></td><td>string</td><td>"npi" (Tier 1), "name_dob" (Tier 2), or "no_match"</td></tr>
+          <tr><td><code>confidence</code></td><td>string</td><td>"high" (NPI match) or "medium" (name+DOB match)</td></tr>
+          <tr><td><code>leie_npi_match</code></td><td>boolean</td><td>True if NPI matched LEIE directly</td></tr>
+          <tr><td><code>leie_name_dob_match</code></td><td>boolean</td><td>True if name+DOB matched LEIE (pre-2007 records)</td></tr>
+          <tr><td><code>pecos_enrolled</code></td><td>boolean</td><td>Informational only. True if found in PECOS. Does not affect gate. Absence is normal for non-Medicare practices.</td></tr>
+          <tr><td><code>leie_excl_type</code></td><td>string</td><td>OIG exclusion type code</td></tr>
+          <tr><td><code>leie_excl_date</code></td><td>string</td><td>Date of exclusion (YYYYMMDD)</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Eng sets the confidence threshold in production. Both match paths are exposed so they can decide: auto-fail on high confidence, flag-for-review on medium. Do not gate on <code>pecos_enrolled</code>.</p>
+      </div>
+
+    </div>
+
+    <!-- ==================== ONBOARDING REQUIREMENTS ==================== -->
+    <div id="tab-onboarding" class="tab-panel">
+      <div class="page-header">
+        <h1>Onboarding &amp; Marketplace Requirements</h1>
+        <div class="subtitle">What we need from the provider profile to run each step. Updated as we complete workstreams.</div>
+      </div>
+
+      <!-- Summary table -->
+      <div class="section-title">Required fields (all steps)</div>
+      <div class="source-card">
+        <p style="margin-bottom:12px;">This is the running list of what the provider onboarding form and marketplace profile need to collect. Each field is tagged with which step needs it and why. As we complete more steps, new fields will be added here.</p>
+        <table class="schema-table">
+          <tr><th>Field</th><th>Format</th><th>Needed by</th><th>Required?</th><th>Why</th></tr>
+          <tr>
+            <td><strong>NPI</strong></td>
+            <td>10-digit string</td>
+            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><strong>Yes</strong></td>
+            <td>Primary identifier. Matches against LEIE exclusion list (Tier 1). Also used for PECOS enrollment lookup (informational, not a gate input). Every licensed provider has one.</td>
+          </tr>
+          <tr>
+            <td><strong>Legal last name</strong></td>
+            <td>String</td>
+            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><strong>Yes</strong></td>
+            <td>Must be the name on their license, not a preferred or married name. LEIE uses the name from the original exclusion filing. Without it, Tier 2 matching can't run.</td>
+          </tr>
+          <tr>
+            <td><strong>Legal first name</strong></td>
+            <td>String</td>
+            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><strong>Yes</strong></td>
+            <td>Same rule as last name. No nicknames. "William" not "Bill." "Robert" not "Bob."</td>
+          </tr>
+          <tr>
+            <td><strong>Date of birth</strong></td>
+            <td>YYYYMMDD</td>
+            <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
+            <td><strong>Yes</strong></td>
+            <td>The key field for Tier 2 matching. Turns a common name into a near-unique key. Without DOB, we can only check against 10% of the LEIE exclusion list instead of 98.9%.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Office hours</td>
+            <td>Structured</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>New patient wait time</td>
+            <td>Integer (days)</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Telehealth available</td>
+            <td>Boolean</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Languages spoken</td>
+            <td>Array of strings</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Accepting new patients</td>
+            <td>Boolean</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+          <tr style="color:#9ca3af;">
+            <td>Wheelchair accessible</td>
+            <td>Boolean</td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td>TBD</td>
+            <td>Access &amp; availability scoring. Not yet implemented.</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Detail per step -->
+      <div class="section-title">Step 1: Safety Gate</div>
+      <div class="source-card" style="border-left:3px solid #22c55e;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="background:#f0fdf4;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;">Confirmed</span>
+          <span style="font-size:12px;color:#6b7280;">Validated in notebook, pushed to GitHub</span>
+        </div>
+        <p>The safety gate needs four fields. NPI is the baseline. Legal name + DOB unlock the second matching tier, which jumps exclusion list coverage from 10% to 98.9%.</p>
+        <div class="highlight" style="margin-top:12px;">
+          <strong>If a provider doesn't supply DOB:</strong> they still get checked on NPI (Tier 1). But they won't be checked against the 70,543 older exclusion records that lack NPIs. This is a coverage limitation, not a pass. Document it and flag it in the provider profile.
+        </div>
+      </div>
+
+      <div class="section-title">Step 4: Access &amp; Availability</div>
+      <div class="source-card" style="border-left:3px solid #e5e7eb;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="background:#f3f4f6;color:#6b7280;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;">Not yet implemented</span>
+          <span style="font-size:12px;color:#6b7280;">Fields from the treasure map doc, pending validation</span>
+        </div>
+        <p>Step 4 is the only other step that requires provider-reported data. The schema is defined in the treasure map but hasn't been validated yet. Fields listed above are preliminary.</p>
+      </div>
+
+      <div class="section-title">Fields we do NOT need from onboarding</div>
+      <div class="source-card">
+        <p>These are things we get from the federal datasets directly. The provider doesn't need to tell us any of this:</p>
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-top:10px;">
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Exclusion status (that's what we're checking via LEIE)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Medicare enrollment status (PECOS gives us this)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Board certification (ABMS, Step 2)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Specialty and taxonomy code (NPPES, Step 2)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> MIPS / clinical quality scores (CMS QPP, Step 5)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Utilization and procedure volume (CMS, Step 5b)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Patient reviews and ratings (Google, Healthgrades, Step 3)</li>
+        </ul>
+      </div>
     </div>
 
   </main>
