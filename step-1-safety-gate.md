@@ -9,7 +9,7 @@ What it answers: should this provider be in the marketplace at all?
 ## Immediate next steps
 
 1. **OIG LEIE** - free bulk download, no blockers. Pull the file, match against a sample NPI list, confirm pass/fail logic works end-to-end. PECOS is loaded as informational context (Medicare enrollment status) but does not affect the gate decision.
-2. **State boards** - pull WV and MA board data directly. In parallel, test FSMB Physician Data Center against the same two states to compare coverage and quality.
+2. **State boards** - pull WV and MA board data directly. FSMB Physician Data Center is deferred to post 60-day sprint (no enterprise contract in place).
 
 NPDB is out of scope for this sprint.
 
@@ -122,16 +122,17 @@ No standardized format. Many boards use license number rather than NPI, requirin
 - **DocInfo.org** - free public lookup, one physician at a time. Not useful at scale.
 - **FSMB Physician Data Center** - bulk/API access aggregating data from all 70+ medical and osteopathic boards in the US. License status, disciplinary history, board certifications. This is what hospitals and health plans use. Paid enterprise contract.
 
-**This sprint:** Test two approaches in parallel.
+**This sprint:** West Virginia + Massachusetts direct pulls only. FSMB Physician Data Center is not available.
 
 1. **West Virginia + Massachusetts direct** - pull from each state board directly for these two states. Proves the per-state logic and gives us a working baseline.
-2. **FSMB Physician Data Center** - test FSMB's feed against the same two states to validate coverage and data quality. If it matches, FSMB becomes the production path for national expansion.
+
+**FSMB Physician Data Center — on hold.** No enterprise contract in place. This is the production path for national expansion (one contract, all 50 states), but access requires a paid enterprise agreement. On hold until we prove the pipeline works with direct state pulls. Revisit post 60-day sprint.
 
 **Access paths:**
 
-| Path | Coverage | Cost | Speed |
-|------|----------|------|-------|
-| WV + MA direct (this sprint) | 2 states | Low | Immediate |
-| FSMB Physician Data Center (test this sprint) | All 50 states, one feed | Enterprise contract | Fastest to full national coverage |
-| State-by-state scraping | Varies, patchy | Engineering time | Slow, fragile |
+| Path | Coverage | Cost | Speed | Status |
+|------|----------|------|-------|--------|
+| WV + MA direct (this sprint) | 2 states | Low | Immediate | In progress |
+| FSMB Physician Data Center | All 50 states, one feed | Enterprise contract | Fastest to full national coverage | Deferred, no contract |
+| State-by-state scraping | Varies, patchy | Engineering time | Slow, fragile | Not recommended |
 
