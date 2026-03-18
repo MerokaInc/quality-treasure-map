@@ -8,7 +8,7 @@ What it answers: should this provider be in the marketplace at all?
 
 ## Immediate next steps
 
-1. **OIG LEIE + PECOS** - both are free bulk downloads, no blockers. Pull the files, match against a sample NPI list, confirm pass/fail logic works end-to-end.
+1. **OIG LEIE** - free bulk download, no blockers. Pull the file, match against a sample NPI list, confirm pass/fail logic works end-to-end. PECOS is loaded as informational context (Medicare enrollment status) but does not affect the gate decision.
 2. **State boards** - pull WV and MA board data directly. In parallel, test FSMB Physician Data Center against the same two states to compare coverage and quality.
 
 NPDB is out of scope for this sprint.
@@ -17,8 +17,9 @@ NPDB is out of scope for this sprint.
 
 ## Business logic
 
-- Query each NPI against NPDB, state medical boards, and the PECOS/OIG exclusion list
-- If any of the three returns an active sanction, unresolved adverse action, or exclusion, the provider fails the gate
+- Query each NPI against NPDB, state medical boards, and the OIG LEIE exclusion list
+- If any of those returns an active sanction, unresolved adverse action, or exclusion, the provider fails the gate
+- PECOS enrollment is checked as informational context (tells us who bills Medicare) but does not affect pass/fail. Many good independent practices don't bill Medicare.
 - This is not a score. It's a binary check. No weighting, no partial credit
 - A provider who fails the gate does not receive a composite quality score and is not listed
 - Refresh cadence matters. Hecht v. Cigna settled for $5.7M because provider data went stale. We need a monitoring interval, not just a one-time check
@@ -74,7 +75,7 @@ NPDB is out of scope for this sprint.
 
 ---
 
-### 3. PECOS (Provider Enrollment, Chain and Ownership System)
+### 3. PECOS (Provider Enrollment, Chain and Ownership System) — evaluated, not used as a gate input
 
 **What it is:** CMS's enrollment system for providers who bill Medicare.
 
@@ -84,7 +85,14 @@ NPDB is out of scope for this sprint.
 - Practice location and group affiliations
 - Enrollment status: active, inactive, deactivated, revoked
 
-**The revocation signal:** PECOS revocation is serious - CMS revokes enrollment for felony convictions, license loss, exclusion, or billing abuse. Different from OIG exclusion but often overlapping.
+**Why we evaluated it for the gate:** PECOS revocation is a serious signal. CMS revokes enrollment for felony convictions, license loss, exclusion, or billing abuse. Different from OIG exclusion but often overlapping. We initially considered it as a gate input.
+
+**Why we removed it from the gate:** Absence from PECOS does not indicate a problem. Many legitimate independent practices don't bill Medicare: concierge, cash-pay, commercial-only. Failing providers on PECOS absence would knock out the exact providers Meroka is trying to serve. The public PECOS extract also only contains currently enrolled providers, so we can't distinguish "never enrolled" from "was enrolled, got revoked" without historical snapshots or the separate CMS revocation files.
+
+**What we kept it for:**
+- **Informational context in Step 1:** We flag `pecos_enrolled` as a data point for eng but it does not affect pass/fail. We also cross-reference LEIE exclusions against PECOS enrollment as a data integrity check (an excluded provider still showing as enrolled suggests CMS hasn't caught up to OIG).
+- **Step 2 (Credentials):** PECOS is a legitimate input for specialty validation, enrollment history, and practice affiliations.
+- **Step 5b (Bundles):** Medicare billing patterns from PECOS cross-referenced with utilization data.
 
 **Access:** CMS publishes a public extract called the **Medicare Fee-for-Service Public Provider Enrollment** file on data.cms.gov. Free bulk download, updated monthly. No registration required.
 

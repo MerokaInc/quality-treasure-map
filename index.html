@@ -349,16 +349,17 @@
         <div class="desc">Should this provider be in the marketplace at all?</div>
         <div class="logic">Binary check: <strong>pass = scored</strong>, <strong>fail = excluded</strong>. No weighting, no partial credit.</div>
         <div class="gate-data">
-          <span class="tag">PECOS / OIG exclusion list</span>
+          <span class="tag">OIG LEIE exclusion list</span>
+          <span class="tag" style="background:#f0f9ff;color:#1e40af;">PECOS &mdash; informational only</span>
           <span class="tag">State medical boards (WV + MA)</span>
           <span class="tag" style="background:#fef9f0;color:#92400e;">NPDB &mdash; future sprint</span>
         </div>
         <div class="logic" style="margin-top:10px;font-size:12px;color:#6b7280;">
-          This sprint: OIG LEIE + PECOS (free bulk downloads, no blockers) &middot; State boards direct for WV &amp; MA + FSMB test
+          This sprint: OIG LEIE (gate) + PECOS (informational context only) &middot; State boards direct for WV &amp; MA + FSMB test
         </div>
         <div class="progress-wrap">
           <div class="progress-label">
-            <span class="pl-text">LEIE (two-tier) + PECOS done. NPDB + state boards pending</span>
+            <span class="pl-text">LEIE (two-tier matching) done. PECOS evaluated, kept as informational. NPDB + state boards pending</span>
             <span class="pl-pct" style="color:#dc2626;">40%</span>
           </div>
           <div class="progress-bar"><div class="fill" style="width:40%;background:#ef4444;"></div></div>
@@ -446,7 +447,7 @@
           <h3>CMS Utilization &amp; Bundle Scoring</h3>
           <div class="question">What does this provider actually do, and are there cost or volume red flags?</div>
           <div class="data-sources">
-            <span class="src">Medicare Utilization</span><span class="src">Medicaid T-MSIS</span><span class="src">Bundle taxonomy (internal)</span>
+            <span class="src">Medicare Utilization</span><span class="src">Medicaid T-MSIS</span><span class="src">PECOS</span><span class="src">Bundle taxonomy (internal)</span>
           </div>
           <div class="logic-note">CPT-to-bundle mapping per specialty. Procedure volume = confidence signal. Cost pattern flags vs. peers.</div>
           <div class="progress-wrap">
@@ -585,8 +586,9 @@
       <div class="section-title">Business logic</div>
       <div class="logic-box">
         <ul>
-          <li>Query each NPI against NPDB, state medical boards, and the PECOS/OIG exclusion list</li>
+          <li>Query each NPI against NPDB, state medical boards, and the OIG LEIE exclusion list</li>
           <li>If any source returns an active sanction, unresolved adverse action, or exclusion &rarr; provider fails</li>
+          <li>PECOS enrollment is checked as informational context (who bills Medicare) but does not affect pass/fail. Many legitimate independent practices don't bill Medicare</li>
           <li><strong>Not a score.</strong> Binary check only. No weighting, no partial credit</li>
           <li>A provider who fails is not listed and receives no composite quality score</li>
           <li>Refresh cadence matters: <strong>Hecht v. Cigna settled for $5.7M</strong> because provider data went stale. We need monitoring, not just a one-time check</li>
@@ -598,7 +600,7 @@
       <div class="source-card" style="border-left:3px solid #6366f1;">
         <div class="progress-wrap" style="margin-top:0;">
           <div class="progress-label">
-            <span class="pl-text">LEIE (two-tier matching, 98.9% coverage) + PECOS done. NPDB + state boards pending</span>
+            <span class="pl-text">LEIE (two-tier matching, 98.9% coverage) done. PECOS evaluated, kept as informational. NPDB + state boards pending</span>
             <span class="pl-pct" style="color:#6366f1;">40%</span>
           </div>
           <div class="progress-bar" style="height:8px;"><div class="fill" style="width:40%;background:#6366f1;"></div></div>
@@ -712,32 +714,34 @@
       <div class="section-title">
         <span style="display:inline-flex;align-items:center;gap:8px;">
           Data source 3: PECOS
-          <span style="background:#f0fdf4;color:#15803d;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">Done</span>
+          <span style="background:#f0f9ff;color:#1e40af;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;text-transform:none;letter-spacing:0;">Evaluated &mdash; informational only</span>
         </span>
       </div>
-      <div class="source-card" style="border-left:3px solid #22c55e;">
+      <div class="source-card" style="border-left:3px solid #3b82f6;">
         <div class="source-header">
           <div class="source-num">3</div>
           <div>
             <h4>PECOS &mdash; Provider Enrollment, Chain and Ownership System</h4>
-            <div class="source-sub">CMS &middot; Medicare enrollment registry</div>
+            <div class="source-sub">CMS &middot; Medicare enrollment registry &middot; <strong>Not a gate input</strong></div>
           </div>
           <span class="access-badge free">Free &middot; Public extract</span>
         </div>
-        <p>CMS's enrollment system for providers who bill Medicare. Active enrollment is a baseline signal. A revocation is serious: CMS revokes for felony convictions, license loss, OIG exclusion, or billing abuse.</p>
+        <p>CMS's enrollment system for providers who bill Medicare. We evaluated PECOS as a potential gate input and decided against it. It's kept as informational context for this step and as a real input for Steps 2 and 5b.</p>
         <table class="detail-table" style="margin-top:12px;">
           <tr><th>Access</th><th>Format</th><th>Refresh</th><th>Cost</th></tr>
           <tr><td>data.cms.gov</td><td>CSV bulk download</td><td>Monthly</td><td class="tag-free">Free</td></tr>
         </table>
 
-        <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-top:16px;">
-          <div style="font-size:12px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;">What we found</div>
+        <div style="background:#f0f9ff;border-radius:8px;padding:16px;margin-top:16px;">
+          <div style="font-size:12px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;">Why we removed it from the gate</div>
 
-          <p style="font-size:13px;color:#374151;margin-bottom:12px;">The file has <strong>2,957,262 enrollment rows</strong> covering <strong>2,542,195 unique providers</strong>. This is essentially every provider who bills Medicare in the US. We use it as a cross-reference: if a provider is actively enrolled in PECOS, it's a signal they're known to CMS and in good standing.</p>
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">The file has <strong>2,957,262 enrollment rows</strong> covering <strong>2,542,195 unique providers</strong>. This is every provider who bills Medicare in the US. We initially considered using PECOS enrollment as a gate signal.</p>
 
-          <p style="font-size:13px;color:#374151;margin-bottom:12px;">We tested 200 NPIs pulled from PECOS against the gate. All 200 passed (100% PASS rate), which is what we'd expect for actively enrolled providers.</p>
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">The problem: absence from PECOS doesn't indicate anything wrong. Plenty of good independent practices don't bill Medicare: concierge, cash-pay, commercial-only. Failing providers on PECOS absence would knock out the exact providers Meroka is trying to serve.</p>
 
-          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>Design decision:</strong> PECOS is informational, not a gate blocker. A provider not found in PECOS isn't necessarily a problem. They might just not bill Medicare (cash-pay practices, commercial insurance only, etc.). We flag the absence for context, but we don't fail a provider on it. The LEIE exclusion check is what drives the pass/fail decision.</p>
+          <p style="font-size:13px;color:#374151;margin-bottom:12px;">We also can't use the public PECOS extract to detect revocations. It only contains currently enrolled providers, so we can't distinguish "never enrolled" from "was enrolled, got revoked" without historical snapshots or the separate CMS revocation files.</p>
+
+          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>What we kept:</strong> A <code>pecos_enrolled</code> informational flag (does not affect pass/fail), plus a cross-reference check: if a provider is LEIE-excluded but still shows as PECOS-enrolled, that's a data integrity flag suggesting CMS hasn't caught up to OIG's exclusion. PECOS remains a real input for <strong>Step 2</strong> (specialty validation, enrollment history) and <strong>Step 5b</strong> (Medicare billing patterns).</p>
         </div>
       </div>
 
@@ -805,15 +809,16 @@
         <table class="schema-table">
           <tr><th>Column</th><th>Type</th><th>Description</th></tr>
           <tr><td><code>NPI</code></td><td>string</td><td>10-digit National Provider Identifier</td></tr>
-          <tr><td><code>gate_result</code></td><td>string</td><td>PASS or FAIL</td></tr>
+          <tr><td><code>gate_result</code></td><td>string</td><td>PASS or FAIL (driven by LEIE match only)</td></tr>
           <tr><td><code>match_method</code></td><td>string</td><td>"npi" (Tier 1), "name_dob" (Tier 2), or "no_match"</td></tr>
           <tr><td><code>confidence</code></td><td>string</td><td>"high" (NPI match) or "medium" (name+DOB). Eng sets the threshold in prod</td></tr>
           <tr><td><code>leie_npi_match</code></td><td>boolean</td><td>True if NPI matched LEIE directly</td></tr>
           <tr><td><code>leie_name_dob_match</code></td><td>boolean</td><td>True if name+DOB matched LEIE (pre-2007 records)</td></tr>
-          <tr><td><code>pecos_enrolled</code></td><td>boolean</td><td>True if NPI appears in PECOS Medicare enrollment</td></tr>
+          <tr><td><code>pecos_enrolled</code></td><td>boolean</td><td>Informational only. True if NPI appears in PECOS. Does not affect gate result. Absence is normal for non-Medicare practices.</td></tr>
           <tr><td><code>leie_excl_type</code></td><td>string</td><td>OIG exclusion type code (if excluded)</td></tr>
           <tr><td><code>leie_excl_date</code></td><td>string</td><td>Date of exclusion, YYYYMMDD (if excluded)</td></tr>
         </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Do not gate on <code>pecos_enrolled</code>. It's context for downstream steps (S2, S5b), not a safety signal.</p>
       </div>
 
     </div>
@@ -828,7 +833,29 @@
         </div>
         <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">25% of composite</div>
       </div>
-      <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
+
+      <div class="section-title">Data sources</div>
+      <div class="source-card">
+        <table class="detail-table">
+          <tr><th>Source</th><th>What it gives us</th><th>Access</th><th>Refresh</th></tr>
+          <tr><td><strong>NPPES</strong></td><td>NPI, taxonomy code, practice address, enrollment date</td><td>CMS bulk download</td><td>Weekly</td></tr>
+          <tr><td><strong>ABMS</strong></td><td>Board certification status, specialty, expiration</td><td>ABMS API or verification service</td><td>Annual cert cycle</td></tr>
+          <tr><td><strong>PECOS</strong></td><td>Medicare enrollment status, specialty, practice affiliations. Cross-reference for specialty alignment with NPPES taxonomy</td><td>CMS bulk download</td><td>Monthly</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">PECOS was evaluated as a gate input in Step 1 and scoped out (absence from PECOS ≠ problem). Here it's a real input: specialty validation, enrollment history, and practice group affiliations.</p>
+      </div>
+
+      <div class="section-title">Business logic</div>
+      <div class="source-card">
+        <ul style="padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+          <li style="font-size:13px;color:#374151;">Board certification from ABMS is the primary signal. Active cert = full credit. Expired or never certified = flag, not automatic zero (some specialties have low cert rates)</li>
+          <li style="font-size:13px;color:#374151;">NPPES gives us taxonomy code, practice address, and enrollment date as validation</li>
+          <li style="font-size:13px;color:#374151;">PECOS cross-reference confirms Medicare enrollment status and specialty alignment</li>
+          <li style="font-size:13px;color:#374151;">Years in practice is a context variable, not a quality signal. We include it for employer transparency, not scoring</li>
+        </ul>
+      </div>
+
+      <p style="font-size:14px;color:#6b7280;margin-top:16px;">Full detail coming soon. See the main treasure map doc for additional context.</p>
     </div>
 
     <!-- ==================== STEP 3 (stub) ==================== -->
@@ -880,7 +907,20 @@
         </div>
         <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">15% of composite</div>
       </div>
-      <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
+
+      <div class="section-title">Data sources</div>
+      <div class="source-card">
+        <table class="detail-table">
+          <tr><th>Source</th><th>What it gives us</th><th>Access</th><th>Refresh</th></tr>
+          <tr><td><strong>Medicare Utilization</strong></td><td>Procedure-level data (CPT codes, volumes, charges) per provider</td><td>CMS bulk download</td><td>Annual</td></tr>
+          <tr><td><strong>Medicaid T-MSIS</strong></td><td>State-level Medicaid claims and utilization</td><td>CMS / state portals</td><td>Varies</td></tr>
+          <tr><td><strong>PECOS</strong></td><td>Medicare billing patterns, enrollment type, practice affiliations. Cross-reference for provider-level Medicare participation context</td><td>CMS bulk download</td><td>Monthly</td></tr>
+          <tr><td><strong>Bundle taxonomy</strong></td><td>CPT-to-bundle mapping per specialty (internal)</td><td>Internal</td><td>As needed</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">PECOS was evaluated as a gate input in Step 1 and scoped out. Here it provides Medicare participation context for bundle-level scoring: which providers bill Medicare, what specialties they enrolled under, and how that maps to utilization patterns.</p>
+      </div>
+
+      <p style="font-size:14px;color:#6b7280;margin-top:16px;">Full detail coming soon. See the main treasure map doc for additional context.</p>
     </div>
 
     <!-- ==================== STEP 6 (stub) ==================== -->
@@ -900,13 +940,13 @@
     <div id="tab-s1report" class="tab-panel">
       <div class="page-header">
         <h1>Step 1 Report: Safety Gate</h1>
-        <div class="subtitle">OIG LEIE + PECOS exclusion check &middot; Completed March 2026</div>
+        <div class="subtitle">OIG LEIE exclusion check &middot; PECOS evaluated, kept as informational &middot; Completed March 2026</div>
       </div>
 
       <!-- 1 -->
       <div class="section-title">1. What we set out to do</div>
       <div class="source-card">
-        <p>Build the first layer of the safety gate: check whether a provider should be allowed into the Meroka marketplace at all. Binary pass/fail. We focused on two freely available federal datasets (LEIE and PECOS) because NPDB requires registration and state boards are a separate workstream.</p>
+        <p>Build the first layer of the safety gate: check whether a provider should be allowed into the Meroka marketplace at all. Binary pass/fail. We started with two freely available federal datasets (LEIE and PECOS) because NPDB requires registration and state boards are a separate workstream. After evaluation, LEIE became the gate driver and PECOS was scoped as informational context only.</p>
       </div>
 
       <!-- 2 -->
@@ -919,7 +959,7 @@
       <!-- 3 -->
       <div class="section-title">3. What we built</div>
       <div class="source-card">
-        <p>A Jupyter notebook that takes a list of provider NPIs, runs them against both datasets, and produces a pass/fail result per provider. We tested it on 210 NPIs: 200 clean providers from PECOS and 10 providers we knew were on the exclusion list.</p>
+        <p>A Jupyter notebook that takes a list of provider NPIs, runs them against the LEIE exclusion list, and produces a pass/fail result per provider. PECOS is loaded for informational context but does not affect the gate decision. We tested it on 210 NPIs: 200 clean providers sourced from PECOS and 10 providers we knew were on the exclusion list.</p>
       </div>
 
       <!-- 4 -->
@@ -948,10 +988,21 @@
       </div>
 
       <!-- 6 -->
-      <div class="section-title">6. What we decided about PECOS</div>
+      <div class="section-title">6. Why we removed PECOS from the gate</div>
       <div class="source-card">
-        <p>PECOS tells us whether a provider is actively enrolled in Medicare. All 10 of our excluded test providers were absent from PECOS, which makes sense: if you're federally banned, you're not billing Medicare.</p>
-        <p>But a provider NOT in PECOS isn't necessarily bad. They might just not bill Medicare (cash-pay, concierge, commercial insurance only). So we made PECOS informational, not a gate blocker. We flag the absence but don't fail on it.</p>
+        <p>We initially evaluated PECOS as a potential gate input. PECOS tells us whether a provider is actively enrolled in Medicare, and CMS does revoke enrollment for serious reasons (felony convictions, license loss, billing abuse). On the surface, it looks like a safety signal.</p>
+
+        <p style="margin-top:12px;"><strong>Why it doesn't work as a gate:</strong> Absence from PECOS doesn't indicate a problem. Many legitimate independent practices don't bill Medicare: concierge, cash-pay, commercial-only. These are exactly the providers Meroka is trying to serve. Failing them on PECOS absence would knock out good providers for no reason.</p>
+
+        <p style="margin-top:12px;">There's also a data limitation. The public PECOS extract only contains currently enrolled providers. We can't distinguish "never enrolled" (fine) from "was enrolled but got revoked" (bad) without historical snapshots or the separate CMS revocation files.</p>
+
+        <p style="margin-top:12px;"><strong>What we kept:</strong></p>
+        <ul style="margin-top:8px;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+          <li style="font-size:13px;color:#374151;">A <code>pecos_enrolled</code> informational flag in the output. Does not affect pass/fail.</li>
+          <li style="font-size:13px;color:#374151;">A cross-reference check: if a provider is LEIE-excluded but still shows as PECOS-enrolled, we flag that as a data integrity issue. It means CMS enrollment hasn't caught up to OIG's exclusion.</li>
+        </ul>
+
+        <p style="margin-top:12px;"><strong>Where PECOS goes from here:</strong> It's a real input for <strong>Step 2</strong> (specialty validation, enrollment history, practice affiliations) and <strong>Step 5b</strong> (Medicare billing patterns mapped to clinical bundles). PECOS earns its keep in quality, not in safety.</p>
       </div>
 
       <!-- 7 -->
@@ -959,7 +1010,7 @@
       <div class="source-card">
         <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 10 known-excluded NPIs correctly flagged as FAIL (Tier 1)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 200 clean PECOS providers correctly passed</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> All 200 clean providers (sourced from PECOS) correctly passed</li>
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> 5 name+DOB test cases (excluded individuals with no NPI) correctly caught (Tier 2)</li>
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> A fabricated name correctly passed (no false positive)</li>
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#15803d;font-weight:700;flex-shrink:0;">&#10003;</span> Spot-checked one excluded provider against raw LEIE data: name, exclusion type, and date all matched exactly</li>
@@ -1017,16 +1068,16 @@
         <table class="schema-table">
           <tr><th>Column</th><th>Type</th><th>Description</th></tr>
           <tr><td><code>NPI</code></td><td>string</td><td>10-digit provider identifier</td></tr>
-          <tr><td><code>gate_result</code></td><td>string</td><td>PASS or FAIL</td></tr>
+          <tr><td><code>gate_result</code></td><td>string</td><td>PASS or FAIL (driven by LEIE match only)</td></tr>
           <tr><td><code>match_method</code></td><td>string</td><td>"npi" (Tier 1), "name_dob" (Tier 2), or "no_match"</td></tr>
           <tr><td><code>confidence</code></td><td>string</td><td>"high" (NPI match) or "medium" (name+DOB match)</td></tr>
           <tr><td><code>leie_npi_match</code></td><td>boolean</td><td>True if NPI matched LEIE directly</td></tr>
           <tr><td><code>leie_name_dob_match</code></td><td>boolean</td><td>True if name+DOB matched LEIE (pre-2007 records)</td></tr>
-          <tr><td><code>pecos_enrolled</code></td><td>boolean</td><td>True if found in PECOS Medicare enrollment</td></tr>
+          <tr><td><code>pecos_enrolled</code></td><td>boolean</td><td>Informational only. True if found in PECOS. Does not affect gate. Absence is normal for non-Medicare practices.</td></tr>
           <tr><td><code>leie_excl_type</code></td><td>string</td><td>OIG exclusion type code</td></tr>
           <tr><td><code>leie_excl_date</code></td><td>string</td><td>Date of exclusion (YYYYMMDD)</td></tr>
         </table>
-        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Eng sets the confidence threshold in production. Both match paths are exposed so they can decide: auto-fail on high confidence, flag-for-review on medium.</p>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Eng sets the confidence threshold in production. Both match paths are exposed so they can decide: auto-fail on high confidence, flag-for-review on medium. Do not gate on <code>pecos_enrolled</code>.</p>
       </div>
 
     </div>
@@ -1049,7 +1100,7 @@
             <td>10-digit string</td>
             <td><span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S1</span></td>
             <td><strong>Yes</strong></td>
-            <td>Primary identifier. Matches against LEIE exclusion list (Tier 1) and PECOS enrollment. Every licensed provider has one.</td>
+            <td>Primary identifier. Matches against LEIE exclusion list (Tier 1). Also used for PECOS enrollment lookup (informational, not a gate input). Every licensed provider has one.</td>
           </tr>
           <tr>
             <td><strong>Legal last name</strong></td>

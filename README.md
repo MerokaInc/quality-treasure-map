@@ -1,4 +1,4 @@
-# Step 1 — Safety Gate: OIG LEIE + PECOS Exclusion Check
+# Step 1 — Safety Gate: OIG LEIE Exclusion Check
 
 ## Business question
 
@@ -11,10 +11,10 @@ If a provider is on the federal exclusion list (LEIE), any entity that pays them
 ## What this notebook does
 
 Takes a list of provider NPIs and checks each one against:
-1. **OIG LEIE** — is this provider federally excluded?
-2. **PECOS** — is this provider actively enrolled in Medicare?
+1. **OIG LEIE** — is this provider federally excluded? This is the gate.
+2. **PECOS** — is this provider actively enrolled in Medicare? **Informational only, not a gate blocker.** Many legitimate independent practices (concierge, cash-pay, commercial-only) don't bill Medicare.
 
-Produces a `gate_result` column: PASS or FAIL.
+Produces a `gate_result` column: PASS or FAIL (driven by LEIE match only).
 
 ## Data sources
 
@@ -37,8 +37,8 @@ Produces a `gate_result` column: PASS or FAIL.
 | `STATE` | str | State code |
 | `PROVIDER_TYPE` | str | Provider type description |
 | `leie_excluded` | bool | True if NPI is on the active LEIE exclusion list |
-| `pecos_enrolled` | bool | True if NPI appears in PECOS Medicare enrollment |
-| `gate_result` | str | PASS or FAIL |
+| `gate_result` | str | PASS or FAIL (driven by LEIE match only) |
+| `pecos_enrolled` | bool | Informational: True if NPI appears in PECOS Medicare enrollment. Not used in gate logic. |
 | `leie_excl_type` | str | OIG exclusion type code (if excluded) |
 | `leie_excl_date` | str | Date of exclusion, YYYYMMDD (if excluded) |
 
