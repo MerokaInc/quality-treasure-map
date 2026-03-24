@@ -1193,17 +1193,116 @@
 
     </div>
 
-    <!-- ==================== STEP 2 (stub) ==================== -->
+    <!-- ==================== STEP 2 ==================== -->
     <div id="tab-step2" class="tab-panel">
       <div class="step-header">
         <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S2</div>
         <div class="step-meta">
-          <h2>Clinical Quality (MIPS)</h2>
+          <h2>Government Quality Score (MIPS)</h2>
           <div class="tagline">Has the government independently assessed this provider's clinical quality?</div>
         </div>
         <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">20% of composite</div>
       </div>
-      <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
+
+      <!-- Objective -->
+      <div class="section-title">Objective</div>
+      <div class="logic-box">
+        <ul>
+          <li>Pull the CMS MIPS/QPP final score for each NPI. This is the only place where a federal agency has independently evaluated a provider's clinical quality</li>
+          <li>Produce a per-NPI output: QPP score (0-100), low-volume flag (yes/no), and a three-situation decision</li>
+          <li>Strong ERISA evidentiary value. An employer can point to a government-issued quality assessment as part of their fiduciary due diligence</li>
+        </ul>
+      </div>
+
+      <!-- Business logic -->
+      <div class="section-title">Business logic: three situations</div>
+      <div class="source-card" style="border-left:3px solid #16a34a;margin-bottom:12px;">
+        <div class="source-header">
+          <div class="source-num" style="background:#dcfce7;color:#15803d;">1</div>
+          <div>
+            <h4>Score present and strong</h4>
+            <div class="source-sub">Action: weight at 20% of composite</div>
+          </div>
+        </div>
+        <ul style="font-size:13px;color:#374151;line-height:1.8;">
+          <li>Provider has a MIPS final score and it's above a reasonable threshold</li>
+          <li>This is the strongest signal in the dimension. Use it at full weight</li>
+          <li>Example: NPI has MIPS score of 82/100 with quality and cost categories both reporting</li>
+        </ul>
+      </div>
+
+      <div class="source-card" style="border-left:3px solid #f59e0b;margin-bottom:12px;">
+        <div class="source-header">
+          <div class="source-num" style="background:#fef3c7;color:#b45309;">2</div>
+          <div>
+            <h4>No score (below low-volume threshold)</h4>
+            <div class="source-sub">Action: null out, redistribute weight to other dimensions</div>
+          </div>
+        </div>
+        <ul style="font-size:13px;color:#374151;line-height:1.8;">
+          <li>Provider falls below CMS thresholds: ~200 Medicare patients or ~$90k billed</li>
+          <li>This is a size signal, not a quality signal. Many indie practices are small or commercially focused</li>
+          <li>Not a penalty. Redistribute the 20% weight across other scored dimensions</li>
+          <li>Example: small primary care practice with 80% commercial patients has no MIPS score</li>
+        </ul>
+      </div>
+
+      <div class="source-card" style="border-left:3px solid #dc2626;margin-bottom:12px;">
+        <div class="source-header">
+          <div class="source-num" style="background:#fee2e2;color:#dc2626;">3</div>
+          <div>
+            <h4>Score present but low</h4>
+            <div class="source-sub">Action: cross-reference before penalizing</div>
+          </div>
+        </div>
+        <ul style="font-size:13px;color:#374151;line-height:1.8;">
+          <li>Provider has a MIPS score but it's below the threshold</li>
+          <li>Low MIPS alone doesn't mean bad care. MIPS has a heavy administrative burden and some good providers just don't report well</li>
+          <li><strong>Low MIPS + clean safety gate + good reviews</strong> = likely admin burden, don't penalize hard</li>
+          <li><strong>Low MIPS + sanctions or adverse actions + bad reviews</strong> = real quality flag, penalize</li>
+          <li>Example: rural OB-GYN with MIPS score of 35 but no disciplinary history and strong patient reviews. Likely reporting issue, not care issue</li>
+        </ul>
+      </div>
+
+      <!-- What to build -->
+      <div class="section-title">What needs to get built</div>
+      <div class="logic-box">
+        <ul>
+          <li><strong>Download QPP data:</strong> pull the CMS Provider Data Catalog MIPS file. Match on NPI. Extract final score, category scores (quality, cost, improvement activities, promoting interoperability), and low-volume flag</li>
+          <li><strong>Download Care Compare:</strong> pull QPP scores, telehealth flags, facility affiliations, procedure volume. Join to QPP data on NPI for enrichment</li>
+          <li><strong>Download Part B claims:</strong> billing volume and specialty consistency as supplementary validation. Helps confirm whether a provider is active and in what specialty</li>
+          <li><strong>Build three-situation logic:</strong> classify each NPI into one of the three situations. Document thresholds for "strong" vs "low" (e.g., below 50 = low, above 70 = strong, 50-70 = gray zone)</li>
+          <li><strong>Cross-reference hook:</strong> for situation 3 (low score), build a lookup against Step 1 (safety gate result) and eventually Step 5 (patient reviews) to decide whether to penalize or flag</li>
+          <li><strong>Output schema:</strong> one row per NPI with: <code>npi</code>, <code>mips_final_score</code>, <code>low_volume_flag</code>, <code>situation</code> (1/2/3), <code>dimension_score</code> (0-100), <code>category_scores</code>, <code>cross_ref_notes</code></li>
+        </ul>
+      </div>
+
+      <!-- Structural ceiling -->
+      <div class="section-title">Structural ceiling</div>
+      <div class="highlight" style="background:#fef9f0;border-left-color:#f59e0b;">
+        <strong>All CMS data is Medicare fee-for-service.</strong> A physician whose patients are commercially insured will look thin in CMS data because of who they treat, not how well they treat them. We can't engineer around this, but we can be transparent about it. This is the same limitation as Step 3 (utilization).
+      </div>
+
+      <!-- Data sources -->
+      <div class="section-title">Data sources</div>
+      <div class="source-card">
+        <table class="detail-table">
+          <tr><th>Source</th><th>What it gives us</th><th>Access</th><th>Refresh</th></tr>
+          <tr><td><strong>CMS QPP / Provider Data Catalog</strong></td><td>MIPS final score, category scores (quality, cost, improvement activities, promoting interoperability), low-volume flag</td><td>CMS bulk download</td><td>Annual (with lag)</td></tr>
+          <tr><td><strong>CMS Care Compare</strong></td><td>QPP scores, telehealth flags, facility affiliations, procedure volume</td><td>CMS API or bulk download</td><td>Quarterly</td></tr>
+          <tr><td><strong>Part B claims (supplementary)</strong></td><td>Billing volume, specialty consistency, practice activity</td><td>CMS bulk download</td><td>Annual</td></tr>
+        </table>
+      </div>
+
+      <!-- Eng handoff -->
+      <div class="section-title">Eng handoff</div>
+      <div class="logic-box">
+        <ul>
+          <li>Notebook with NPI-level QPP score, threshold flag (above/below low-volume), and the three-situation decision logic as documented rules</li>
+          <li>Output: one CSV/parquet per NPI with score, situation classification, and dimension score</li>
+          <li>Document which thresholds were chosen and why</li>
+        </ul>
+      </div>
     </div>
 
     <!-- ==================== STEP 3 ==================== -->
@@ -1215,6 +1314,45 @@
           <div class="tagline">What does this provider actually do, how much, and are there cost red flags at the bundle level?</div>
         </div>
         <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">20% of composite</div>
+      </div>
+
+      <!-- Objective -->
+      <div class="section-title">Objective</div>
+      <div class="logic-box">
+        <ul>
+          <li>Pull per-NPI procedure-level data from Medicare and Medicaid: what CPT/HCPCS codes they billed, how many services, at what charge levels, for how many patients</li>
+          <li>Map those codes to clinical bundles by specialty (e.g., OB-GYN: maternity CPTs to Maternity bundle, surgical CPTs to GYN Surgery, screening CPTs to Preventive)</li>
+          <li>Score each provider against specialty peers and clinical standards. Flag cost or volume outliers</li>
+          <li>This is what enables bundle-level scoring with public data. Instead of one flat composite per NPI, you can slice the score by clinical service line</li>
+        </ul>
+      </div>
+
+      <!-- What's done -->
+      <div class="section-title">What's already built (<a href="https://github.com/MerokaInc/quality-stream" style="color:#4f46e5;text-decoration:none;">quality-stream repo</a>)</div>
+      <div class="logic-box" style="border-left:3px solid #16a34a;">
+        <ul>
+          <li><strong>Data pipeline (notebook):</strong> Medicare (~2.9 GB CSV) + Medicaid T-MSIS (~2.7 GB parquet, 227M rows) joined at NPI + HCPCS level using DuckDB. Full EDA, schema harmonization, payer source labeling (Medicare Only / Medicaid Only / Both Payers)</li>
+          <li><strong>Proof of correctness:</strong> reusable <code>lookup_npi()</code> function. Verified end-to-end with Dr. Brandon M. Lingenfelter (NPI 1790045821, OB-GYN, WV)</li>
+          <li><strong>CPT quality intelligence mapping:</strong> 6 clinical domains, 20+ CPT codes, each with 3-4 quality formulas (red/yellow/green/blue flags). Domains: Prenatal &amp; Global OB, Cervical Screening &amp; Colposcopy, Surgical, Preventive &amp; Well-Woman, Lab Utilization, E/M &amp; Billing Integrity</li>
+          <li><strong>Clinical standards mapped:</strong> ACOG Practice Bulletins (prenatal cadence, GDM screening at 24-28w, depression screening), HEDIS measure specs (PPC, CCS, CHL, PND-E, PDS-E with CPT value sets), Joint Commission Perinatal (PC-01, PC-02), ASCCP cervical screening guidelines, CMS E/M benchmarks</li>
+          <li><strong>7-step claims validation process:</strong> data integrity checks, prenatal care completeness (HEDIS PPC), C-section &amp; delivery quality (NTSV rate), surgical quality (MIS rate), lab utilization outliers, E/M billing integrity, bundle score updates</li>
+          <li><strong>Scoring framework UI:</strong> Next.js dashboard with 4 quality dimensions (Clinical Quality 40%, Service Accessibility 25%, Bedside Manner 20%, Comfort &amp; Accessibility 15%). Each dimension has Reality/Standard/Delta/Context structure documented</li>
+          <li><strong>Provider dashboard (proof of concept):</strong> full interactive dashboard for Dr. Lingenfelter showing credential flags, CPT quality intelligence by clinical domain, and scoring methodology</li>
+        </ul>
+      </div>
+
+      <!-- What still needs to get built -->
+      <div class="section-title">What still needs to get built</div>
+      <div class="logic-box" style="border-left:3px solid #f59e0b;">
+        <ul>
+          <li><strong>Compute actual dimension scores:</strong> the five-dimension scoring model (ACOG Concordance, Peer Comparison, Volume Adequacy, Billing Quality, Payer Diversity) is documented but not yet computed from real claims data. Need to wire the formulas to the joined dataset</li>
+          <li><strong>Prioritize ACOG Concordance + Peer Comparison first:</strong> strongest clinical signals, simplest logic. ACOG is a binary check per category (did they bill at least one code in each of five preventive buckets?). Peer Comparison counts coverage of the 25 most common OB-GYN codes. Volume Adequacy follows once categories are mapped</li>
+          <li><strong>Build peer benchmark distributions:</strong> for each specialty, compute peer cohort stats (p10, p25, median, p75, p90) for code coverage, volume ratios, and charge ratios from the 17,962 OB-GYN NPIs in the 2023 data</li>
+          <li><strong>Dynamic provider lookup:</strong> currently hardcoded to one NPI. Need to generalize scoring to run across all NPIs in a specialty cohort and produce per-NPI output</li>
+          <li><strong>Bundle taxonomy for additional specialties:</strong> OB-GYN proof of concept exists. Need to define CPT-to-bundle mappings for primary care, pediatrics, orthopedics</li>
+          <li><strong>Output as notebook for eng handoff:</strong> consolidate the scoring pipeline into a standalone notebook that produces per-NPI, per-bundle scores as CSV/parquet. Format: <code>npi</code>, <code>specialty</code>, <code>bundle</code>, <code>dimension_scores</code>, <code>composite_score</code>, <code>peer_flags</code>, <code>cost_flags</code></li>
+          <li><strong>Connect to Step 2 (MIPS):</strong> for the cross-reference in Step 2's "low score" situation, the utilization profile provides context on whether a low MIPS score reflects admin burden vs. actual quality gaps</li>
+        </ul>
       </div>
 
       <!-- Methodology overview -->
