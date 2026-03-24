@@ -59,69 +59,97 @@
   .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #9ca3af; margin-bottom: 14px; margin-top: 40px; }
   .section-title:first-of-type { margin-top: 0; }
 
-  /* Gate card */
-  .gate-card {
-    background: #fff; border: 2px solid #16a34a; border-radius: 12px; padding: 24px;
-    margin-bottom: 12px;
+  /* Flow pipeline */
+  .flow-pipeline {
+    position: relative; padding-left: 28px; margin-bottom: 16px;
   }
-  .gate-card .badge { background: #f0fdf4; color: #15803d; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 8px; }
-  .gate-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
-  .gate-card .desc { font-size: 14px; color: #6b7280; }
-  .gate-card .logic { font-size: 13px; color: #374151; margin-top: 12px; }
-  .gate-card .logic strong { color: #15803d; }
-  .gate-data { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .gate-data .tag { background: #f0f0ff; color: #4338ca; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 6px; }
-  .gate-data .tag.done { background: #dcfce7; color: #15803d; }
-
-  /* Connector */
-  .connector { display: flex; align-items: center; padding: 8px 0; }
-  .connector .arrow { width: 2px; height: 28px; background: #d1d5db; position: relative; }
-  .connector .arrow::after { content: ''; position: absolute; bottom: -4px; left: -4px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #d1d5db; }
-  .connector .label { font-size: 11px; color: #9ca3af; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; margin-left: 12px; }
-
-  /* Dimensions grid */
-  .dimensions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-  @media (max-width: 700px) { .dimensions-grid { grid-template-columns: 1fr; } }
-
-  .dim-card {
-    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;
-    position: relative; transition: box-shadow 0.15s; cursor: pointer;
+  .flow-pipeline::before {
+    content: ''; position: absolute; left: 11px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(180deg, #16a34a 0%, #16a34a 15%, #6366f1 30%, #6366f1 70%, #d1d5db 85%, #d1d5db 100%);
   }
-  .dim-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-color: #c7d2fe; }
-  .dim-card .weight { position: absolute; top: 16px; right: 16px; font-size: 22px; font-weight: 700; color: #d1d5db; }
-  .dim-card .step-num { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
-  .dim-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-  .dim-card .question { font-size: 13px; color: #6b7280; font-style: italic; margin-bottom: 10px; }
-  .dim-card .data-sources { display: flex; gap: 6px; flex-wrap: wrap; }
-  .dim-card .data-sources .src { background: #f3f4f6; color: #374151; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 100px; }
-  .dim-card .logic-note { font-size: 12px; color: #6b7280; margin-top: 10px; border-top: 1px solid #f3f4f6; padding-top: 8px; }
 
-  .phase2-card {
-    background: #fff; border: 1px dashed #d1d5db; border-radius: 12px; padding: 20px;
-    grid-column: 1 / -1; opacity: 0.7;
+  .flow-node {
+    position: relative; margin-bottom: 6px; cursor: pointer;
+    transition: transform 0.12s ease;
   }
-  .phase2-card .badge { background: #f3f4f6; color: #6b7280; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 6px; }
-  .phase2-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #6b7280; }
-  .phase2-card .desc { font-size: 13px; color: #9ca3af; }
-
-  /* Progress bars */
-  .progress-wrap { margin-top: 12px; }
-  .progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-  .progress-label .pl-text { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
-  .progress-label .pl-pct { font-size: 11px; font-weight: 700; }
-  .progress-bar { width: 100%; height: 6px; background: #f3f4f6; border-radius: 100px; overflow: hidden; }
-  .progress-bar .fill { height: 100%; border-radius: 100px; transition: width 0.4s ease; }
-
-  /* Composite */
-  .composite-card {
-    background: #1a1a2e; color: #fff; border-radius: 12px; padding: 28px; text-align: center; margin-bottom: 12px;
+  .flow-node:hover { transform: translateX(3px); }
+  .flow-node::before {
+    content: ''; position: absolute; left: -22px; top: 16px;
+    width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff;
+    box-shadow: 0 0 0 1px #d1d5db;
   }
-  .composite-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-  .composite-card .desc { font-size: 14px; color: #9ca3af; }
-  .composite-card .weights { display: flex; justify-content: center; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
-  .composite-card .weights .w { text-align: center; }
-  .composite-card .weights .w .pct { font-size: 20px; font-weight: 700; color: #60a5fa; }
-  .composite-card .weights .w .lbl { font-size: 11px; color: #9ca3af; display: block; margin-top: 2px; }
+  .flow-node.gate::before { background: #16a34a; box-shadow: 0 0 0 1px #16a34a; }
+  .flow-node.mvp::before { background: #6366f1; box-shadow: 0 0 0 1px #6366f1; }
+  .flow-node.deferred::before { background: #d1d5db; box-shadow: 0 0 0 1px #d1d5db; }
+  .flow-node.output::before { background: #1a1a2e; box-shadow: 0 0 0 1px #1a1a2e; width: 14px; height: 14px; left: -23px; top: 15px; }
+
+  .flow-inner {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+    padding: 14px 18px; display: flex; align-items: center; gap: 16px;
+  }
+  .flow-node.gate .flow-inner { border-color: #16a34a; border-width: 2px; }
+  .flow-node.mvp .flow-inner { border-color: #c7d2fe; }
+  .flow-node.deferred .flow-inner { opacity: 0.55; }
+  .flow-node.output .flow-inner {
+    background: #1a1a2e; border-color: #1a1a2e; color: #fff;
+  }
+
+  .flow-step-badge {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; letter-spacing: 0.3px;
+  }
+  .flow-step-badge.gate-badge { background: #dcfce7; color: #15803d; }
+  .flow-step-badge.mvp-badge { background: #eef2ff; color: #4f46e5; }
+  .flow-step-badge.deferred-badge { background: #f3f4f6; color: #9ca3af; }
+  .flow-step-badge.output-badge { background: rgba(255,255,255,0.1); color: #60a5fa; }
+
+  .flow-body { flex: 1; min-width: 0; }
+  .flow-body h3 { font-size: 15px; font-weight: 600; margin: 0 0 2px; }
+  .flow-node.output .flow-body h3 { color: #fff; }
+  .flow-body .flow-desc { font-size: 12px; color: #6b7280; margin: 0; line-height: 1.5; }
+  .flow-node.output .flow-body .flow-desc { color: #9ca3af; }
+
+  .flow-right {
+    flex-shrink: 0; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  }
+  .flow-tag {
+    font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 100px;
+    text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+  }
+  .flow-tag.mvp { background: #eef2ff; color: #4f46e5; }
+  .flow-tag.done { background: #dcfce7; color: #15803d; }
+  .flow-tag.later { background: #f3f4f6; color: #9ca3af; }
+  .flow-weight { font-size: 18px; font-weight: 700; color: #d1d5db; }
+  .flow-node.output .flow-weight { color: #60a5fa; }
+
+  .flow-sources {
+    display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;
+  }
+  .flow-sources .src {
+    background: #f3f4f6; color: #6b7280; font-size: 10px; font-weight: 500;
+    padding: 1px 8px; border-radius: 100px;
+  }
+  .flow-node.output .flow-sources .src { background: rgba(255,255,255,0.08); color: #9ca3af; }
+
+  .flow-progress {
+    margin-top: 6px; display: flex; align-items: center; gap: 8px;
+  }
+  .flow-progress-bar {
+    flex: 1; height: 4px; background: #f3f4f6; border-radius: 100px; overflow: hidden;
+  }
+  .flow-progress-bar .fill { height: 100%; border-radius: 100px; }
+  .flow-progress-pct { font-size: 10px; font-weight: 700; flex-shrink: 0; }
+
+  .flow-connector-label {
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
+    color: #9ca3af; padding: 4px 0 4px 6px; margin: 0;
+  }
+
+  @media (max-width: 700px) {
+    .flow-inner { flex-wrap: wrap; gap: 10px; }
+    .flow-right { align-items: flex-start; flex-direction: row; gap: 8px; }
+  }
 
   /* Open questions */
   .questions { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
@@ -420,147 +448,170 @@
 
       <div class="section-title">The flow: NPI enters, quality score comes out</div>
 
-      <div class="gate-card" style="cursor:pointer;" onclick="showTab('step1', document.querySelector('.nav-item.gate'))">
-        <div class="badge">Pre-check gate</div>
-        <span style="background:#eef2ff;color:#4f46e5;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;margin-left:8px;">MVP</span>
-        <h3>Step 1. Safety Gate</h3>
-        <div class="desc">Should this provider be in the marketplace at all?</div>
-        <div class="logic">Binary check: <strong>pass = scored</strong>, <strong>fail = excluded</strong>. No weighting, no partial credit.</div>
-        <div class="gate-data">
-          <span class="tag done">OIG LEIE exclusion list &#10003;</span>
-          <span class="tag done">PECOS &mdash; informational only &#10003;</span>
-          <span class="tag done">State medical board (WV) &#10003;</span>
-          <span class="tag" style="background:#fef9f0;color:#92400e;">State medical board (MA) &mdash; pending</span>
-          <span class="tag" style="background:#fef9f0;color:#92400e;">NPDB &mdash; deferred (registration blocker)</span>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label">
-            <span class="pl-text">LEIE done. PECOS evaluated. WV state board done. MA pending records request. NPDB deferred.</span>
-            <span class="pl-pct" style="color:#16a34a;">80%</span>
-          </div>
-          <div class="progress-bar"><div class="fill" style="width:80%;background:#16a34a;"></div></div>
-        </div>
-      </div>
+      <div class="flow-pipeline">
 
-      <div class="connector"><div class="arrow"></div><span class="label">Pass &rarr; proceed to scoring</span></div>
-
-      <div class="dimensions-grid">
-        <div class="dim-card" onclick="showTab('step5', document.querySelectorAll('.nav-item.step')[3])" style="border-color:#c7d2fe;">
-          <div class="weight">20%</div>
-          <div class="step-num">Step 5 <span style="background:#eef2ff;color:#4f46e5;font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;margin-left:4px;">MVP</span></div>
-          <h3>Government Quality Score (MIPS)</h3>
-          <div class="question">Has the government assessed this provider's quality?</div>
-          <div class="data-sources">
-            <span class="src">CMS QPP</span><span class="src">Care Compare</span><span class="src">Part B claims</span>
-          </div>
-          <div class="logic-note">Three situations: strong score &rarr; weight it. No score &rarr; null (size signal). Low score &rarr; cross-reference first.</div>
-          <div class="progress-wrap">
-            <div class="progress-label">
-              <span class="pl-text">Not started</span>
-              <span class="pl-pct" style="color:#9ca3af;">0%</span>
+        <!-- Step 1: Safety Gate -->
+        <div class="flow-node gate" onclick="showTab('step1', document.querySelector('.nav-item.gate'))">
+          <div class="flow-inner">
+            <div class="flow-step-badge gate-badge">S1</div>
+            <div class="flow-body">
+              <h3>Safety Gate</h3>
+              <p class="flow-desc">Binary pass/fail. OIG LEIE, state boards, PECOS informational. Fail = excluded.</p>
+              <div class="flow-sources">
+                <span class="src">OIG LEIE &#10003;</span>
+                <span class="src">PECOS &#10003;</span>
+                <span class="src">WV board &#10003;</span>
+                <span class="src" style="opacity:0.5;">MA pending</span>
+                <span class="src" style="opacity:0.5;">NPDB deferred</span>
+              </div>
+              <div class="flow-progress">
+                <div class="flow-progress-bar"><div class="fill" style="width:80%;background:#16a34a;"></div></div>
+                <span class="flow-progress-pct" style="color:#16a34a;">80%</span>
+              </div>
             </div>
-            <div class="progress-bar"><div class="fill" style="width:0%;background:#6366f1;"></div></div>
-          </div>
-        </div>
-
-        <div class="dim-card" onclick="showTab('step6', document.querySelectorAll('.nav-item.step')[4])" style="border-color:#c7d2fe;">
-          <div class="weight">20%</div>
-          <div class="step-num">Step 6 <span style="background:#eef2ff;color:#4f46e5;font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;margin-left:4px;">MVP</span></div>
-          <h3>Utilization &amp; Bundle Profiling</h3>
-          <div class="question">What does this provider actually do, and are there cost or volume red flags?</div>
-          <div class="data-sources">
-            <span class="src">Medicare Utilization</span><span class="src" style="opacity:0.5;text-decoration:line-through;">Medicaid T-MSIS (unavailable)</span><span class="src">Bundle taxonomy (internal)</span>
-          </div>
-          <div class="logic-note">Medicare-only for MVP. CPT-to-bundle mapping per specialty. Claims-quality framework proven for OB-GYN.</div>
-          <div class="progress-wrap">
-            <div class="progress-label">
-              <span class="pl-text">Framework built (OB-GYN proof of concept)</span>
-              <span class="pl-pct" style="color:#f59e0b;">20%</span>
+            <div class="flow-right">
+              <span class="flow-tag mvp">MVP</span>
+              <span style="font-size:11px;color:#15803d;font-weight:600;">Gate</span>
             </div>
-            <div class="progress-bar"><div class="fill" style="width:20%;background:#f59e0b;"></div></div>
           </div>
         </div>
 
-        <div class="dim-card" onclick="showTab('step2', document.querySelectorAll('.nav-item.step')[0])" style="opacity:0.6;">
-          <div class="weight">20%</div>
-          <div class="step-num">Step 2 <span style="background:#f3f4f6;color:#9ca3af;font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;margin-left:4px;">60 days</span></div>
-          <h3>Credentials &amp; Training</h3>
-          <div class="question">Is this provider qualified in their claimed specialty?</div>
-          <div class="data-sources">
-            <span class="src">NPPES (MVP plumbing)</span><span class="src" style="opacity:0.5;">ABMS (paid, 60 days)</span><span class="src">PECOS</span>
-          </div>
-          <div class="logic-note">NPPES used as provider identity layer in MVP. Full scoring (ABMS board cert) at 60 days.</div>
-          <div class="progress-wrap">
-            <div class="progress-label">
-              <span class="pl-text">NPPES as plumbing only for MVP</span>
-              <span class="pl-pct" style="color:#9ca3af;">0%</span>
+        <p class="flow-connector-label">Pass &rarr; proceed to scoring</p>
+
+        <!-- Step 5: MIPS -->
+        <div class="flow-node mvp" onclick="showTab('step5', document.querySelectorAll('.nav-item.step')[3])">
+          <div class="flow-inner">
+            <div class="flow-step-badge mvp-badge">S5</div>
+            <div class="flow-body">
+              <h3>Government Quality Score (MIPS)</h3>
+              <p class="flow-desc">QPP scores. Three situations: strong &rarr; weight, absent &rarr; null, low &rarr; cross-reference.</p>
+              <div class="flow-sources">
+                <span class="src">CMS QPP</span><span class="src">Care Compare</span><span class="src">Part B claims</span>
+              </div>
+              <div class="flow-progress">
+                <div class="flow-progress-bar"><div class="fill" style="width:0%;background:#6366f1;"></div></div>
+                <span class="flow-progress-pct" style="color:#9ca3af;">0%</span>
+              </div>
             </div>
-            <div class="progress-bar"><div class="fill" style="width:0%;background:#6366f1;"></div></div>
-          </div>
-        </div>
-
-        <div class="dim-card" onclick="showTab('step3', document.querySelectorAll('.nav-item.step')[1])" style="opacity:0.6;">
-          <div class="weight">20%</div>
-          <div class="step-num">Step 3 <span style="background:#f3f4f6;color:#9ca3af;font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;margin-left:4px;">90 days</span></div>
-          <h3>Patient Experience</h3>
-          <div class="question">What do patients actually say about this provider?</div>
-          <div class="data-sources">
-            <span class="src" style="opacity:0.5;">Google</span><span class="src" style="opacity:0.5;">Healthgrades</span><span class="src" style="opacity:0.5;">Doximity</span>
-          </div>
-          <div class="logic-note">Deferred. All sources require APIs, scraping, or partnerships. Legal questions unresolved.</div>
-          <div class="progress-wrap">
-            <div class="progress-label">
-              <span class="pl-text">Deferred (API/scraping blockers)</span>
-              <span class="pl-pct" style="color:#9ca3af;">&mdash;</span>
+            <div class="flow-right">
+              <span class="flow-tag mvp">MVP</span>
+              <span class="flow-weight">20%</span>
             </div>
-            <div class="progress-bar"><div class="fill" style="width:0%;background:#d1d5db;"></div></div>
           </div>
         </div>
 
-        <div class="dim-card" onclick="showTab('step4', document.querySelectorAll('.nav-item.step')[2])" style="opacity:0.6;">
-          <div class="weight">20%</div>
-          <div class="step-num">Step 4 <span style="background:#f3f4f6;color:#9ca3af;font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;margin-left:4px;">60 days</span></div>
-          <h3>Access &amp; Availability</h3>
-          <div class="question">Can patients actually get seen?</div>
-          <div class="data-sources">
-            <span class="src" style="opacity:0.5;">Practice onboarding (self-report)</span>
-          </div>
-          <div class="logic-note">Deferred. Needs onboarding form built in product. Schema deliverable at 60 days.</div>
-          <div class="progress-wrap">
-            <div class="progress-label">
-              <span class="pl-text">Deferred (needs product build)</span>
-              <span class="pl-pct" style="color:#9ca3af;">&mdash;</span>
+        <!-- Step 6: Utilization -->
+        <div class="flow-node mvp" onclick="showTab('step6', document.querySelectorAll('.nav-item.step')[4])">
+          <div class="flow-inner">
+            <div class="flow-step-badge mvp-badge">S6</div>
+            <div class="flow-body">
+              <h3>Utilization &amp; Bundle Profiling</h3>
+              <p class="flow-desc">Medicare utilization scored via claims-quality framework. OB-GYN proof of concept built.</p>
+              <div class="flow-sources">
+                <span class="src">Medicare Utilization</span><span class="src">Bundle taxonomy</span><span class="src" style="opacity:0.4;text-decoration:line-through;">Medicaid T-MSIS</span>
+              </div>
+              <div class="flow-progress">
+                <div class="flow-progress-bar"><div class="fill" style="width:20%;background:#f59e0b;"></div></div>
+                <span class="flow-progress-pct" style="color:#f59e0b;">20%</span>
+              </div>
             </div>
-            <div class="progress-bar"><div class="fill" style="width:0%;background:#d1d5db;"></div></div>
-          </div>
-        </div>
-
-        <div class="phase2-card">
-          <div class="badge">Phase 2</div>
-          <h3>Step 7. Clinical Outcomes</h3>
-          <div class="desc">Care journey, preventive care, readmissions. Requires live employer claims data. Gold standard, unweighted until claims flow.</div>
-          <div class="progress-wrap" style="margin-top:12px;">
-            <div class="progress-label">
-              <span class="pl-text">Phase 2</span>
-              <span class="pl-pct" style="color:#9ca3af;">&mdash;</span>
+            <div class="flow-right">
+              <span class="flow-tag mvp">MVP</span>
+              <span class="flow-weight">20%</span>
             </div>
-            <div class="progress-bar"><div class="fill" style="width:0%;background:#d1d5db;"></div></div>
           </div>
         </div>
-      </div>
 
-      <div class="connector"><div class="arrow"></div><span class="label">MVP dimensions combine</span></div>
+        <p class="flow-connector-label">Coming at 60-90 days</p>
 
-      <div class="composite-card">
-        <h3>Quality Score 1.0</h3>
-        <div class="desc">MVP: MIPS + Utilization. One score per NPI from downloadable federal data.</div>
-        <div class="weights">
-          <div class="w"><span class="pct" style="color:#60a5fa;">20%</span><span class="lbl">MIPS</span></div>
-          <div class="w"><span class="pct" style="color:#60a5fa;">20%</span><span class="lbl">Utilization</span></div>
-          <div class="w" style="opacity:0.35;"><span class="pct">20%</span><span class="lbl">Credentials</span></div>
-          <div class="w" style="opacity:0.35;"><span class="pct">20%</span><span class="lbl">Patient Exp.</span></div>
-          <div class="w" style="opacity:0.35;"><span class="pct">20%</span><span class="lbl">Access</span></div>
+        <!-- Step 2: Credentials -->
+        <div class="flow-node deferred" onclick="showTab('step2', document.querySelectorAll('.nav-item.step')[0])">
+          <div class="flow-inner">
+            <div class="flow-step-badge deferred-badge">S2</div>
+            <div class="flow-body">
+              <h3>Credentials &amp; Training</h3>
+              <p class="flow-desc">NPPES as plumbing in MVP. Full scoring (ABMS board cert) at 60 days.</p>
+              <div class="flow-sources">
+                <span class="src">NPPES (plumbing)</span><span class="src" style="opacity:0.4;">ABMS (paid)</span><span class="src">PECOS</span>
+              </div>
+            </div>
+            <div class="flow-right">
+              <span class="flow-tag later">60 days</span>
+              <span class="flow-weight">20%</span>
+            </div>
+          </div>
         </div>
+
+        <!-- Step 3: Patient Experience -->
+        <div class="flow-node deferred" onclick="showTab('step3', document.querySelectorAll('.nav-item.step')[1])">
+          <div class="flow-inner">
+            <div class="flow-step-badge deferred-badge">S3</div>
+            <div class="flow-body">
+              <h3>Patient Experience</h3>
+              <p class="flow-desc">Deferred. All sources need APIs, scraping, or partnerships.</p>
+              <div class="flow-sources">
+                <span class="src" style="opacity:0.4;">Google</span><span class="src" style="opacity:0.4;">Healthgrades</span><span class="src" style="opacity:0.4;">Doximity</span>
+              </div>
+            </div>
+            <div class="flow-right">
+              <span class="flow-tag later">90 days</span>
+              <span class="flow-weight">20%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Access -->
+        <div class="flow-node deferred" onclick="showTab('step4', document.querySelectorAll('.nav-item.step')[2])">
+          <div class="flow-inner">
+            <div class="flow-step-badge deferred-badge">S4</div>
+            <div class="flow-body">
+              <h3>Access &amp; Availability</h3>
+              <p class="flow-desc">Deferred. Needs onboarding form built in product.</p>
+              <div class="flow-sources">
+                <span class="src" style="opacity:0.4;">Practice onboarding (self-report)</span>
+              </div>
+            </div>
+            <div class="flow-right">
+              <span class="flow-tag later">60 days</span>
+              <span class="flow-weight">20%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 7: Clinical Outcomes -->
+        <div class="flow-node deferred" onclick="showTab('step7', document.querySelectorAll('.nav-item.phase2')[0])">
+          <div class="flow-inner" style="border-style:dashed;">
+            <div class="flow-step-badge deferred-badge">S7</div>
+            <div class="flow-body">
+              <h3>Clinical Outcomes</h3>
+              <p class="flow-desc">Requires live employer claims data. Gold standard, unweighted until claims flow.</p>
+            </div>
+            <div class="flow-right">
+              <span class="flow-tag later">Phase 2</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="flow-connector-label">All scored dimensions combine</p>
+
+        <!-- Output: Composite -->
+        <div class="flow-node output">
+          <div class="flow-inner">
+            <div class="flow-step-badge output-badge">&Sigma;</div>
+            <div class="flow-body">
+              <h3>Quality Score 1.0</h3>
+              <p class="flow-desc">MVP: MIPS + Utilization. One score per NPI from downloadable federal data.</p>
+              <div class="flow-sources">
+                <span class="src" style="color:#60a5fa;">MIPS 20%</span>
+                <span class="src" style="color:#60a5fa;">Utilization 20%</span>
+                <span class="src" style="opacity:0.35;">Credentials 20%</span>
+                <span class="src" style="opacity:0.35;">Patient Exp. 20%</span>
+                <span class="src" style="opacity:0.35;">Access 20%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
 
