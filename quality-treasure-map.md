@@ -15,16 +15,16 @@ We're building a marketplace where employers direct contract with independent pr
 | 2 | Credentials & training | Board cert, med school, years in practice from NPPES, ABMS, PECOS | 25% |
 | 3 | Patient experience | Normalised review scores from Google, Healthgrades, Doximity | 25% |
 | 4 | Access & availability | Practice-reported onboarding fields (hours, wait times, telehealth, languages) | 15% |
-| 5 | Clinical quality (MIPS) | QPP scores where available, three-situation logic for present/absent/low | 20% |
-| 5b | CMS utilization & bundles | Medicare + Medicaid procedure-level data mapped to clinical bundles per specialty | 15% |
-| 6 | Clinical outcomes | Claims-based metrics from employer data. Phase 2, not required for initial bar | Phase 2 |
+| 5 | Government quality score (MIPS) | QPP scores where available, three-situation logic for present/absent/low | 20% |
+| 6 | Utilization & bundle profiling | Medicare + Medicaid procedure-level data mapped to clinical bundles per specialty | 15% |
+| 7 | Clinical outcomes | Claims-based metrics from employer data. Phase 2, not required for initial bar | Phase 2 |
 
 ### Timeline
 
 | Window | Deliverables |
 |--------|-------------|
 | 30 days (mid-April) | Steps 1-4 as notebooks to eng. Clara delivers ERISA methodology |
-| 60 days (mid-May) | Steps 5 + 5b delivered. Bundle taxonomy defined. Composite score v1. Eng productionises all dimensions. API endpoint live |
+| 60 days (mid-May) | Steps 5 + 6 delivered. Bundle taxonomy defined. Composite score v1. Eng productionises all dimensions. API endpoint live |
 | 90 days (mid-June) | Clinical outcomes schema designed. Safety gate monitoring automated. Score validation complete. Slack agent live |
 
 Clara's parallel workstream defines what quality evidence satisfies ERISA fiduciary duty, documents the methodology for the employer-facing product, and identifies legal thresholds that gate marketplace inclusion.
@@ -45,7 +45,7 @@ What follows is the workstream broken into concrete steps, with data sources, bu
 
 ## 2. The workstream
 
-Seven steps. Ordered by dependency and priority. Steps 1-4 are the 30-day target. Steps 5 and 5b follow at 60 days. Step 6 is Phase 2.
+Seven steps. Ordered by dependency and priority. Steps 1-4 are the 30-day target. Steps 5 and 6 follow at 60 days. Step 7 is Phase 2.
 
 ---
 
@@ -160,7 +160,7 @@ What it answers: can patients actually get to this provider and get seen?
 
 ---
 
-### Step 5. Clinical quality (MIPS)
+### Step 5. Government quality score (MIPS)
 
 > **QPP score + threshold flag per NPI. Three-situation logic. Weight: 20% of composite score.**
 
@@ -188,7 +188,7 @@ What it answers: has the government independently assessed this provider's clini
 
 ---
 
-### Step 5b. CMS utilization & bundle scoring
+### Step 6. Utilization & bundle profiling
 
 > **Per-CPT procedure volume, cost patterns, and clinical bundle mapping per NPI. Weight: 15% of composite score.**
 
@@ -216,7 +216,7 @@ What it answers: what does this provider actually do, how much of it, and are th
 
 ---
 
-### Step 6. Clinical outcomes (Phase 2)
+### Step 7. Clinical outcomes (Phase 2)
 
 > **Care journey, preventive care, readmissions. Unweighted until employer claims data is live. Not required for initial bar.**
 
@@ -246,9 +246,9 @@ Phase 2. We can't build it until we have employer claims data flowing, which req
 
 | Deliverable | Owner |
 |------------|-------|
-| Step 5, MIPS / clinical quality: QPP score per NPI with three-situation logic, cross-referenced against credentials and reviews. Notebook to eng | Othmane + Antoine |
-| Step 5b, CMS utilization & bundle scoring: Medicare + Medicaid procedure-level data mapped to clinical bundles. Bundle taxonomy defined. Notebook to eng | Antoine + Othmane + Clara |
-| Composite score v1: first full composite combining steps 1-5b. Weighting validated against sample NPI cohort. Bundle-level slicing enabled | Antoine |
+| Step 5, government quality score (MIPS): QPP score per NPI with three-situation logic, cross-referenced against credentials and reviews. Notebook to eng | Othmane + Antoine |
+| Step 6, utilization & bundle profiling: Medicare + Medicaid procedure-level data mapped to clinical bundles. Bundle taxonomy defined. Notebook to eng | Antoine + Othmane + Clara |
+| Composite score v1: first full composite combining steps 1-6. Weighting validated against sample NPI cohort. Bundle-level slicing enabled | Antoine |
 | Eng integration: all dimension notebooks productionised. API endpoint serving NPI-level quality data | Eng team |
 | ERISA integration: methodology visible in product. Legal thresholds for marketplace inclusion defined | Clara + Product |
 
@@ -256,7 +256,7 @@ Phase 2. We can't build it until we have employer claims data flowing, which req
 
 | Deliverable | Owner |
 |------------|-------|
-| Step 6, clinical outcomes design: schema and methodology for claims-based outcomes scoring. Ready when claims data is live | Antoine + Othmane |
+| Step 7, clinical outcomes design: schema and methodology for claims-based outcomes scoring. Ready when claims data is live | Antoine + Othmane |
 | Safety gate monitoring: automated refresh cadence for NPDB / PECOS / state boards. Alerting for status changes | Eng team |
 | Score validation: back-test composite scores against known quality signals. Identify edge cases. Adjust weights if needed | Antoine + Clara |
 | Slack agent (#m-alpha-agent): natural language interface querying quality DB via API endpoint. Internal tool for team | Eng team |
@@ -332,6 +332,6 @@ Each dimension is a separate handoff. We don't bundle them. Eng can productionis
 | Review platform rights: Google API limits, Healthgrades/Doximity scraping legality. Partnership? | Step 3 feasibility |
 | MIPS low-volume: neutral signal or slight negative? | Step 5 scoring logic |
 | Composite weights (25/25/20/15/15): validate against employer priorities or ship and adjust? | Composite methodology |
-| Medicaid Provider Spending dataset: currently unavailable on HHS Open Data portal. Medicare-only fallback until then | Step 5b data completeness |
-| Bundle taxonomy granularity: top 3-5 bundles per specialty, or comprehensive from day one? | Step 5b scope |
+| Medicaid Provider Spending dataset: currently unavailable on HHS Open Data portal. Medicare-only fallback until then | Step 6 data completeness |
+| Bundle taxonomy granularity: top 3-5 bundles per specialty, or comprehensive from day one? | Step 6 scope |
 | Safety gate refresh cadence: what interval satisfies the monitoring obligation? | Legal exposure (Hecht v. Cigna) |
