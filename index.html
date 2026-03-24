@@ -352,31 +352,31 @@
 
       <button class="nav-item step" onclick="showTab('step2', this)">
         <span class="nav-icon">S2</span>
-        Credentials
+        MIPS
         <span class="nav-weight">20%</span>
       </button>
 
       <button class="nav-item step" onclick="showTab('step3', this)">
         <span class="nav-icon">S3</span>
-        Patient Exp.
+        Utilization
         <span class="nav-weight">20%</span>
       </button>
 
       <button class="nav-item step" onclick="showTab('step4', this)">
         <span class="nav-icon">S4</span>
-        Access
+        Credentials
         <span class="nav-weight">20%</span>
       </button>
 
       <button class="nav-item step" onclick="showTab('step5', this)">
         <span class="nav-icon">S5</span>
-        MIPS
+        Patient Exp.
         <span class="nav-weight">20%</span>
       </button>
 
       <button class="nav-item step" onclick="showTab('step6', this)">
         <span class="nav-icon">S6</span>
-        Utilization
+        Access
         <span class="nav-weight">20%</span>
       </button>
 
@@ -436,10 +436,10 @@
             </ul>
           </div>
           <div>
-            <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">Quality Score 1.0 (Steps 5 + 6)</div>
+            <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">Quality Score 1.0 (Steps 2 + 3)</div>
             <ul style="margin:0;padding:0 0 0 16px;font-size:13px;color:#374151;line-height:1.8;">
-              <li>Step 5: MIPS/QPP scores from CMS Provider Data Catalog</li>
-              <li>Step 6: Medicare utilization file, scored using claims-quality framework</li>
+              <li>Step 2: MIPS/QPP scores from CMS Provider Data Catalog</li>
+              <li>Step 3: Medicare + Medicaid utilization, scored using claims-quality framework</li>
               <li style="color:#9ca3af;">NPPES as provider identity layer (plumbing)</li>
             </ul>
           </div>
@@ -478,10 +478,10 @@
 
         <p class="flow-connector-label">Pass &rarr; proceed to scoring</p>
 
-        <!-- Step 5: MIPS -->
-        <div class="flow-node mvp" onclick="showTab('step5', document.querySelectorAll('.nav-item.step')[3])">
+        <!-- Step 2: MIPS -->
+        <div class="flow-node mvp" onclick="showTab('step2', document.querySelectorAll('.nav-item.step')[0])">
           <div class="flow-inner">
-            <div class="flow-step-badge mvp-badge">S5</div>
+            <div class="flow-step-badge mvp-badge">S2</div>
             <div class="flow-body">
               <h3>Government Quality Score (MIPS)</h3>
               <p class="flow-desc">QPP scores. Three situations: strong &rarr; weight, absent &rarr; null, low &rarr; cross-reference.</p>
@@ -500,15 +500,15 @@
           </div>
         </div>
 
-        <!-- Step 6: Utilization -->
-        <div class="flow-node mvp" onclick="showTab('step6', document.querySelectorAll('.nav-item.step')[4])">
+        <!-- Step 3: Utilization -->
+        <div class="flow-node mvp" onclick="showTab('step3', document.querySelectorAll('.nav-item.step')[1])">
           <div class="flow-inner">
-            <div class="flow-step-badge mvp-badge">S6</div>
+            <div class="flow-step-badge mvp-badge">S3</div>
             <div class="flow-body">
               <h3>Utilization &amp; Bundle Profiling</h3>
-              <p class="flow-desc">Medicare utilization scored via claims-quality framework. OB-GYN proof of concept built.</p>
+              <p class="flow-desc">Medicare + Medicaid utilization scored via claims-quality framework. OB-GYN proof of concept built.</p>
               <div class="flow-sources">
-                <span class="src">Medicare Utilization</span><span class="src">Bundle taxonomy</span><span class="src" style="opacity:0.4;text-decoration:line-through;">Medicaid T-MSIS</span>
+                <span class="src">Medicare Utilization</span><span class="src">Medicaid T-MSIS</span><span class="src">Bundle taxonomy</span>
               </div>
               <div class="flow-progress">
                 <div class="flow-progress-bar"><div class="fill" style="width:20%;background:#f59e0b;"></div></div>
@@ -524,10 +524,10 @@
 
         <p class="flow-connector-label">Coming at 60-90 days</p>
 
-        <!-- Step 2: Credentials -->
-        <div class="flow-node deferred" onclick="showTab('step2', document.querySelectorAll('.nav-item.step')[0])">
+        <!-- Step 4: Credentials -->
+        <div class="flow-node deferred" onclick="showTab('step4', document.querySelectorAll('.nav-item.step')[2])">
           <div class="flow-inner">
-            <div class="flow-step-badge deferred-badge">S2</div>
+            <div class="flow-step-badge deferred-badge">S4</div>
             <div class="flow-body">
               <h3>Credentials &amp; Training</h3>
               <p class="flow-desc">NPPES as plumbing in MVP. Full scoring (ABMS board cert) at 60 days.</p>
@@ -542,10 +542,10 @@
           </div>
         </div>
 
-        <!-- Step 3: Patient Experience -->
-        <div class="flow-node deferred" onclick="showTab('step3', document.querySelectorAll('.nav-item.step')[1])">
+        <!-- Step 5: Patient Experience -->
+        <div class="flow-node deferred" onclick="showTab('step5', document.querySelectorAll('.nav-item.step')[3])">
           <div class="flow-inner">
-            <div class="flow-step-badge deferred-badge">S3</div>
+            <div class="flow-step-badge deferred-badge">S5</div>
             <div class="flow-body">
               <h3>Patient Experience</h3>
               <p class="flow-desc">Deferred. All sources need APIs, scraping, or partnerships.</p>
@@ -560,10 +560,10 @@
           </div>
         </div>
 
-        <!-- Step 4: Access -->
-        <div class="flow-node deferred" onclick="showTab('step4', document.querySelectorAll('.nav-item.step')[2])">
+        <!-- Step 6: Access -->
+        <div class="flow-node deferred" onclick="showTab('step6', document.querySelectorAll('.nav-item.step')[4])">
           <div class="flow-inner">
-            <div class="flow-step-badge deferred-badge">S4</div>
+            <div class="flow-step-badge deferred-badge">S6</div>
             <div class="flow-body">
               <h3>Access &amp; Availability</h3>
               <p class="flow-desc">Deferred. Needs onboarding form built in product.</p>
@@ -688,7 +688,7 @@
           <p>No. Many legitimate independent practices don't bill Medicare: concierge, cash-pay, commercial-only. Failing on PECOS absence would exclude the exact providers Meroka is trying to serve. The public extract also can't distinguish "never enrolled" from "was revoked" without historical snapshots.</p>
           <ul>
             <li>PECOS kept as informational context (pecos_enrolled flag)</li>
-            <li>Used downstream in Step 2 (credentials) and Step 6 (bundles)</li>
+            <li>Used downstream in Step 3 (bundles) and Step 4 (credentials)</li>
             <li>Cross-referenced against LEIE as a data integrity check</li>
           </ul>
         </div>
@@ -816,32 +816,32 @@
       </div>
 
       <!-- #10 -->
-      <div class="dl-entry deferred" data-type="deferred">
+      <div class="dl-entry resolved" data-type="resolved">
         <div class="dl-top">
-          <h4>Medicaid T-MSIS data temporarily unavailable</h4>
-          <div class="dl-step-tags"><span class="dm-step-tag scored">S6</span></div>
-          <span class="dl-status deferred">Deferred</span>
+          <h4>Medicaid T-MSIS data now available</h4>
+          <div class="dl-step-tags"><span class="dm-step-tag scored">S3</span></div>
+          <span class="dl-status resolved">Resolved</span>
         </div>
-        <div class="dl-problem">Step 6 needs Medicaid provider spending data (T-MSIS, 2018-2024) for a full picture, especially for OB/GYN, pediatrics, and primary care. The dataset is listed on the HHS Open Data portal but currently isn't accessible.</div>
+        <div class="dl-problem">Step 3 needs Medicaid provider spending data (T-MSIS, 2018-2024) for a full picture, especially for OB/GYN, pediatrics, and primary care. Previously listed as unavailable on the HHS Open Data portal.</div>
         <div class="dl-resolution">
-          <h5>Fallback</h5>
-          <p>Proceed with Medicare Utilization PUF only. This covers Medicare FFS volume and costs per NPI. Providers with mostly commercial or Medicaid patients will look thin, which is a known structural ceiling. Add T-MSIS when it comes back online.</p>
+          <h5>Resolution</h5>
+          <p>Dataset is now accessible. Medicare + Medicaid combined for full utilization picture in MVP.</p>
         </div>
-        <div class="dl-date">Identified Mar 2026 &middot; Using Medicare-only fallback</div>
+        <div class="dl-date">Resolved Mar 2026</div>
       </div>
 
       <!-- #11 -->
       <div class="dl-entry resolved" data-type="resolved">
         <div class="dl-top">
           <h4>Bundle-level scoring needs a new step (6)</h4>
-          <div class="dl-step-tags"><span class="dm-step-tag scored">S6</span></div>
+          <div class="dl-step-tags"><span class="dm-step-tag scored">S3</span></div>
           <span class="dl-status resolved">Resolved</span>
         </div>
         <div class="dl-problem">The product mockup scores providers by clinical bundle (Maternity 71, GYN Surgery 83), not just a flat composite per NPI. The original treasure map only had 6 steps with no bundle-level slicing capability. We renumbered to make room.</div>
         <div class="dl-resolution">
           <h5>What we did</h5>
           <ul>
-            <li>Added Step 6: Utilization &amp; Bundle Profiling (15% weight, taken from Step 7)</li>
+            <li>Added Step 3: Utilization &amp; Bundle Profiling (15% weight, taken from Step 7)</li>
             <li>Maps CPT codes to clinical bundles by specialty using Medicare + Medicaid data</li>
             <li>Enables bundle-level score slicing with public data before employer claims flow</li>
             <li>Bundle taxonomy defined jointly by Antoine, Othmane, and Clara</li>
@@ -1034,7 +1034,7 @@
           </div>
           <span class="access-badge free">Free &middot; Public extract</span>
         </div>
-        <p>CMS's enrollment system for providers who bill Medicare. We evaluated PECOS as a potential gate input and decided against it. It's kept as informational context for this step and as a real input for Steps 2 and 6.</p>
+        <p>CMS's enrollment system for providers who bill Medicare. We evaluated PECOS as a potential gate input and decided against it. It's kept as informational context for this step and as a real input for Steps 3 and 4.</p>
         <table class="detail-table" style="margin-top:12px;">
           <tr><th>Access</th><th>Format</th><th>Refresh</th><th>Cost</th></tr>
           <tr><td>data.cms.gov</td><td>CSV bulk download</td><td>Monthly</td><td class="tag-free">Free</td></tr>
@@ -1049,7 +1049,7 @@
 
           <p style="font-size:13px;color:#374151;margin-bottom:12px;">We also can't use the public PECOS extract to detect revocations. It only contains currently enrolled providers, so we can't distinguish "never enrolled" from "was enrolled, got revoked" without historical snapshots or the separate CMS revocation files.</p>
 
-          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>What we kept:</strong> A <code>pecos_enrolled</code> informational flag (does not affect pass/fail), plus a cross-reference check: if a provider is LEIE-excluded but still shows as PECOS-enrolled, that's a data integrity flag suggesting CMS hasn't caught up to OIG's exclusion. PECOS remains a real input for <strong>Step 2</strong> (specialty validation, enrollment history) and <strong>Step 6</strong> (Medicare billing patterns).</p>
+          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>What we kept:</strong> A <code>pecos_enrolled</code> informational flag (does not affect pass/fail), plus a cross-reference check: if a provider is LEIE-excluded but still shows as PECOS-enrolled, that's a data integrity flag suggesting CMS hasn't caught up to OIG's exclusion. PECOS remains a real input for <strong>Step 3</strong> (Medicare billing patterns) and <strong>Step 4</strong> (specialty validation, enrollment history).</p>
         </div>
       </div>
 
@@ -1188,7 +1188,7 @@
           <tr><td><code>leie_excl_type</code></td><td>string</td><td>OIG exclusion type code (if excluded)</td></tr>
           <tr><td><code>leie_excl_date</code></td><td>string</td><td>Date of exclusion, YYYYMMDD (if excluded)</td></tr>
         </table>
-        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Do not gate on <code>pecos_enrolled</code>. It's context for downstream steps (S2, S6), not a safety signal.</p>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Do not gate on <code>pecos_enrolled</code>. It's context for downstream steps (S3, S4), not a safety signal.</p>
       </div>
 
     </div>
@@ -1198,67 +1198,6 @@
       <div class="step-header">
         <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S2</div>
         <div class="step-meta">
-          <h2>Credentials &amp; Training</h2>
-          <div class="tagline">Is this provider qualified to practice in their claimed specialty?</div>
-        </div>
-        <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">20% of composite</div>
-      </div>
-
-      <div class="section-title">Data sources</div>
-      <div class="source-card">
-        <table class="detail-table">
-          <tr><th>Source</th><th>What it gives us</th><th>Access</th><th>Refresh</th></tr>
-          <tr><td><strong>NPPES</strong></td><td>NPI, taxonomy code, practice address, enrollment date</td><td>CMS bulk download</td><td>Weekly</td></tr>
-          <tr><td><strong>ABMS</strong></td><td>Board certification status, specialty, expiration</td><td>ABMS API or verification service</td><td>Annual cert cycle</td></tr>
-          <tr><td><strong>PECOS</strong></td><td>Medicare enrollment status, specialty, practice affiliations. Cross-reference for specialty alignment with NPPES taxonomy</td><td>CMS bulk download</td><td>Monthly</td></tr>
-        </table>
-        <p style="margin-top:12px;font-size:13px;color:#6b7280;">PECOS was evaluated as a gate input in Step 1 and scoped out (absence from PECOS ≠ problem). Here it's a real input: specialty validation, enrollment history, and practice group affiliations.</p>
-      </div>
-
-      <div class="section-title">Business logic</div>
-      <div class="source-card">
-        <ul style="padding-left:20px;display:flex;flex-direction:column;gap:6px;">
-          <li style="font-size:13px;color:#374151;">Board certification from ABMS is the primary signal. Active cert = full credit. Expired or never certified = flag, not automatic zero (some specialties have low cert rates)</li>
-          <li style="font-size:13px;color:#374151;">NPPES gives us taxonomy code, practice address, and enrollment date as validation</li>
-          <li style="font-size:13px;color:#374151;">PECOS cross-reference confirms Medicare enrollment status and specialty alignment</li>
-          <li style="font-size:13px;color:#374151;">Years in practice is a context variable, not a quality signal. We include it for employer transparency, not scoring</li>
-        </ul>
-      </div>
-
-      <p style="font-size:14px;color:#6b7280;margin-top:16px;">Full detail coming soon. See the main treasure map doc for additional context.</p>
-    </div>
-
-    <!-- ==================== STEP 3 (stub) ==================== -->
-    <div id="tab-step3" class="tab-panel">
-      <div class="step-header">
-        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S3</div>
-        <div class="step-meta">
-          <h2>Patient Experience</h2>
-          <div class="tagline">What do patients actually say about this provider?</div>
-        </div>
-        <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">20% of composite</div>
-      </div>
-      <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
-    </div>
-
-    <!-- ==================== STEP 4 (stub) ==================== -->
-    <div id="tab-step4" class="tab-panel">
-      <div class="step-header">
-        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S4</div>
-        <div class="step-meta">
-          <h2>Access &amp; Availability</h2>
-          <div class="tagline">Can patients actually get to this provider and get seen?</div>
-        </div>
-        <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">20% of composite</div>
-      </div>
-      <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
-    </div>
-
-    <!-- ==================== STEP 5 (stub) ==================== -->
-    <div id="tab-step5" class="tab-panel">
-      <div class="step-header">
-        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S5</div>
-        <div class="step-meta">
           <h2>Clinical Quality (MIPS)</h2>
           <div class="tagline">Has the government independently assessed this provider's clinical quality?</div>
         </div>
@@ -1267,10 +1206,10 @@
       <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
     </div>
 
-    <!-- ==================== STEP 6 ==================== -->
-    <div id="tab-step6" class="tab-panel">
+    <!-- ==================== STEP 3 ==================== -->
+    <div id="tab-step3" class="tab-panel">
       <div class="step-header">
-        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S6</div>
+        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S3</div>
         <div class="step-meta">
           <h2>Utilization &amp; Bundle Profiling</h2>
           <div class="tagline">What does this provider actually do, how much, and are there cost red flags at the bundle level?</div>
@@ -1296,7 +1235,7 @@
         <table class="detail-table">
           <tr><th>Source</th><th>What it gives us</th><th>Access</th><th>Refresh</th></tr>
           <tr><td><strong>Medicare Physician &amp; Other Practitioners</strong></td><td>Per-NPI, per-HCPCS line items: service count, beneficiary count, avg submitted/allowed charges</td><td>CMS bulk download</td><td>Annual</td></tr>
-          <tr><td><strong>Medicaid Provider Spending (T-MSIS)</strong></td><td>Provider-level spending by procedure code and month. FFS, managed care, and CHIP. 2018-2024</td><td>HHS Open Data portal (currently temporarily unavailable)</td><td>TBD</td></tr>
+          <tr><td><strong>Medicaid Provider Spending (T-MSIS)</strong></td><td>Provider-level spending by procedure code and month. FFS, managed care, and CHIP. 2018-2024</td><td>HHS Open Data portal</td><td>Annual</td></tr>
           <tr><td><strong>PECOS</strong></td><td>Medicare billing patterns, enrollment type, practice affiliations. Cross-reference for provider-level Medicare participation context</td><td>CMS bulk download</td><td>Monthly</td></tr>
           <tr><td><strong>Bundle taxonomy (internal)</strong></td><td>CPT-to-bundle mapping per specialty. Starts with top specialties on the marketplace</td><td>Internal</td><td>As needed</td></tr>
         </table>
@@ -1497,6 +1436,67 @@
       </div>
     </div>
 
+    <!-- ==================== STEP 4 (stub) ==================== -->
+    <div id="tab-step4" class="tab-panel">
+      <div class="step-header">
+        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S4</div>
+        <div class="step-meta">
+          <h2>Credentials &amp; Training</h2>
+          <div class="tagline">Is this provider qualified to practice in their claimed specialty?</div>
+        </div>
+        <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">20% of composite</div>
+      </div>
+
+      <div class="section-title">Data sources</div>
+      <div class="source-card">
+        <table class="detail-table">
+          <tr><th>Source</th><th>What it gives us</th><th>Access</th><th>Refresh</th></tr>
+          <tr><td><strong>NPPES</strong></td><td>NPI, taxonomy code, practice address, enrollment date</td><td>CMS bulk download</td><td>Weekly</td></tr>
+          <tr><td><strong>ABMS</strong></td><td>Board certification status, specialty, expiration</td><td>ABMS API or verification service</td><td>Annual cert cycle</td></tr>
+          <tr><td><strong>PECOS</strong></td><td>Medicare enrollment status, specialty, practice affiliations. Cross-reference for specialty alignment with NPPES taxonomy</td><td>CMS bulk download</td><td>Monthly</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">PECOS was evaluated as a gate input in Step 1 and scoped out (absence from PECOS ≠ problem). Here it's a real input: specialty validation, enrollment history, and practice group affiliations.</p>
+      </div>
+
+      <div class="section-title">Business logic</div>
+      <div class="source-card">
+        <ul style="padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+          <li style="font-size:13px;color:#374151;">Board certification from ABMS is the primary signal. Active cert = full credit. Expired or never certified = flag, not automatic zero (some specialties have low cert rates)</li>
+          <li style="font-size:13px;color:#374151;">NPPES gives us taxonomy code, practice address, and enrollment date as validation</li>
+          <li style="font-size:13px;color:#374151;">PECOS cross-reference confirms Medicare enrollment status and specialty alignment</li>
+          <li style="font-size:13px;color:#374151;">Years in practice is a context variable, not a quality signal. We include it for employer transparency, not scoring</li>
+        </ul>
+      </div>
+
+      <p style="font-size:14px;color:#6b7280;margin-top:16px;">Full detail coming soon. See the main treasure map doc for additional context.</p>
+    </div>
+
+    <!-- ==================== STEP 5 (stub) ==================== -->
+    <div id="tab-step5" class="tab-panel">
+      <div class="step-header">
+        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S5</div>
+        <div class="step-meta">
+          <h2>Patient Experience</h2>
+          <div class="tagline">What do patients actually say about this provider?</div>
+        </div>
+        <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">20% of composite</div>
+      </div>
+      <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
+    </div>
+
+    <!-- ==================== STEP 6 (stub) ==================== -->
+    <div id="tab-step6" class="tab-panel">
+      <div class="step-header">
+        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S6</div>
+        <div class="step-meta">
+          <h2>Access &amp; Availability</h2>
+          <div class="tagline">Can patients actually get to this provider and get seen?</div>
+        </div>
+        <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">20% of composite</div>
+      </div>
+      <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
+    </div>
+
     <!-- ==================== STEP 7 (stub) ==================== -->
     <div id="tab-step7" class="tab-panel">
       <div class="step-header">
@@ -1583,7 +1583,7 @@
       <div class="section-title">5. Why PECOS was removed from the gate</div>
       <div class="source-card">
         <p>Absence from PECOS doesn't indicate a problem. Many legitimate independent practices don't bill Medicare: concierge, cash-pay, commercial-only. Failing them on PECOS absence would knock out the exact providers Meroka is trying to serve.</p>
-        <p style="margin-top:8px;">We kept a <code>pecos_enrolled</code> informational flag (does not affect pass/fail) plus a cross-reference check: if a provider is LEIE-excluded but still PECOS-enrolled, that's a data integrity flag. PECOS is a real input for Steps 2 and 6, not for safety.</p>
+        <p style="margin-top:8px;">We kept a <code>pecos_enrolled</code> informational flag (does not affect pass/fail) plus a cross-reference check: if a provider is LEIE-excluded but still PECOS-enrolled, that's a data integrity flag. PECOS is a real input for Steps 3 and 4, not for safety.</p>
       </div>
 
       <!-- 6 -->
@@ -1740,42 +1740,42 @@
           <tr style="color:#9ca3af;">
             <td>Office hours</td>
             <td>Structured</td>
-            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S6</span></td>
             <td>TBD</td>
             <td>Access &amp; availability scoring. Not yet implemented.</td>
           </tr>
           <tr style="color:#9ca3af;">
             <td>New patient wait time</td>
             <td>Integer (days)</td>
-            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S6</span></td>
             <td>TBD</td>
             <td>Access &amp; availability scoring. Not yet implemented.</td>
           </tr>
           <tr style="color:#9ca3af;">
             <td>Telehealth available</td>
             <td>Boolean</td>
-            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S6</span></td>
             <td>TBD</td>
             <td>Access &amp; availability scoring. Not yet implemented.</td>
           </tr>
           <tr style="color:#9ca3af;">
             <td>Languages spoken</td>
             <td>Array of strings</td>
-            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S6</span></td>
             <td>TBD</td>
             <td>Access &amp; availability scoring. Not yet implemented.</td>
           </tr>
           <tr style="color:#9ca3af;">
             <td>Accepting new patients</td>
             <td>Boolean</td>
-            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S6</span></td>
             <td>TBD</td>
             <td>Access &amp; availability scoring. Not yet implemented.</td>
           </tr>
           <tr style="color:#9ca3af;">
             <td>Wheelchair accessible</td>
             <td>Boolean</td>
-            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S4</span></td>
+            <td><span style="background:#ede9fe;color:#7c3aed;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;">S6</span></td>
             <td>TBD</td>
             <td>Access &amp; availability scoring. Not yet implemented.</td>
           </tr>
@@ -1795,13 +1795,13 @@
         </div>
       </div>
 
-      <div class="section-title">Step 4: Access &amp; Availability</div>
+      <div class="section-title">Step 6: Access &amp; Availability</div>
       <div class="source-card" style="border-left:3px solid #e5e7eb;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
           <span style="background:#f3f4f6;color:#6b7280;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;">Not yet implemented</span>
           <span style="font-size:12px;color:#6b7280;">Fields from the treasure map doc, pending validation</span>
         </div>
-        <p>Step 4 is the only other step that requires provider-reported data. The schema is defined in the treasure map but hasn't been validated yet. Fields listed above are preliminary.</p>
+        <p>Step 6 is the only other step that requires provider-reported data. The schema is defined in the treasure map but hasn't been validated yet. Fields listed above are preliminary.</p>
       </div>
 
       <div class="section-title">Fields we do NOT need from onboarding</div>
@@ -1810,11 +1810,11 @@
         <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;margin-top:10px;">
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Exclusion status (that's what we're checking via LEIE)</li>
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Medicare enrollment status (PECOS gives us this)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Board certification (ABMS, Step 2)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Specialty and taxonomy code (NPPES, Step 2)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> MIPS / clinical quality scores (CMS QPP, Step 5)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Utilization and procedure volume (CMS, Step 6)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Patient reviews and ratings (Google, Healthgrades, Step 3)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Board certification (ABMS, Step 4)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Specialty and taxonomy code (NPPES, Step 4)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> MIPS / clinical quality scores (CMS QPP, Step 2)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Utilization and procedure volume (CMS, Step 3)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Patient reviews and ratings (Google, Healthgrades, Step 5)</li>
         </ul>
       </div>
     </div>
