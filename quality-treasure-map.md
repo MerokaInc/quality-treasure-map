@@ -9,23 +9,44 @@ We're building a marketplace where employers direct contract with independent pr
 
 ### Seven steps, in order
 
-| Step | Dimension | What it does | Weight |
-|------|-----------|-------------|--------|
-| 1 | Safety gate | Binary pass/fail per NPI using NPDB, state boards, OIG LEIE. PECOS is informational context only. Fail = out | Gate |
-| 2 | Credentials & training | Board cert, med school, years in practice from NPPES, ABMS, PECOS | 25% |
-| 3 | Patient experience | Normalised review scores from Google, Healthgrades, Doximity | 25% |
-| 4 | Access & availability | Practice-reported onboarding fields (hours, wait times, telehealth, languages) | 15% |
-| 5 | Government quality score (MIPS) | QPP scores where available, three-situation logic for present/absent/low | 20% |
-| 6 | Utilization & bundle profiling | Medicare + Medicaid procedure-level data mapped to clinical bundles per specialty | 15% |
-| 7 | Clinical outcomes | Claims-based metrics from employer data. Phase 2, not required for initial bar | Phase 2 |
+| Step | Dimension | What it does | Weight | MVP |
+|------|-----------|-------------|--------|-----|
+| 1 | Safety gate | Binary pass/fail per NPI using NPDB, state boards, OIG LEIE. PECOS is informational context only. Fail = out | Gate | **Yes** |
+| 2 | Credentials & training | Board cert, med school, years in practice from NPPES, ABMS, PECOS | 20% | NPPES only (plumbing) |
+| 3 | Patient experience | Normalised review scores from Google, Healthgrades, Doximity | 20% | Deferred |
+| 4 | Access & availability | Practice-reported onboarding fields (hours, wait times, telehealth, languages) | 20% | Deferred |
+| 5 | Government quality score (MIPS) | QPP scores where available, three-situation logic for present/absent/low | 20% | **Yes** |
+| 6 | Utilization & bundle profiling | Medicare + Medicaid procedure-level data mapped to clinical bundles per specialty | 20% | **Yes** (Medicare only) |
+| 7 | Clinical outcomes | Claims-based metrics from employer data. Phase 2, not required for initial bar | Phase 2 | Deferred |
 
-### Timeline
+### MVP target: May 5, 2026
+
+Quality Gate + Quality Score 1.0, built entirely from downloadable federal data.
+
+| Deliverable | What's in it | Data sources |
+|-------------|-------------|--------------|
+| Quality Gate (Step 1) | NPI-level pass/fail for WV and/or MA providers | OIG LEIE (done), PECOS informational (done), WV state board (done, 87.5% NPI match), MA (pending records request). NPDB deferred (registration blocker) |
+| Quality Score 1.0 (Steps 5 + 6) | MIPS score + Medicare utilization-based claims-quality score per NPI | CMS QPP/Provider Data Catalog, CMS Care Compare, Medicare Physician & Other Practitioners utilization file |
+| Provider identity layer (Step 2 partial) | NPI, specialty, practice address as join key for scoring | NPPES (CMS bulk download) |
+
+### Full timeline
 
 | Window | Deliverables |
 |--------|-------------|
-| 30 days (mid-April) | Steps 1-4 as notebooks to eng. Clara delivers ERISA methodology |
-| 60 days (mid-May) | Steps 5 + 6 delivered. Bundle taxonomy defined. Composite score v1. Eng productionises all dimensions. API endpoint live |
-| 90 days (mid-June) | Clinical outcomes schema designed. Safety gate monitoring automated. Score validation complete. Slack agent live |
+| MVP (May 5) | Quality Gate for WV/MA. Quality Score 1.0: MIPS + Medicare utilization. NPPES as provider identity layer. All from CMS/OIG bulk downloads |
+| 60 days (mid-May) | Bundle taxonomy defined. Composite score v1. Eng productionises MVP dimensions. API endpoint live. Clara delivers ERISA methodology |
+| 90 days (mid-June) | Steps 2-4 filled in (ABMS, patient reviews, access schema). Clinical outcomes schema designed. Safety gate monitoring automated. Score validation complete. Slack agent live |
+
+### What's deferred and why
+
+| Step | Blocker | When it comes back |
+|------|---------|-------------------|
+| Step 1: NPDB | Registration as eligible entity (weeks to months) | Post-MVP, via CVO or direct registration |
+| Step 2: ABMS | Paid API or verification service | 60-day window |
+| Step 3: Patient experience | Google API limits, Healthgrades/Doximity scraping legality | 60-90 day window, may need partnerships |
+| Step 4: Access & availability | Needs onboarding form built in product | 60-day window, schema deliverable only |
+| Step 6: Medicaid T-MSIS | Currently unavailable on HHS Open Data portal | When portal comes back online, Medicare-only fallback until then |
+| Step 7: Clinical outcomes | Requires live employer claims data | Phase 2, 90+ days from first live employer |
 
 Clara's parallel workstream defines what quality evidence satisfies ERISA fiduciary duty, documents the methodology for the employer-facing product, and identifies legal thresholds that gate marketplace inclusion.
 
@@ -45,7 +66,7 @@ What follows is the workstream broken into concrete steps, with data sources, bu
 
 ## 2. The workstream
 
-Seven steps. Ordered by dependency and priority. Steps 1-4 are the 30-day target. Steps 5 and 6 follow at 60 days. Step 7 is Phase 2.
+Seven steps. Ordered by dependency and priority. MVP (May 5): Steps 1, 5, and 6 using downloadable federal data only, with NPPES as the provider identity layer. Steps 2-4 fill in at 60 days. Step 7 is Phase 2.
 
 ---
 
@@ -78,7 +99,7 @@ What it answers: should this provider be in the marketplace at all?
 
 ### Step 2. Credentials and training
 
-> **Structured fields per NPI. Weight: 25% of composite score.**
+> **Structured fields per NPI. Weight: 20% of composite score.**
 
 What it answers: is this provider qualified to practice in their claimed specialty?
 
@@ -105,7 +126,7 @@ What it answers: is this provider qualified to practice in their claimed special
 
 ### Step 3. Patient experience
 
-> **Normalised composite from Google, Healthgrades, Doximity. Weight: 25% of composite score.**
+> **Normalised composite from Google, Healthgrades, Doximity. Weight: 20% of composite score.**
 
 What it answers: what do patients actually say about this provider?
 
@@ -133,7 +154,7 @@ What it answers: what do patients actually say about this provider?
 
 ### Step 4. Access and availability
 
-> **Structured onboarding form fields. Defined schema for pipeline. Weight: 15% of composite score.**
+> **Structured onboarding form fields. Defined schema for pipeline. Weight: 20% of composite score.**
 
 What it answers: can patients actually get to this provider and get seen?
 
@@ -190,7 +211,7 @@ What it answers: has the government independently assessed this provider's clini
 
 ### Step 6. Utilization & bundle profiling
 
-> **Per-CPT procedure volume, cost patterns, and clinical bundle mapping per NPI. Weight: 15% of composite score.**
+> **Per-CPT procedure volume, cost patterns, and clinical bundle mapping per NPI. Weight: 20% of composite score.**
 
 What it answers: what does this provider actually do, how much of it, and are there cost or volume red flags at the bundle level?
 
@@ -232,30 +253,31 @@ Phase 2. We can't build it until we have employer claims data flowing, which req
 
 ## 3. Timeline
 
-### 30 days (by mid-April 2026)
+### MVP (by May 5, 2026)
 
 | Deliverable | Owner |
 |------------|-------|
-| Step 1, safety gate: NPI-level pass/fail from NPDB + OIG LEIE + state boards (PECOS as informational context). Notebook to eng | Othmane + Antoine |
-| Step 2, credentials: NPI-level structured fields from NPPES + ABMS + PECOS. Notebook to eng | Othmane |
-| Step 3, patient experience: normalised composite score from Google / Healthgrades / Doximity. Notebook to eng | Antoine |
-| Step 4, access & availability: onboarding form schema, sample output, scoring rubric | Antoine |
-| ERISA methodology: legal definition of quality evidence for fiduciary duty. Methodology doc for employer-facing product | Clara |
+| Step 1, safety gate: NPI-level pass/fail from OIG LEIE + state boards (WV done, MA pending) + PECOS informational. NPDB deferred | Othmane + Antoine |
+| Step 5, government quality score (MIPS): QPP score per NPI with three-situation logic. Notebook to eng | Othmane + Antoine |
+| Step 6, utilization & bundle profiling: Medicare Physician & Other Practitioners utilization file scored using claims-quality framework. Medicare-only (Medicaid T-MSIS unavailable). Notebook to eng | Antoine + Othmane |
+| NPPES provider identity layer: NPI, specialty, practice address as join key across all scoring dimensions | Othmane |
 
 ### 60 days (by mid-May 2026)
 
 | Deliverable | Owner |
 |------------|-------|
-| Step 5, government quality score (MIPS): QPP score per NPI with three-situation logic, cross-referenced against credentials and reviews. Notebook to eng | Othmane + Antoine |
-| Step 6, utilization & bundle profiling: Medicare + Medicaid procedure-level data mapped to clinical bundles. Bundle taxonomy defined. Notebook to eng | Antoine + Othmane + Clara |
-| Composite score v1: first full composite combining steps 1-6. Weighting validated against sample NPI cohort. Bundle-level slicing enabled | Antoine |
-| Eng integration: all dimension notebooks productionised. API endpoint serving NPI-level quality data | Eng team |
-| ERISA integration: methodology visible in product. Legal thresholds for marketplace inclusion defined | Clara + Product |
+| Step 2, credentials: ABMS board certification + PECOS cross-reference added to NPPES base. Notebook to eng | Othmane |
+| Step 4, access & availability: onboarding form schema, sample output, scoring rubric | Antoine |
+| Bundle taxonomy defined: CPT-to-bundle mapping per specialty, starting with top marketplace specialties | Antoine + Othmane + Clara |
+| Composite score v1: first full composite combining MVP dimensions + credentials. Weighting validated against sample NPI cohort | Antoine |
+| Eng integration: MVP dimension notebooks productionised. API endpoint serving NPI-level quality data | Eng team |
+| ERISA methodology: legal definition of quality evidence for fiduciary duty. Methodology doc for employer-facing product | Clara |
 
 ### 90 days (by mid-June 2026)
 
 | Deliverable | Owner |
 |------------|-------|
+| Step 3, patient experience: normalised composite score from Google / Healthgrades / Doximity. Notebook to eng | Antoine |
 | Step 7, clinical outcomes design: schema and methodology for claims-based outcomes scoring. Ready when claims data is live | Antoine + Othmane |
 | Safety gate monitoring: automated refresh cadence for NPDB / PECOS / state boards. Alerting for status changes | Eng team |
 | Score validation: back-test composite scores against known quality signals. Identify edge cases. Adjust weights if needed | Antoine + Clara |
@@ -331,7 +353,7 @@ Each dimension is a separate handoff. We don't bundle them. Eng can productionis
 | State board coverage: start with states where we have practices, or solve nationally? | Scope of Step 1 |
 | Review platform rights: Google API limits, Healthgrades/Doximity scraping legality. Partnership? | Step 3 feasibility |
 | MIPS low-volume: neutral signal or slight negative? | Step 5 scoring logic |
-| Composite weights (25/25/20/15/15): validate against employer priorities or ship and adjust? | Composite methodology |
+| Composite weights (20/20/20/20/20): validate against employer priorities or ship and adjust? | Composite methodology |
 | Medicaid Provider Spending dataset: currently unavailable on HHS Open Data portal. Medicare-only fallback until then | Step 6 data completeness |
 | Bundle taxonomy granularity: top 3-5 bundles per specialty, or comprehensive from day one? | Step 6 scope |
 | Safety gate refresh cadence: what interval satisfies the monitoring obligation? | Legal exposure (Hecht v. Cigna) |
