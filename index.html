@@ -313,49 +313,6 @@
   .dl-stat .dl-stat-num { font-size: 24px; font-weight: 700; color: #1a1a2e; }
   .dl-stat .dl-stat-label { font-size: 11px; color: #9ca3af; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
 
-  /* ---- Data Map ---- */
-  .dm-section { margin-bottom: 32px; }
-  .dm-section-header {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
-    padding-bottom: 10px; border-bottom: 1px solid #e5e7eb;
-  }
-  .dm-section-icon {
-    width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center;
-    justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; color: #fff;
-  }
-  .dm-section-header h3 { font-size: 16px; font-weight: 600; color: #1a1a2e; }
-  .dm-section-header .dm-count { margin-left: auto; font-size: 12px; color: #9ca3af; font-weight: 500; }
-
-  .dm-table { width: 100%; border-collapse: collapse; }
-  .dm-table th {
-    text-align: left; font-size: 10px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.8px; color: #9ca3af; padding: 8px 12px; border-bottom: 2px solid #e5e7eb;
-    background: #f8fafc;
-  }
-  .dm-table td {
-    padding: 10px 12px; border-bottom: 1px solid #f3f4f6; font-size: 13px; color: #374151;
-    vertical-align: top;
-  }
-  .dm-table tr:last-child td { border-bottom: none; }
-  .dm-table tr:hover td { background: #f8fafc; }
-  .dm-table a { color: #4f46e5; text-decoration: none; font-weight: 500; }
-  .dm-table a:hover { text-decoration: underline; }
-
-  .dm-badge {
-    display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.5px; padding: 2px 8px; border-radius: 100px;
-  }
-  .dm-badge.csv { background: #dbeafe; color: #1d4ed8; }
-  .dm-badge.api { background: #fae8ff; color: #9333ea; }
-  .dm-badge.scraper { background: #fee2e2; color: #dc2626; }
-  .dm-badge.form { background: #d1fae5; color: #059669; }
-  .dm-badge.paid { background: #fef3c7; color: #92400e; }
-  .dm-badge.restricted { background: #fef9f0; color: #92400e; }
-  .dm-badge.free { background: #dcfce7; color: #15803d; }
-
-  .dm-steps-used {
-    display: flex; flex-wrap: wrap; gap: 4px;
-  }
   .dm-step-tag {
     font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px;
   }
@@ -363,59 +320,6 @@
   .dm-step-tag.scored { background: #eef2ff; color: #4f46e5; }
   .dm-step-tag.phase2 { background: #f3f4f6; color: #9ca3af; }
 
-  .dm-refresh { font-size: 12px; color: #6b7280; }
-
-  .dm-card-wrap {
-    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;
-  }
-
-  /* Expanded source cards */
-  .dm-source-card {
-    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px 24px;
-    margin-bottom: 12px; transition: box-shadow 0.15s;
-  }
-  .dm-source-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-  .dm-source-top {
-    display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;
-  }
-  .dm-source-top h4 { font-size: 16px; font-weight: 600; color: #1a1a2e; }
-  .dm-source-top h4 a { color: #4f46e5; text-decoration: none; }
-  .dm-source-top h4 a:hover { text-decoration: underline; }
-  .dm-source-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-  .dm-source-meta .dm-publisher { font-size: 12px; color: #6b7280; font-weight: 500; }
-  .dm-source-top .dm-steps-used { margin-left: auto; }
-
-  .dm-source-desc { font-size: 13px; color: #374151; line-height: 1.6; margin-bottom: 12px; }
-
-  .dm-detail-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  }
-  @media (max-width: 700px) { .dm-detail-grid { grid-template-columns: 1fr; } }
-  .dm-detail-box {
-    background: #f8fafc; border-radius: 8px; padding: 12px 14px;
-  }
-  .dm-detail-box h5 {
-    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
-    color: #9ca3af; margin-bottom: 6px;
-  }
-  .dm-detail-box ul { list-style: none; padding: 0; margin: 0; }
-  .dm-detail-box ul li {
-    font-size: 12px; color: #374151; padding: 2px 0; padding-left: 12px; position: relative; line-height: 1.5;
-  }
-  .dm-detail-box ul li::before {
-    content: ''; position: absolute; left: 0; top: 8px; width: 4px; height: 4px; border-radius: 50%;
-  }
-  .dm-detail-box.gives ul li::before { background: #16a34a; }
-  .dm-detail-box.limits ul li::before { background: #dc2626; }
-  .dm-detail-box.connect ul li::before { background: #4f46e5; }
-  .dm-detail-box.connect p { font-size: 12px; color: #374151; line-height: 1.5; margin: 0; }
-
-  .dm-source-footer {
-    display: flex; gap: 16px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #f3f4f6;
-    flex-wrap: wrap; font-size: 12px; color: #6b7280;
-  }
-  .dm-source-footer span { display: flex; align-items: center; gap: 4px; }
-  .dm-source-footer strong { color: #374151; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -433,10 +337,6 @@
       <button class="nav-item active" onclick="showTab('overview', this)">
         <span class="nav-icon" style="background:rgba(255,255,255,0.08);color:#9ca3af;">&equiv;</span>
         Full map
-      </button>
-      <button class="nav-item" onclick="showTab('pipeline', this)">
-        <span class="nav-icon" style="background:rgba(99,102,241,0.2);color:#818cf8;">&#8644;</span>
-        Data Map
       </button>
     </div>
 
@@ -473,14 +373,14 @@
         <span class="nav-weight">20%</span>
       </button>
 
-      <button class="nav-item step" onclick="showTab('step5b', this)">
-        <span class="nav-icon">5b</span>
+      <button class="nav-item step" onclick="showTab('step6', this)">
+        <span class="nav-icon">S6</span>
         Utilization
         <span class="nav-weight">15%</span>
       </button>
 
-      <button class="nav-item phase2" onclick="showTab('step6', this)">
-        <span class="nav-icon" style="background:rgba(255,255,255,0.04);color:#6b7280;">S6</span>
+      <button class="nav-item phase2" onclick="showTab('step7', this)">
+        <span class="nav-icon" style="background:rgba(255,255,255,0.04);color:#6b7280;">S7</span>
         Outcomes
         <span class="nav-weight" style="color:#4b5563;">Ph.2</span>
       </button>
@@ -623,10 +523,10 @@
           </div>
         </div>
 
-        <div class="dim-card" onclick="showTab('step5b', document.querySelectorAll('.nav-item.step')[4])">
+        <div class="dim-card" onclick="showTab('step6', document.querySelectorAll('.nav-item.step')[4])">
           <div class="weight">15%</div>
-          <div class="step-num">Step 5b</div>
-          <h3>CMS Utilization &amp; Bundle Scoring</h3>
+          <div class="step-num">Step 6</div>
+          <h3>Utilization &amp; Bundle Profiling</h3>
           <div class="question">What does this provider actually do, and are there cost or volume red flags?</div>
           <div class="data-sources">
             <span class="src">Medicare Utilization</span><span class="src">Medicaid T-MSIS</span><span class="src">PECOS</span><span class="src">Bundle taxonomy (internal)</span>
@@ -643,7 +543,7 @@
 
         <div class="phase2-card">
           <div class="badge">Phase 2</div>
-          <h3>Step 6. Clinical Outcomes</h3>
+          <h3>Step 7. Clinical Outcomes</h3>
           <div class="desc">Care journey, preventive care, readmissions. Requires live employer claims data. Gold standard, unweighted until claims flow.</div>
           <div class="progress-wrap" style="margin-top:12px;">
             <div class="progress-label">
@@ -740,794 +640,6 @@
 
     </div>
 
-    <!-- ==================== DATA MAP ==================== -->
-    <div id="tab-pipeline" class="tab-panel">
-      <div class="page-header">
-        <h1>Data Map</h1>
-        <div class="subtitle">Every data source we use, where to get it, and which steps it feeds</div>
-      </div>
-
-      <!-- ====== NPPES ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank">NPPES</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge csv">CSV</span>
-            <span class="dm-publisher">Published by CMS</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S2</span></div>
-        </div>
-        <div class="dm-source-desc">The National Plan and Provider Enumeration System. CMS's master registry of every healthcare provider in the US. Each provider gets a unique 10-digit NPI that serves as our primary key across all datasets.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>NPI (our universal join key)</li>
-              <li>Taxonomy code (specialty classification)</li>
-              <li>Practice name and address</li>
-              <li>Phone, fax, enrollment date</li>
-              <li>Individual vs. organization flag</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>No quality signals of any kind</li>
-              <li>No board certification status</li>
-              <li>No disciplinary or sanctions data</li>
-              <li>Self-reported taxonomy, sometimes stale or wrong</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Full file bulk download from <a href="https://download.cms.gov/nppes/NPI_Files.html" target="_blank">download.cms.gov/nppes</a>. ~8 GB zipped, updated weekly. No registration required. Also available as a real-time single-NPI lookup API at <a href="https://npiregistry.cms.hhs.gov/api/" target="_blank">npiregistry.cms.hhs.gov/api</a>.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Weekly</span>
-          <span><strong>Key field:</strong> NPI</span>
-          <span><strong>Size:</strong> ~8 GB (full dissemination)</span>
-        </div>
-      </div>
-
-      <!-- ====== PECOS ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://data.cms.gov/provider-characteristics/medicare-provider-supplier-enrollment/medicare-fee-for-service-public-provider-enrollment" target="_blank">CMS PECOS</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge csv">CSV</span>
-            <span class="dm-publisher">Published by CMS</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag gate">S1</span><span class="dm-step-tag scored">S2</span><span class="dm-step-tag scored">S5b</span></div>
-        </div>
-        <div class="dm-source-desc">Provider Enrollment, Chain and Ownership System. CMS's enrollment database for providers who bill Medicare. Tells us who is actively enrolled, their specialty, and their practice affiliations. Used as informational context in the safety gate (not a pass/fail input) and as validation in credentials and utilization.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Active Medicare enrollment status</li>
-              <li>Specialty and taxonomy code (CMS-validated)</li>
-              <li>Practice location and group affiliations</li>
-              <li>Enrollment type (individual, group, facility)</li>
-              <li>Cross-reference for LEIE data integrity checks</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Only currently enrolled providers, no historical revocations</li>
-              <li>Can't distinguish "never enrolled" from "was revoked"</li>
-              <li>Absence doesn't mean a problem: many indie practices don't bill Medicare</li>
-              <li>No quality, outcomes, or disciplinary data</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Public extract called "Medicare Fee-for-Service Public Provider Enrollment" on <a href="https://data.cms.gov/" target="_blank">data.cms.gov</a>. Free bulk download, updated monthly. No registration required. ~304 MB CSV.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Monthly</span>
-          <span><strong>Key field:</strong> NPI</span>
-          <span><strong>Size:</strong> ~304 MB</span>
-        </div>
-      </div>
-
-      <!-- ====== OIG LEIE ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://oig.hhs.gov/exclusions/exclusions_list.asp" target="_blank">OIG LEIE</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge csv">CSV</span>
-            <span class="dm-publisher">Published by HHS Office of Inspector General</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag gate">S1</span></div>
-        </div>
-        <div class="dm-source-desc">List of Excluded Individuals/Entities. The OIG's master list of every individual or entity excluded from participating in federal healthcare programs. If a provider is on this list, any entity that pays them for federally reimbursable services faces civil monetary penalties. Hard gate: excluded = out.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Exclusion status (active, reinstated, waived)</li>
-              <li>Exclusion type and reason code</li>
-              <li>Exclusion and reinstatement dates</li>
-              <li>NPI for most records, name + address for older ones</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>~90% of records lack a usable NPI (older records, name-only)</li>
-              <li>No detail on the underlying offense</li>
-              <li>No state-level disciplinary actions (only federal exclusions)</li>
-              <li>Doesn't cover malpractice settlements</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Full database CSV at <a href="https://oig.hhs.gov/exclusions/exclusions_list.asp" target="_blank">oig.hhs.gov/exclusions</a>. Also a monthly supplement file for new additions only. No registration. ~15 MB.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Monthly</span>
-          <span><strong>Key field:</strong> NPI (when present), else name + DOB</span>
-          <span><strong>Size:</strong> ~15 MB</span>
-        </div>
-      </div>
-
-      <!-- ====== NPDB ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://www.npdb.hrsa.gov/" target="_blank">HRSA NPDB</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge restricted">Restricted</span>
-            <span class="dm-badge api">API</span>
-            <span class="dm-publisher">Published by HRSA (HHS)</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag gate">S1</span></div>
-        </div>
-        <div class="dm-source-desc">National Practitioner Data Bank. The federal government's central repository for adverse actions against healthcare providers. The only place where malpractice settlements are aggregated nationally. A provider could have paid out multiple claims across different states and nothing would show on any single state board. NPDB captures it all.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Malpractice payments (any settlement or judgment)</li>
-              <li>Adverse licensure actions from state boards</li>
-              <li>Clinical privilege actions from hospitals</li>
-              <li>DEA controlled substance violations</li>
-              <li>Medicare/Medicaid exclusions</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Not public. Must be a registered "querying entity"</li>
-              <li>No bulk download available</li>
-              <li>Individual query per NPI, not a flat file</li>
-              <li>Doesn't cover informal complaints or investigations</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Must register as an eligible entity (hospital, health plan, licensing board, credentialing org). Query per NPI at $2.50 via Continuous Query enrollment (12 months, auto-alerts). Alternatives: use a CVO vendor (Verisys, Aperture, symplr, CAQH) at $1-5/NPI, or partner with an employer/TPA who qualifies. Meroka's registration path is under evaluation by Clara.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Continuous Query (real-time alerts)</span>
-          <span><strong>Key field:</strong> NPI</span>
-          <span><strong>Status:</strong> Deferred (access pending)</span>
-        </div>
-      </div>
-
-      <!-- ====== FSMB ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://www.fsmb.org/physician-data-center/" target="_blank">FSMB Physician Data Center</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge paid">Paid</span>
-            <span class="dm-badge api">API</span>
-            <span class="dm-publisher">Published by Federation of State Medical Boards</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag gate">S1</span></div>
-        </div>
-        <div class="dm-source-desc">Aggregates data from all 70+ medical and osteopathic boards in the US into a single feed. License status, disciplinary history, board certifications. This is what hospitals and health plans use for national coverage instead of going state by state. The production path for scaling beyond WV + MA.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>License status from all 50 states in one query</li>
-              <li>Disciplinary history (suspensions, revocations, probation)</li>
-              <li>Board actions and consent orders</li>
-              <li>Board certification cross-reference</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Paid enterprise contract required, no free tier</li>
-              <li>No malpractice payment data (that's NPDB)</li>
-              <li>DocInfo.org is free but single-lookup only, not usable at scale</li>
-              <li>Some state boards lag in reporting to FSMB</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Enterprise contract with FSMB for bulk/API access. Contact via <a href="https://www.fsmb.org/physician-data-center/" target="_blank">fsmb.org/physician-data-center</a>. Deferred to post-sprint. For now, pulling WV and MA directly from state boards.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Quarterly</span>
-          <span><strong>Key field:</strong> License number (crosswalk to NPI needed)</span>
-          <span><strong>Status:</strong> Deferred (no contract)</span>
-        </div>
-      </div>
-
-      <!-- ====== State Medical Boards ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://wvbom.wv.gov/" target="_blank">State Medical Boards</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge scraper">Scraper</span>
-            <span class="dm-publisher">Published by individual state boards</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag gate">S1</span></div>
-        </div>
-        <div class="dm-source-desc">Each of the 50 states runs its own medical board with its own infrastructure. No single national database. Coverage varies wildly: ~15 states have bulk downloads or APIs (CA, TX, NY), ~20 have scrapeable lookup pages, ~15 are PDF-only. We started with WV (roster + discipline files) and MA (pending public records request).</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Active license status (valid, expired, lapsed)</li>
-              <li>Disciplinary actions (suspensions, revocations, probation)</li>
-              <li>Consent orders and settlements</li>
-              <li>Practice restrictions and reinstatements</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>No standardized format across states</li>
-              <li>Many boards use license number, not NPI (crosswalk required via NPPES API)</li>
-              <li>WV doesn't include action type in disciplinary file</li>
-              <li>MA doesn't publish bulk data (requires formal public records request to BORIM)</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p><strong>WV:</strong> Roster (wv_md_roster.xlsx) and discipline (wv_discipline.xlsx) downloaded from <a href="https://wvbom.wv.gov/" target="_blank">wvbom.wv.gov</a>. NPI resolved via NPPES API (87.5% match rate). <strong>MA:</strong> Pending public records request to BORIM. No bulk download available.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Quarterly minimum</span>
-          <span><strong>Key field:</strong> License number (resolved to NPI)</span>
-          <span><strong>Coverage:</strong> WV done, MA pending</span>
-        </div>
-      </div>
-
-      <!-- ====== ABMS ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://www.abms.org/" target="_blank">ABMS</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge paid">Paid</span>
-            <span class="dm-badge api">API</span>
-            <span class="dm-publisher">Published by American Board of Medical Specialties</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S2</span></div>
-        </div>
-        <div class="dm-source-desc">The definitive source for board certification status across all 24 ABMS member boards. Board certification is the primary signal in our credentials dimension and carries the highest ERISA weight under the duty of prudence. Employers must show they verified qualifications.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Board certification status (active, expired, never certified)</li>
-              <li>Certifying board and specialty</li>
-              <li>Certification expiration date</li>
-              <li>MOC (Maintenance of Certification) participation</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Paid verification service, no free bulk download</li>
-              <li>Only covers ABMS member boards (not AOA osteopathic boards)</li>
-              <li>Some specialties have low cert rates, so "not certified" isn't always bad</li>
-              <li>No practice-level data, patient outcomes, or disciplinary info</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>ABMS API or batch verification service. Contact via <a href="https://www.abms.org/" target="_blank">abms.org</a>. Pricing is per-query or per-batch. Free public lookup at <a href="https://www.certificationmatters.org/" target="_blank">certificationmatters.org</a> (single provider, not usable at scale).</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Annual certification cycle</span>
-          <span><strong>Key field:</strong> NPI or name + DOB</span>
-          <span><strong>Status:</strong> Not started</span>
-        </div>
-      </div>
-
-      <!-- ====== CMS QPP / MIPS ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://qpp.cms.gov/" target="_blank">CMS QPP / MIPS</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge csv">CSV</span>
-            <span class="dm-publisher">Published by CMS</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S5</span></div>
-        </div>
-        <div class="dm-source-desc">Quality Payment Program data. The only place where a federal agency independently evaluated a provider's clinical quality. MIPS scores combine quality measures, cost, improvement activities, and promoting interoperability into a final score per NPI. Strong evidentiary claim for ERISA.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>MIPS final score (0-100)</li>
-              <li>Category scores (quality, cost, PI, IA)</li>
-              <li>Low-volume threshold flag</li>
-              <li>Payment adjustment indicator</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Medicare FFS only. Commercially-insured providers look thin</li>
-              <li>Below ~200 Medicare patients or ~$90k billed = no score</li>
-              <li>Annual with ~18-month lag</li>
-              <li>Low MIPS can mean admin burden, not low quality</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Bulk download from <a href="https://qpp.cms.gov/" target="_blank">qpp.cms.gov</a> via the Provider Data Catalog. CSV files by performance year. No registration required. Also available via the QPP API.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Annual (with ~18-month lag)</span>
-          <span><strong>Key field:</strong> NPI</span>
-          <span><strong>Status:</strong> Not started</span>
-        </div>
-      </div>
-
-      <!-- ====== CMS Care Compare ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://data.cms.gov/provider-data/" target="_blank">CMS Care Compare</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge api">API</span>
-            <span class="dm-publisher">Published by CMS</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S5</span></div>
-        </div>
-        <div class="dm-source-desc">CMS's consumer-facing provider comparison tool, backed by a public API. Overlaps with QPP data but adds facility affiliations, telehealth flags, and procedure volume. Updated more frequently than the annual QPP dump.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>QPP scores in a more accessible format</li>
-              <li>Telehealth availability flags</li>
-              <li>Facility and group practice affiliations</li>
-              <li>Procedure volume and service counts</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Same Medicare FFS population ceiling as QPP</li>
-              <li>No commercial payer data</li>
-              <li>Hospital-level data is stronger than clinician-level</li>
-              <li>API rate limits apply</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>API at <a href="https://data.cms.gov/provider-data/" target="_blank">data.cms.gov/provider-data</a>. Also bulk CSV downloads available. No registration for bulk files. API requires a free API key.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Quarterly</span>
-          <span><strong>Key field:</strong> NPI</span>
-          <span><strong>Status:</strong> Not started</span>
-        </div>
-      </div>
-
-      <!-- ====== Google Places ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://developers.google.com/maps/documentation/places/web-service" target="_blank">Google Places API</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free*</span>
-            <span class="dm-badge api">API</span>
-            <span class="dm-publisher">Published by Google</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S3</span></div>
-        </div>
-        <div class="dm-source-desc">Google's location and reviews data for businesses. The highest-volume review platform for healthcare providers. Star ratings and review counts are the primary signal for patient experience scoring. *Free tier covers ~$200/month, then pay-per-request.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Star rating (1-5, aggregated)</li>
-              <li>Total review count (our confidence signal)</li>
-              <li>Review text snippets</li>
-              <li>Place ID for matching to practice address</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Reviews are for the practice location, not individual providers</li>
-              <li>Subject to fake review manipulation</li>
-              <li>Rate limits and usage-based pricing at scale</li>
-              <li>No structured clinical satisfaction categories</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Google Places API (New) via <a href="https://developers.google.com/maps/documentation/places/web-service" target="_blank">Google Cloud Console</a>. Requires a GCP project and API key. Match practice by name + address. Free tier covers basic volume, then ~$17 per 1,000 requests.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Real-time</span>
-          <span><strong>Key field:</strong> Place ID (matched via practice address)</span>
-          <span><strong>Status:</strong> Not started</span>
-        </div>
-      </div>
-
-      <!-- ====== Healthgrades ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://www.healthgrades.com/" target="_blank">Healthgrades</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge scraper">Scraper</span>
-            <span class="dm-publisher">Published by Healthgrades (RVO Health)</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S3</span></div>
-        </div>
-        <div class="dm-source-desc">Healthcare-specific review platform with individual provider profiles. Includes patient satisfaction survey data beyond simple star ratings. More structured than Google for clinical satisfaction categories.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Overall patient satisfaction score</li>
-              <li>Category scores (trust, communication, time spent)</li>
-              <li>Review count per provider</li>
-              <li>Provider-level (not just practice-level) ratings</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>No public API, requires scraping</li>
-              <li>Scraping may violate ToS, partnership or licensing path TBD</li>
-              <li>Lower review volume than Google for many providers</li>
-              <li>Selection bias: patients with strong opinions over-represented</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Scrape provider profiles at healthgrades.com/physician/dr-[name]-[id]. No public API. A data licensing partnership may be available. Match by NPI (Healthgrades profiles include NPI in structured data).</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Quarterly</span>
-          <span><strong>Key field:</strong> NPI (embedded in profile)</span>
-          <span><strong>Status:</strong> Not started</span>
-        </div>
-      </div>
-
-      <!-- ====== Doximity ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://www.doximity.com/" target="_blank">Doximity</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge paid">Paid</span>
-            <span class="dm-badge api">API</span>
-            <span class="dm-publisher">Published by Doximity Inc.</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S3</span></div>
-        </div>
-        <div class="dm-source-desc">Professional network for physicians (~80% of US doctors have profiles). Combines peer reputation data with patient reviews where available. Unique signal because it captures how other doctors view a provider, not just patients.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Peer reputation / recommendation scores</li>
-              <li>Patient reviews (where available)</li>
-              <li>Verified credentials and training history</li>
-              <li>Publications and research activity</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Paid API or partnership required</li>
-              <li>Patient review coverage is thinner than Google/Healthgrades</li>
-              <li>Peer reputation can reflect referral networks, not quality</li>
-              <li>Physician-only (no NPs, PAs, or other provider types)</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Doximity API via partnership. Contact <a href="https://www.doximity.com/" target="_blank">doximity.com</a> for data access. Public profiles are viewable but structured data requires a licensing agreement.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Quarterly</span>
-          <span><strong>Key field:</strong> NPI</span>
-          <span><strong>Status:</strong> Not started</span>
-        </div>
-      </div>
-
-      <!-- ====== RateMDs ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://www.ratemds.com/" target="_blank">RateMDs</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge scraper">Scraper</span>
-            <span class="dm-publisher">Published by RateMDs</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S3</span></div>
-        </div>
-        <div class="dm-source-desc">Supplementary review platform. Lower volume than Google or Healthgrades but useful for filling gaps. Some providers have reviews here that don't appear elsewhere. Used to increase review coverage, not as a primary signal.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Patient ratings (staff, punctuality, helpfulness, knowledge)</li>
-              <li>Review text and count</li>
-              <li>Provider profile with specialty</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Lowest volume of the four review platforms</li>
-              <li>No public API, scraping only</li>
-              <li>Minimal coverage for newer or smaller practices</li>
-              <li>No NPI in profile (match by name + location)</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Scrape provider profiles at ratemds.com. Match by provider name + city/state. No API, no bulk download.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> As needed</span>
-          <span><strong>Key field:</strong> Name + location (no NPI)</span>
-          <span><strong>Status:</strong> Not started</span>
-        </div>
-      </div>
-
-      <!-- ====== Medicare Utilization PUF ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank">Medicare Utilization PUF</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge csv">CSV</span>
-            <span class="dm-publisher">Published by CMS</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S5b</span></div>
-        </div>
-        <div class="dm-source-desc">Medicare Physician &amp; Other Practitioners data. Per-NPI, per-HCPCS line items showing exactly what procedures each provider bills, how often, and at what cost. This is the backbone of our bundle-level scoring: we map CPT codes to clinical bundles by specialty to enable procedure-level quality slicing.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Per-NPI, per-CPT/HCPCS service counts</li>
-              <li>Beneficiary counts per service</li>
-              <li>Average submitted and allowed charges</li>
-              <li>Procedure volume as a confidence signal per bundle</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Medicare FFS only, no commercial or Medicaid</li>
-              <li>Providers with mostly commercial patients look thin</li>
-              <li>Annual with significant lag</li>
-              <li>No outcomes, just volume and cost patterns</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Bulk CSV from <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service" target="_blank">data.cms.gov</a>. Multiple files by year. No registration required. Large files (~2-4 GB per year).</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Annual</span>
-          <span><strong>Key field:</strong> NPI + HCPCS code</span>
-          <span><strong>Status:</strong> Not started</span>
-        </div>
-      </div>
-
-      <!-- ====== Medicaid T-MSIS ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://data.cms.gov/" target="_blank">Medicaid T-MSIS</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge csv">CSV</span>
-            <span class="dm-publisher">Published by CMS / HHS Open Data</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S5b</span></div>
-        </div>
-        <div class="dm-source-desc">Transformed Medicaid Statistical Information System. Provider-level spending by procedure code and month, covering FFS, managed care, and CHIP. Combined with Medicare data, gives a much fuller picture for specialties with heavy Medicaid populations (OB/GYN, pediatrics, primary care).</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Provider-level spending by procedure</li>
-              <li>FFS + managed care + CHIP coverage</li>
-              <li>Monthly granularity (2018-2024)</li>
-              <li>Fills the Medicaid gap that Medicare PUF misses</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Currently temporarily unavailable on HHS Open Data portal</li>
-              <li>Data quality varies by state</li>
-              <li>Still government-payer only, no commercial</li>
-              <li>Less granular than Medicare PUF for procedure-level detail</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>HHS Open Data portal at data.cms.gov. Currently temporarily unavailable. Medicare-only fallback until this dataset comes back online. No registration required when available.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> TBD (dataset currently offline)</span>
-          <span><strong>Key field:</strong> NPI</span>
-          <span><strong>Status:</strong> Blocked (data unavailable)</span>
-        </div>
-      </div>
-
-      <!-- ====== Part B Claims ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4><a href="https://data.cms.gov/" target="_blank">Part B Claims (supplementary)</a></h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge csv">CSV</span>
-            <span class="dm-publisher">Published by CMS</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S5</span></div>
-        </div>
-        <div class="dm-source-desc">Supplementary Medicare Part B claims data. Adds billing volume, specialty consistency, and practice activity signals. Used to cross-reference MIPS scores: a provider with high billing volume but no MIPS score is a size signal, not a quality signal.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Billing volume per provider</li>
-              <li>Specialty consistency validation</li>
-              <li>Practice activity level</li>
-              <li>Beneficiary demographics summary</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Medicare FFS only</li>
-              <li>Annual release with lag</li>
-              <li>No clinical quality indicators</li>
-              <li>Supplementary to MIPS, not standalone</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Bulk CSV from <a href="https://data.cms.gov/" target="_blank">data.cms.gov</a>. Part of the Medicare Provider Utilization and Payment Data series. No registration required.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> Annual</span>
-          <span><strong>Key field:</strong> NPI</span>
-          <span><strong>Status:</strong> Not started</span>
-        </div>
-      </div>
-
-      <!-- ====== Onboarding Form ====== -->
-      <div class="dm-source-card">
-        <div class="dm-source-top">
-          <h4>Practice Onboarding Form</h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge free">Free</span>
-            <span class="dm-badge form">Form</span>
-            <span class="dm-publisher">Self-reported by practices</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag scored">S4</span></div>
-        </div>
-        <div class="dm-source-desc">The only practice-reported data source. Practices fill this in during marketplace onboarding. Captures access and availability signals that aren't available from any public dataset. The schema is the 30-day deliverable, not the data itself.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it gives us</h5>
-            <ul>
-              <li>Office hours (structured: day + open/close)</li>
-              <li>New patient wait time (days)</li>
-              <li>Telehealth availability</li>
-              <li>Languages spoken</li>
-              <li>Accepting new patients flag</li>
-              <li>Wheelchair accessibility</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it doesn't</h5>
-            <ul>
-              <li>Self-reported, obvious trust problem</li>
-              <li>No independent verification until Phase 2 (claims + appointment data)</li>
-              <li>Only available for practices that onboard onto the marketplace</li>
-              <li>No clinical quality or safety data</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>JSON schema defined by us. Practices submit during onboarding. Schema design is a 30-day deliverable, validation against claims comes in Phase 2.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> On onboarding (periodic re-verification TBD)</span>
-          <span><strong>Key field:</strong> NPI</span>
-          <span><strong>Status:</strong> Schema design pending</span>
-        </div>
-      </div>
-
-      <!-- ====== Phase 2: Employer Claims ====== -->
-      <div class="dm-source-card" style="border-style:dashed;opacity:0.65;">
-        <div class="dm-source-top">
-          <h4>Employer Claims &amp; Payer Feeds</h4>
-          <div class="dm-source-meta">
-            <span class="dm-badge restricted">Contract</span>
-            <span class="dm-badge csv">CSV</span>
-            <span class="dm-publisher">From employer contracts</span>
-          </div>
-          <div class="dm-steps-used"><span class="dm-step-tag phase2">S6</span></div>
-        </div>
-        <div class="dm-source-desc">Phase 2. The gold standard for quality and the data asset we can actually own. No one else will have this for independent practices. Requires live employer contracts to start flowing. Earliest realistic: 90+ days from first live employer.</div>
-        <div class="dm-detail-grid">
-          <div class="dm-detail-box gives">
-            <h5>What it will give us</h5>
-            <ul>
-              <li>Care journey completion rates</li>
-              <li>Preventive care adherence</li>
-              <li>Readmission rates</li>
-              <li>ER utilization patterns</li>
-              <li>Real outcomes, not proxies</li>
-            </ul>
-          </div>
-          <div class="dm-detail-box limits">
-            <h5>What it won't</h5>
-            <ul>
-              <li>Requires live contracts (no data without employers)</li>
-              <li>Small sample sizes initially</li>
-              <li>Claims lag (30-90 days from encounter)</li>
-              <li>Varies by TPA/payer format</li>
-            </ul>
-          </div>
-        </div>
-        <div class="dm-detail-box connect" style="margin-top:12px;">
-          <h5>How to get it</h5>
-          <p>Claims feeds from self-insured employer contracts via their TPA. Format and cadence depend on the contract. Schema design is a 90-day deliverable.</p>
-        </div>
-        <div class="dm-source-footer">
-          <span><strong>Refresh:</strong> TBD (depends on contract)</span>
-          <span><strong>Key field:</strong> NPI + member ID</span>
-          <span><strong>Status:</strong> Phase 2</span>
-        </div>
-      </div>
-
-    </div>
-
     <!-- ==================== DISCOVERY LOG ==================== -->
     <div id="tab-discoverylog" class="tab-panel">
       <div class="page-header">
@@ -1599,7 +711,7 @@
           <p>No. Many legitimate independent practices don't bill Medicare: concierge, cash-pay, commercial-only. Failing on PECOS absence would exclude the exact providers Meroka is trying to serve. The public extract also can't distinguish "never enrolled" from "was revoked" without historical snapshots.</p>
           <ul>
             <li>PECOS kept as informational context (pecos_enrolled flag)</li>
-            <li>Used downstream in Step 2 (credentials) and Step 5b (bundles)</li>
+            <li>Used downstream in Step 2 (credentials) and Step 6 (bundles)</li>
             <li>Cross-referenced against LEIE as a data integrity check</li>
           </ul>
         </div>
@@ -1730,10 +842,10 @@
       <div class="dl-entry deferred" data-type="deferred">
         <div class="dl-top">
           <h4>Medicaid T-MSIS data temporarily unavailable</h4>
-          <div class="dl-step-tags"><span class="dm-step-tag scored">S5b</span></div>
+          <div class="dl-step-tags"><span class="dm-step-tag scored">S6</span></div>
           <span class="dl-status deferred">Deferred</span>
         </div>
-        <div class="dl-problem">Step 5b needs Medicaid provider spending data (T-MSIS, 2018-2024) for a full picture, especially for OB/GYN, pediatrics, and primary care. The dataset is listed on the HHS Open Data portal but currently isn't accessible.</div>
+        <div class="dl-problem">Step 6 needs Medicaid provider spending data (T-MSIS, 2018-2024) for a full picture, especially for OB/GYN, pediatrics, and primary care. The dataset is listed on the HHS Open Data portal but currently isn't accessible.</div>
         <div class="dl-resolution">
           <h5>Fallback</h5>
           <p>Proceed with Medicare Utilization PUF only. This covers Medicare FFS volume and costs per NPI. Providers with mostly commercial or Medicaid patients will look thin, which is a known structural ceiling. Add T-MSIS when it comes back online.</p>
@@ -1744,19 +856,19 @@
       <!-- #11 -->
       <div class="dl-entry resolved" data-type="resolved">
         <div class="dl-top">
-          <h4>Bundle-level scoring needs a new step (5b)</h4>
-          <div class="dl-step-tags"><span class="dm-step-tag scored">S5b</span></div>
+          <h4>Bundle-level scoring needs a new step (6)</h4>
+          <div class="dl-step-tags"><span class="dm-step-tag scored">S6</span></div>
           <span class="dl-status resolved">Resolved</span>
         </div>
-        <div class="dl-problem">The product mockup scores providers by clinical bundle (Maternity 71, GYN Surgery 83), not just a flat composite per NPI. The original treasure map only had 6 steps with no bundle-level slicing capability.</div>
+        <div class="dl-problem">The product mockup scores providers by clinical bundle (Maternity 71, GYN Surgery 83), not just a flat composite per NPI. The original treasure map only had 6 steps with no bundle-level slicing capability. We renumbered to make room.</div>
         <div class="dl-resolution">
           <h5>What we did</h5>
           <ul>
-            <li>Added Step 5b: CMS Utilization &amp; Bundle Scoring (15% weight, taken from Step 6)</li>
+            <li>Added Step 6: Utilization &amp; Bundle Profiling (15% weight, taken from Step 7)</li>
             <li>Maps CPT codes to clinical bundles by specialty using Medicare + Medicaid data</li>
             <li>Enables bundle-level score slicing with public data before employer claims flow</li>
             <li>Bundle taxonomy defined jointly by Antoine, Othmane, and Clara</li>
-            <li>Architecture designed so Step 6 (claims-based outcomes) plugs in per-bundle without refactoring</li>
+            <li>Architecture designed so Step 7 (claims-based outcomes) plugs in per-bundle without refactoring</li>
           </ul>
         </div>
         <div class="dl-date">Resolved Mar 2026 &middot; boss-call-notes.md, quality-treasure-map.md</div>
@@ -1945,7 +1057,7 @@
           </div>
           <span class="access-badge free">Free &middot; Public extract</span>
         </div>
-        <p>CMS's enrollment system for providers who bill Medicare. We evaluated PECOS as a potential gate input and decided against it. It's kept as informational context for this step and as a real input for Steps 2 and 5b.</p>
+        <p>CMS's enrollment system for providers who bill Medicare. We evaluated PECOS as a potential gate input and decided against it. It's kept as informational context for this step and as a real input for Steps 2 and 6.</p>
         <table class="detail-table" style="margin-top:12px;">
           <tr><th>Access</th><th>Format</th><th>Refresh</th><th>Cost</th></tr>
           <tr><td>data.cms.gov</td><td>CSV bulk download</td><td>Monthly</td><td class="tag-free">Free</td></tr>
@@ -1960,7 +1072,7 @@
 
           <p style="font-size:13px;color:#374151;margin-bottom:12px;">We also can't use the public PECOS extract to detect revocations. It only contains currently enrolled providers, so we can't distinguish "never enrolled" from "was enrolled, got revoked" without historical snapshots or the separate CMS revocation files.</p>
 
-          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>What we kept:</strong> A <code>pecos_enrolled</code> informational flag (does not affect pass/fail), plus a cross-reference check: if a provider is LEIE-excluded but still shows as PECOS-enrolled, that's a data integrity flag suggesting CMS hasn't caught up to OIG's exclusion. PECOS remains a real input for <strong>Step 2</strong> (specialty validation, enrollment history) and <strong>Step 5b</strong> (Medicare billing patterns).</p>
+          <p style="font-size:13px;color:#374151;margin-bottom:0;"><strong>What we kept:</strong> A <code>pecos_enrolled</code> informational flag (does not affect pass/fail), plus a cross-reference check: if a provider is LEIE-excluded but still shows as PECOS-enrolled, that's a data integrity flag suggesting CMS hasn't caught up to OIG's exclusion. PECOS remains a real input for <strong>Step 2</strong> (specialty validation, enrollment history) and <strong>Step 6</strong> (Medicare billing patterns).</p>
         </div>
       </div>
 
@@ -2099,7 +1211,7 @@
           <tr><td><code>leie_excl_type</code></td><td>string</td><td>OIG exclusion type code (if excluded)</td></tr>
           <tr><td><code>leie_excl_date</code></td><td>string</td><td>Date of exclusion, YYYYMMDD (if excluded)</td></tr>
         </table>
-        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Do not gate on <code>pecos_enrolled</code>. It's context for downstream steps (S2, S5b), not a safety signal.</p>
+        <p style="margin-top:12px;font-size:13px;color:#6b7280;">Do not gate on <code>pecos_enrolled</code>. It's context for downstream steps (S2, S6), not a safety signal.</p>
       </div>
 
     </div>
@@ -2178,36 +1290,240 @@
       <p style="font-size:14px;color:#6b7280;">Detail coming soon. See the main treasure map doc for current business logic and data sources.</p>
     </div>
 
-    <!-- ==================== STEP 5b (stub) ==================== -->
-    <div id="tab-step5b" class="tab-panel">
+    <!-- ==================== STEP 6 ==================== -->
+    <div id="tab-step6" class="tab-panel">
       <div class="step-header">
-        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">5b</div>
+        <div class="step-badge" style="background:#ede9fe;color:#7c3aed;border:2px solid #c4b5fd;">S6</div>
         <div class="step-meta">
-          <h2>CMS Utilization &amp; Bundle Scoring</h2>
-          <div class="tagline">What does this provider actually do, how much, and are there cost red flags?</div>
+          <h2>Utilization &amp; Bundle Profiling</h2>
+          <div class="tagline">What does this provider actually do, how much, and are there cost red flags at the bundle level?</div>
         </div>
         <div class="gate-badge" style="background:#ede9fe;color:#7c3aed;">15% of composite</div>
       </div>
 
+      <!-- Methodology overview -->
+      <div class="section-title">Claims-to-quality scoring framework (OB-GYN proof of concept)</div>
+      <div class="highlight" style="background:#eef2ff;border-left-color:#6366f1;">
+        <strong>What this is:</strong> A claims-only scoring model built from 2023 Medicare and Medicaid billing data. It turns billing patterns into a process-quality score: did this provider bill for the services a strong OB-GYN practice is expected to deliver, at volumes and billing patterns that look clinically credible?
+        <br><br>
+        <strong>Inputs:</strong> 2023 NPI + HCPCS/CPT rows from Medicare and Medicaid.
+        <strong>Standards layer:</strong> ACOG, HEDIS/NCQA, ASCCP, CMS billing norms, peer OB-GYN distributions.
+        <strong>Output:</strong> Five dimension scores plus one composite score from 0 to 100.
+        <br><br>
+        <a href="claims-quality-explainer.html" style="color:#4f46e5;text-decoration:none;font-weight:600;">Full interactive explainer &rarr;</a>
+      </div>
+
+      <!-- Data sources -->
       <div class="section-title">Data sources</div>
       <div class="source-card">
         <table class="detail-table">
           <tr><th>Source</th><th>What it gives us</th><th>Access</th><th>Refresh</th></tr>
-          <tr><td><strong>Medicare Utilization</strong></td><td>Procedure-level data (CPT codes, volumes, charges) per provider</td><td>CMS bulk download</td><td>Annual</td></tr>
-          <tr><td><strong>Medicaid T-MSIS</strong></td><td>State-level Medicaid claims and utilization</td><td>CMS / state portals</td><td>Varies</td></tr>
+          <tr><td><strong>Medicare Physician &amp; Other Practitioners</strong></td><td>Per-NPI, per-HCPCS line items: service count, beneficiary count, avg submitted/allowed charges</td><td>CMS bulk download</td><td>Annual</td></tr>
+          <tr><td><strong>Medicaid Provider Spending (T-MSIS)</strong></td><td>Provider-level spending by procedure code and month. FFS, managed care, and CHIP. 2018-2024</td><td>HHS Open Data portal (currently temporarily unavailable)</td><td>TBD</td></tr>
           <tr><td><strong>PECOS</strong></td><td>Medicare billing patterns, enrollment type, practice affiliations. Cross-reference for provider-level Medicare participation context</td><td>CMS bulk download</td><td>Monthly</td></tr>
-          <tr><td><strong>Bundle taxonomy</strong></td><td>CPT-to-bundle mapping per specialty (internal)</td><td>Internal</td><td>As needed</td></tr>
+          <tr><td><strong>Bundle taxonomy (internal)</strong></td><td>CPT-to-bundle mapping per specialty. Starts with top specialties on the marketplace</td><td>Internal</td><td>As needed</td></tr>
         </table>
         <p style="margin-top:12px;font-size:13px;color:#6b7280;">PECOS was evaluated as a gate input in Step 1 and scoped out. Here it provides Medicare participation context for bundle-level scoring: which providers bill Medicare, what specialties they enrolled under, and how that maps to utilization patterns.</p>
       </div>
 
-      <p style="font-size:14px;color:#6b7280;margin-top:16px;">Full detail coming soon. See the main treasure map doc for additional context.</p>
+      <!-- Input layer -->
+      <div class="section-title">1. Input layer: what a claims row gives us</div>
+      <div class="logic-box">
+        <p style="margin:0 0 12px;font-size:13px;color:#6b7280;">Base unit: one provider, one code, one year. Enough to see service mix, utilization breadth, payment patterns, and cross-payer overlap. Not enough to reconstruct a specific patient journey.</p>
+        <ul>
+          <li><strong>Provider identity:</strong> NPI, name, specialty, city, state. Isolates OB-GYNs and benchmarks each against the peer set</li>
+          <li><strong>Clinical signal:</strong> HCPCS or CPT code. Codes like <code>Q0091</code>, <code>96127</code>, <code>59025</code>, <code>87491</code> map to preventive or prenatal activities</li>
+          <li><strong>Utilization:</strong> Services, claims, beneficiaries. Shows whether a code appears once, occasionally, or as routine practice</li>
+          <li><strong>Money:</strong> Charges, allowed, paid. Charge-to-allowed ratios compared to OB-GYN peers for plausibility</li>
+          <li><strong>Payer reach:</strong> Medicare only, Medicaid only, or both. Shows whether services are delivered across payer types</li>
+          <li><strong>Important limit:</strong> No dates, diagnoses, or patient linkage. Model is strongest for process measures and practice patterns, not complications or timing</li>
+        </ul>
+      </div>
+
+      <!-- Transformation pipeline -->
+      <div class="section-title">2. Transformation: claims-to-score pipeline</div>
+      <div class="source-card">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+          <div style="background:#f8fafc;border-radius:8px;padding:14px;">
+            <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">01 Normalize</div>
+            <p style="margin:0;font-size:13px;color:#374151;line-height:1.5;">Join Medicare and Medicaid at NPI + code level, deduplicate code variants, compute total service volume per code</p>
+          </div>
+          <div style="background:#f8fafc;border-radius:8px;padding:14px;">
+            <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">02 Map codes to care</div>
+            <p style="margin:0;font-size:13px;color:#374151;line-height:1.5;">Group codes into clinical buckets: cervical screening, STI screening, prenatal monitoring, depression screening, prenatal lab work</p>
+          </div>
+          <div style="background:#f8fafc;border-radius:8px;padding:14px;">
+            <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">03 Benchmark</div>
+            <p style="margin:0;font-size:13px;color:#374151;line-height:1.5;">Compare against board/society guidance where possible, and against 2023 OB-GYN peer distribution where standards aren't directly observable</p>
+          </div>
+          <div style="background:#f8fafc;border-radius:8px;padding:14px;">
+            <div style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">04 Roll up</div>
+            <p style="margin:0;font-size:13px;color:#374151;line-height:1.5;">Convert benchmarked signals into five dimension scores, then combine into one composite for the lookup UI</p>
+          </div>
+        </div>
+        <div style="margin-top:14px;padding:12px 16px;background:#f0f0ff;border-radius:8px;font-size:13px;color:#374151;">
+          <strong>Core idea:</strong> billed code pattern &rarr; clinical category &rarr; standard or peer benchmark &rarr; dimension score &rarr; composite score
+        </div>
+      </div>
+
+      <!-- Five dimension scores -->
+      <div class="section-title">3. The five scores we compute</div>
+
+      <!-- ACOG Concordance -->
+      <div class="source-card" style="border-left:3px solid #0f766e;margin-bottom:12px;">
+        <div class="source-header">
+          <div class="source-num" style="background:#d8f1ec;color:#0f766e;">1</div>
+          <div>
+            <h4>ACOG Concordance</h4>
+            <div class="source-sub">Standards-based &middot; 30% of composite</div>
+          </div>
+        </div>
+        <p>Check whether the provider billed at least one code in each of five preventive categories derived from ACOG and HEDIS-aligned value sets.</p>
+        <ul style="font-size:13px;color:#374151;line-height:1.8;">
+          <li><strong>Formula:</strong> <code>(categories present / 5) x 100</code></li>
+          <li><strong>Categories:</strong> cervical screening, STI screening, prenatal monitoring, depression screening, prenatal lab panel</li>
+          <li><strong>Interpretation:</strong> breadth of guideline-concordant preventive activity. Does not ask whether every patient received the service, just whether the practice visibly performs it</li>
+        </ul>
+      </div>
+
+      <!-- Peer Comparison -->
+      <div class="source-card" style="border-left:3px solid #18354a;margin-bottom:12px;">
+        <div class="source-header">
+          <div class="source-num" style="background:#dce8f4;color:#18354a;">2</div>
+          <div>
+            <h4>Peer Comparison</h4>
+            <div class="source-sub">Peer-normalized &middot; 20% of composite</div>
+          </div>
+        </div>
+        <p>25-code reference set built from the most prevalent codes in the 2023 OB-GYN peer cohort of 17,962 NPIs. Measures how much of that common practice set a provider covers.</p>
+        <ul style="font-size:13px;color:#374151;line-height:1.8;">
+          <li><strong>Formula:</strong> <code>(typical OB-GYN codes billed / 25) x 100</code></li>
+          <li><strong>Why it matters:</strong> rewards coverage of normal OB-GYN workflow, not just purity of code mix</li>
+          <li><strong>Typical codes:</strong> <code>99213</code>, <code>99395</code>, <code>G0101</code>, <code>Q0091</code>, <code>76816</code></li>
+        </ul>
+      </div>
+
+      <!-- Volume Adequacy -->
+      <div class="source-card" style="border-left:3px solid #b45309;margin-bottom:12px;">
+        <div class="source-header">
+          <div class="source-num" style="background:#f8ead2;color:#b45309;">3</div>
+          <div>
+            <h4>Volume Adequacy</h4>
+            <div class="source-sub">Behavior check &middot; 20% of composite</div>
+          </div>
+        </div>
+        <p>Tests whether detected categories show up at believable volume relative to a visit-volume proxy. A category that appears once in a very large practice should not score like a routine workflow.</p>
+        <ul style="font-size:13px;color:#374151;line-height:1.8;">
+          <li><strong>Scoring:</strong> each detected category is scored <code>ok</code> or <code>flag</code>; score = percent marked <code>ok</code></li>
+          <li><strong>Current floors:</strong> cervical and prenatal labs ~5% of visits, STI ~3%, prenatal monitoring ~2%, depression ~1%</li>
+          <li><strong>Neutral fallback:</strong> if no measurable categories are present, provider gets a neutral <code>50</code> instead of automatic fail</li>
+        </ul>
+      </div>
+
+      <!-- Billing Quality -->
+      <div class="source-card" style="border-left:3px solid #9a3412;margin-bottom:12px;">
+        <div class="source-header">
+          <div class="source-num" style="background:#f9e1d7;color:#9a3412;">4</div>
+          <div>
+            <h4>Billing Quality</h4>
+            <div class="source-sub">Medicare pricing pattern &middot; 15% of composite</div>
+          </div>
+        </div>
+        <p>Compares the provider's average charge-to-allowed ratio with the 2023 OB-GYN peer distribution. Integrity and plausibility check, not a clinical standard.</p>
+        <ul style="font-size:13px;color:#374151;line-height:1.8;">
+          <li><strong>Metric:</strong> <code>average charge / average allowed</code></li>
+          <li><strong>Scoring bands:</strong> 100 inside peer p25-p75, 70 inside p10-p90, 40 outside that range</li>
+          <li><strong>2023 peer anchors:</strong> p10 1.45x | p25 1.80x | median 2.30x | p75 2.99x | p90 3.74x</li>
+        </ul>
+      </div>
+
+      <!-- Payer Diversity -->
+      <div class="source-card" style="border-left:3px solid #4d5d2a;margin-bottom:12px;">
+        <div class="source-header">
+          <div class="source-num" style="background:#edf0df;color:#4d5d2a;">5</div>
+          <div>
+            <h4>Payer Diversity</h4>
+            <div class="source-sub">Access proxy &middot; 15% of composite</div>
+          </div>
+        </div>
+        <p>Measures how many of the provider's codes appear in both Medicare and Medicaid. Rough proxy for whether a service pattern is broad-based across the practice.</p>
+        <ul style="font-size:13px;color:#374151;line-height:1.8;">
+          <li><strong>Metric:</strong> <code>codes seen in both payers / total codes</code></li>
+          <li><strong>Scaling:</strong> scores ramp from 0 to 100, cap around 20% both-payer overlap</li>
+          <li><strong>2023 peer anchor:</strong> mean both-payer overlap in OB-GYN peer set is ~10.1%</li>
+        </ul>
+      </div>
+
+      <!-- Composite rollup -->
+      <div class="section-title">4. Composite rollup</div>
+      <div class="source-card">
+        <p style="margin:0 0 12px;">The composite favors standards-based clinical breadth first, then routine peer coverage and volume credibility, then secondary billing and payer-breadth signals. If a provider has no Medicare charge data, billing drops out and remaining weights re-normalize.</p>
+        <div style="padding:14px 18px;background:#f0f0ff;border-radius:8px;font-size:14px;font-weight:600;color:#1a1a2e;font-family:monospace;">
+          0.30 &times; ACOG &nbsp;+&nbsp; 0.20 &times; Peer &nbsp;+&nbsp; 0.20 &times; Volume &nbsp;+&nbsp; 0.15 &times; Billing &nbsp;+&nbsp; 0.15 &times; Payer Diversity
+        </div>
+      </div>
+
+      <!-- Boundaries -->
+      <div class="section-title">5. What claims can and cannot tell us</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="source-card" style="border-left:3px solid #16a34a;">
+          <h4 style="margin:0 0 10px;font-size:14px;color:#16a34a;">Claims can support</h4>
+          <ul style="font-size:13px;color:#374151;line-height:1.8;">
+            <li>Whether guideline-related services appear in the provider's billed mix</li>
+            <li>Whether those services appear at routine or suspiciously thin volume</li>
+            <li>Whether the code mix looks like a typical OB-GYN practice</li>
+            <li>Whether Medicare billing ratios look normal or extreme</li>
+            <li>Whether services appear across both Medicare and Medicaid</li>
+          </ul>
+        </div>
+        <div class="source-card" style="border-left:3px solid #dc2626;">
+          <h4 style="margin:0 0 10px;font-size:14px;color:#dc2626;">Claims cannot support</h4>
+          <ul style="font-size:13px;color:#374151;line-height:1.8;">
+            <li>Whether the right patient got the right service at the right moment</li>
+            <li>Pregnancy timeline measures needing dates of service or gestational age</li>
+            <li>Complication, remission, symptom improvement, or neonatal outcomes</li>
+            <li>Diagnosis-specific appropriateness without ICD linkage</li>
+            <li>True care-journey completion from prenatal to postpartum</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Standards layer -->
+      <div class="section-title">6. Where the benchmarks come from</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="source-card">
+          <h4 style="margin:0 0 10px;font-size:14px;color:#1a1a2e;">Clinical guidance</h4>
+          <ul style="font-size:13px;color:#374151;line-height:1.8;">
+            <li><strong>ACOG:</strong> preventive care, prenatal workflow, depression screening expectations</li>
+            <li><strong>HEDIS / NCQA:</strong> cervical cancer screening, chlamydia screening, postpartum and depression-related process concepts</li>
+            <li><strong>ASCCP:</strong> cervical follow-up logic for future patient-level scoring</li>
+          </ul>
+        </div>
+        <div class="source-card">
+          <h4 style="margin:0 0 10px;font-size:14px;color:#1a1a2e;">Claims-native benchmarks</h4>
+          <ul style="font-size:13px;color:#374151;line-height:1.8;">
+            <li><strong>2023 OB-GYN peer set:</strong> 17,962 NPIs used to define typical-code coverage</li>
+            <li><strong>Medicare ratio bands:</strong> peer percentiles used for billing-quality scoring</li>
+            <li><strong>Payer overlap baseline:</strong> 10.1% mean both-payer overlap across the peer cohort</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight" style="background:#f8fafc;border-left-color:#6b7280;margin-top:16px;">
+        <strong>Bottom line:</strong> This score is best understood as claims-derived clinical completeness plus practice-pattern credibility. Strong enough to rank providers, surface care gaps like missing depression screening, and drive a UI. Not yet a definitive outcome score. That requires patient-linked claims with dates, diagnoses, and episode logic (Step 7).
+      </div>
+
+      <!-- Structural caveat -->
+      <div class="section-title">Structural caveat</div>
+      <div class="logic-box">
+        <p style="margin:0;font-size:13px;color:#6b7280;">Both Medicare and Medicaid datasets are government-payer only. Providers whose patients are mostly commercially insured will still look thin. We can't engineer around this, but we can be transparent about it. Combining Medicare + Medicaid gives a much fuller picture, especially for specialties with heavy Medicaid populations (OB-GYN, pediatrics, primary care).</p>
+      </div>
     </div>
 
-    <!-- ==================== STEP 6 (stub) ==================== -->
-    <div id="tab-step6" class="tab-panel">
+    <!-- ==================== STEP 7 (stub) ==================== -->
+    <div id="tab-step7" class="tab-panel">
       <div class="step-header">
-        <div class="step-badge" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;">S6</div>
+        <div class="step-badge" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;">S7</div>
         <div class="step-meta">
           <h2>Clinical Outcomes</h2>
           <div class="tagline">What are the actual health results for patients treated by this provider?</div>
@@ -2290,7 +1606,7 @@
       <div class="section-title">5. Why PECOS was removed from the gate</div>
       <div class="source-card">
         <p>Absence from PECOS doesn't indicate a problem. Many legitimate independent practices don't bill Medicare: concierge, cash-pay, commercial-only. Failing them on PECOS absence would knock out the exact providers Meroka is trying to serve.</p>
-        <p style="margin-top:8px;">We kept a <code>pecos_enrolled</code> informational flag (does not affect pass/fail) plus a cross-reference check: if a provider is LEIE-excluded but still PECOS-enrolled, that's a data integrity flag. PECOS is a real input for Steps 2 and 5b, not for safety.</p>
+        <p style="margin-top:8px;">We kept a <code>pecos_enrolled</code> informational flag (does not affect pass/fail) plus a cross-reference check: if a provider is LEIE-excluded but still PECOS-enrolled, that's a data integrity flag. PECOS is a real input for Steps 2 and 6, not for safety.</p>
       </div>
 
       <!-- 6 -->
@@ -2520,7 +1836,7 @@
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Board certification (ABMS, Step 2)</li>
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Specialty and taxonomy code (NPPES, Step 2)</li>
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> MIPS / clinical quality scores (CMS QPP, Step 5)</li>
-          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Utilization and procedure volume (CMS, Step 5b)</li>
+          <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Utilization and procedure volume (CMS, Step 6)</li>
           <li style="display:flex;gap:10px;font-size:13px;color:#374151;"><span style="color:#9ca3af;flex-shrink:0;">&times;</span> Patient reviews and ratings (Google, Healthgrades, Step 3)</li>
         </ul>
       </div>
