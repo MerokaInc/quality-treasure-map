@@ -12,11 +12,11 @@ We're building a marketplace where employers direct contract with independent pr
 | Step | Dimension | What it does | Weight | MVP |
 |------|-----------|-------------|--------|-----|
 | 1 | Safety gate | Binary pass/fail per NPI using NPDB, state boards, OIG LEIE. PECOS is informational context only. Fail = out | Gate | **Yes** |
-| 2 | Credentials & training | Board cert, med school, years in practice from NPPES, ABMS, PECOS | 20% | NPPES only (plumbing) |
-| 3 | Patient experience | Normalised review scores from Google, Healthgrades, Doximity | 20% | Deferred |
-| 4 | Access & availability | Practice-reported onboarding fields (hours, wait times, telehealth, languages) | 20% | Deferred |
-| 5 | Government quality score (MIPS) | QPP scores where available, three-situation logic for present/absent/low | 20% | **Yes** |
-| 6 | Utilization & bundle profiling | Medicare + Medicaid procedure-level data mapped to clinical bundles per specialty | 20% | **Yes** (Medicare only) |
+| 2 | Government quality score (MIPS) | QPP scores where available, three-situation logic for present/absent/low | 20% | **Yes** |
+| 3 | Utilization & bundle profiling | Medicare + Medicaid procedure-level data mapped to clinical bundles per specialty | 20% | **Yes** |
+| 4 | Credentials & training | Board cert, med school, years in practice from NPPES, ABMS, PECOS | 20% | NPPES only (plumbing) |
+| 5 | Patient experience | Normalised review scores from Google, Healthgrades, Doximity | 20% | Deferred |
+| 6 | Access & availability | Practice-reported onboarding fields (hours, wait times, telehealth, languages) | 20% | Deferred |
 | 7 | Clinical outcomes | Claims-based metrics from employer data. Phase 2, not required for initial bar | Phase 2 | Deferred |
 
 ### MVP target: May 5, 2026
@@ -26,8 +26,8 @@ Quality Gate + Quality Score 1.0, built entirely from downloadable federal data.
 | Deliverable | What's in it | Data sources |
 |-------------|-------------|--------------|
 | Quality Gate (Step 1) | NPI-level pass/fail for WV and/or MA providers | OIG LEIE (done), PECOS informational (done), WV state board (done, 87.5% NPI match), MA (pending records request). NPDB deferred (registration blocker) |
-| Quality Score 1.0 (Steps 5 + 6) | MIPS score + Medicare utilization-based claims-quality score per NPI | CMS QPP/Provider Data Catalog, CMS Care Compare, Medicare Physician & Other Practitioners utilization file |
-| Provider identity layer (Step 2 partial) | NPI, specialty, practice address as join key for scoring | NPPES (CMS bulk download) |
+| Quality Score 1.0 (Steps 2 + 3) | MIPS score + Medicare + Medicaid utilization-based claims-quality score per NPI | CMS QPP/Provider Data Catalog, CMS Care Compare, Medicare Physician & Other Practitioners, Medicaid T-MSIS |
+| Provider identity layer (Step 4 partial) | NPI, specialty, practice address as join key for scoring | NPPES (CMS bulk download) |
 
 ### Full timeline
 
@@ -35,17 +35,16 @@ Quality Gate + Quality Score 1.0, built entirely from downloadable federal data.
 |--------|-------------|
 | MVP (May 5) | Quality Gate for WV/MA. Quality Score 1.0: MIPS + Medicare utilization. NPPES as provider identity layer. All from CMS/OIG bulk downloads |
 | 60 days (mid-May) | Bundle taxonomy defined. Composite score v1. Eng productionises MVP dimensions. API endpoint live. Clara delivers ERISA methodology |
-| 90 days (mid-June) | Steps 2-4 filled in (ABMS, patient reviews, access schema). Clinical outcomes schema designed. Safety gate monitoring automated. Score validation complete. Slack agent live |
+| 90 days (mid-June) | Steps 4-6 filled in (ABMS, patient reviews, access schema). Clinical outcomes schema designed. Safety gate monitoring automated. Score validation complete. Slack agent live |
 
 ### What's deferred and why
 
 | Step | Blocker | When it comes back |
 |------|---------|-------------------|
 | Step 1: NPDB | Registration as eligible entity (weeks to months) | Post-MVP, via CVO or direct registration |
-| Step 2: ABMS | Paid API or verification service | 60-day window |
-| Step 3: Patient experience | Google API limits, Healthgrades/Doximity scraping legality | 60-90 day window, may need partnerships |
-| Step 4: Access & availability | Needs onboarding form built in product | 60-day window, schema deliverable only |
-| Step 6: Medicaid T-MSIS | Currently unavailable on HHS Open Data portal | When portal comes back online, Medicare-only fallback until then |
+| Step 4: ABMS | Paid API or verification service | 60-day window |
+| Step 5: Patient experience | Google API limits, Healthgrades/Doximity scraping legality | 60-90 day window, may need partnerships |
+| Step 6: Access & availability | Needs onboarding form built in product | 60-day window, schema deliverable only |
 | Step 7: Clinical outcomes | Requires live employer claims data | Phase 2, 90+ days from first live employer |
 
 Clara's parallel workstream defines what quality evidence satisfies ERISA fiduciary duty, documents the methodology for the employer-facing product, and identifies legal thresholds that gate marketplace inclusion.
@@ -66,7 +65,7 @@ What follows is the workstream broken into concrete steps, with data sources, bu
 
 ## 2. The workstream
 
-Seven steps. Ordered by dependency and priority. MVP (May 5): Steps 1, 5, and 6 using downloadable federal data only, with NPPES as the provider identity layer. Steps 2-4 fill in at 60 days. Step 7 is Phase 2.
+Seven steps. Ordered by dependency and priority. MVP (May 5): Steps 1, 2, and 3 using downloadable federal data only, with NPPES as the provider identity layer. Steps 4-6 fill in at 60 days. Step 7 is Phase 2.
 
 ---
 
@@ -97,7 +96,63 @@ What it answers: should this provider be in the marketplace at all?
 
 ---
 
-### Step 2. Credentials and training
+### Step 2. Government quality score (MIPS)
+
+> **QPP score + threshold flag per NPI. Three-situation logic. Weight: 20% of composite score.**
+
+What it answers: has the government independently assessed this provider's clinical quality?
+
+**Business logic (three situations):**
+
+| Situation | Action | Rationale |
+|-----------|--------|-----------|
+| Score present and strong | Weight at 20% | Only place where a federal agency independently evaluated this provider's quality. Strong evidentiary claim |
+| No score (below low-volume threshold) | Null out, redistribute weight | Below ~200 Medicare patients or ~$90k billed. Size signal, not quality signal. Not a penalty |
+| Score present but low | Cross-reference credentials and patient reviews before penalising | Low MIPS + clean record + good reviews = likely admin burden. Low MIPS + sanctions + bad reviews = real flag |
+
+**Structural ceiling:** All CMS data is Medicare fee-for-service. A physician whose patients are commercially insured will look thin in CMS data because of who they treat, not how well they treat them. We can't engineer around this, but we can be transparent about it.
+
+**Data sources:**
+
+| Source | What it gives us | Access | Refresh |
+|--------|-----------------|--------|---------|
+| CMS QPP / Provider Data Catalog | MIPS final score, category scores, low-volume flag | CMS bulk download | Annual (with lag) |
+| CMS Care Compare | QPP scores, telehealth flags, facility affiliations, procedure volume | CMS API or bulk download | Quarterly |
+| Part B claims (supplementary) | Billing volume, specialty consistency, practice activity | CMS bulk download | Annual |
+
+**Eng handoff:** Notebook with NPI-level QPP score, threshold flag (above/below low-volume), and the three-situation decision logic as documented rules.
+
+---
+
+### Step 3. Utilization & bundle profiling
+
+> **Per-CPT procedure volume, cost patterns, and clinical bundle mapping per NPI. Weight: 20% of composite score.**
+
+What it answers: what does this provider actually do, how much of it, and are there cost or volume red flags at the bundle level?
+
+**Business logic:**
+- Pull per-NPI procedure-level data from Medicare Provider Utilization files and Medicaid Provider Spending (T-MSIS): CPT/HCPCS codes billed, service counts, average charges, beneficiary counts
+- Map CPT codes to clinical bundles by specialty (e.g., OB/GYN: maternity CPTs to Maternity bundle, surgical CPTs to GYN Surgery, screening CPTs to Preventive)
+- This is what enables bundle-level scoring with public data. Instead of one flat composite per NPI, you can slice the score by clinical service line
+- Cost pattern flags: compare provider utilization against specialty peers. Lab over-ordering, unusual billing concentration, outlier charge ratios. These are cost signals for employers, not quality penalties
+- Procedure volume is a confidence signal per bundle. High volume in a bundle = reliable score. Low volume = flag for transparency, not a penalty
+- Combining Medicare + Medicaid gives a much fuller picture, especially for specialties with heavy Medicaid populations (OB/GYN, pediatrics, primary care)
+
+**Structural caveat:** Both datasets are still government-payer only. Providers whose patients are mostly commercially insured will still look thin. We can't engineer around this, but we can be transparent about it.
+
+**Data sources:**
+
+| Source | What it gives us | Access | Refresh |
+|--------|-----------------|--------|---------|
+| Medicare Physician & Other Practitioners | Per-NPI, per-HCPCS line items. Service count, beneficiary count, avg submitted/allowed charges | CMS bulk download | Annual |
+| Medicaid Provider Spending (T-MSIS) | Provider-level spending by procedure code and month. FFS, managed care, and CHIP. 2018-2024 | HHS Open Data portal | Annual |
+| Bundle taxonomy (internal) | CPT-to-bundle mapping per specialty. Starts with top specialties on the marketplace | Defined jointly by Antoine, Othmane, and Clara | As needed |
+
+**Eng handoff:** Notebook with per-NPI procedure profile across Medicare + Medicaid, CPT-to-bundle mapping, peer comparison flags, and cost pattern signals. Schema supports slicing composite score by bundle.
+
+---
+
+### Step 4. Credentials and training
 
 > **Structured fields per NPI. Weight: 20% of composite score.**
 
@@ -124,7 +179,7 @@ What it answers: is this provider qualified to practice in their claimed special
 
 ---
 
-### Step 3. Patient experience
+### Step 5. Patient experience
 
 > **Normalised composite from Google, Healthgrades, Doximity. Weight: 20% of composite score.**
 
@@ -152,7 +207,7 @@ What it answers: what do patients actually say about this provider?
 
 ---
 
-### Step 4. Access and availability
+### Step 6. Access and availability
 
 > **Structured onboarding form fields. Defined schema for pipeline. Weight: 20% of composite score.**
 
@@ -181,62 +236,6 @@ What it answers: can patients actually get to this provider and get seen?
 
 ---
 
-### Step 5. Government quality score (MIPS)
-
-> **QPP score + threshold flag per NPI. Three-situation logic. Weight: 20% of composite score.**
-
-What it answers: has the government independently assessed this provider's clinical quality?
-
-**Business logic (three situations):**
-
-| Situation | Action | Rationale |
-|-----------|--------|-----------|
-| Score present and strong | Weight at 20% | Only place where a federal agency independently evaluated this provider's quality. Strong evidentiary claim |
-| No score (below low-volume threshold) | Null out, redistribute weight | Below ~200 Medicare patients or ~$90k billed. Size signal, not quality signal. Not a penalty |
-| Score present but low | Cross-reference credentials and patient reviews before penalising | Low MIPS + clean record + good reviews = likely admin burden. Low MIPS + sanctions + bad reviews = real flag |
-
-**Structural ceiling:** All CMS data is Medicare fee-for-service. A physician whose patients are commercially insured will look thin in CMS data because of who they treat, not how well they treat them. We can't engineer around this, but we can be transparent about it.
-
-**Data sources:**
-
-| Source | What it gives us | Access | Refresh |
-|--------|-----------------|--------|---------|
-| CMS QPP / Provider Data Catalog | MIPS final score, category scores, low-volume flag | CMS bulk download | Annual (with lag) |
-| CMS Care Compare | QPP scores, telehealth flags, facility affiliations, procedure volume | CMS API or bulk download | Quarterly |
-| Part B claims (supplementary) | Billing volume, specialty consistency, practice activity | CMS bulk download | Annual |
-
-**Eng handoff:** Notebook with NPI-level QPP score, threshold flag (above/below low-volume), and the three-situation decision logic as documented rules.
-
----
-
-### Step 6. Utilization & bundle profiling
-
-> **Per-CPT procedure volume, cost patterns, and clinical bundle mapping per NPI. Weight: 20% of composite score.**
-
-What it answers: what does this provider actually do, how much of it, and are there cost or volume red flags at the bundle level?
-
-**Business logic:**
-- Pull per-NPI procedure-level data from Medicare Provider Utilization files and Medicaid Provider Spending (T-MSIS): CPT/HCPCS codes billed, service counts, average charges, beneficiary counts
-- Map CPT codes to clinical bundles by specialty (e.g., OB/GYN: maternity CPTs to Maternity bundle, surgical CPTs to GYN Surgery, screening CPTs to Preventive)
-- This is what enables bundle-level scoring with public data. Instead of one flat composite per NPI, you can slice the score by clinical service line
-- Cost pattern flags: compare provider utilization against specialty peers. Lab over-ordering, unusual billing concentration, outlier charge ratios. These are cost signals for employers, not quality penalties
-- Procedure volume is a confidence signal per bundle. High volume in a bundle = reliable score. Low volume = flag for transparency, not a penalty
-- Combining Medicare + Medicaid gives a much fuller picture, especially for specialties with heavy Medicaid populations (OB/GYN, pediatrics, primary care)
-
-**Structural caveat:** Both datasets are still government-payer only. Providers whose patients are mostly commercially insured will still look thin. We can't engineer around this, but we can be transparent about it.
-
-**Data sources:**
-
-| Source | What it gives us | Access | Refresh |
-|--------|-----------------|--------|---------|
-| Medicare Physician & Other Practitioners | Per-NPI, per-HCPCS line items. Service count, beneficiary count, avg submitted/allowed charges | CMS bulk download | Annual |
-| Medicaid Provider Spending (T-MSIS) | Provider-level spending by procedure code and month. FFS, managed care, and CHIP. 2018-2024 | HHS Open Data portal (currently temporarily unavailable) | TBD |
-| Bundle taxonomy (internal) | CPT-to-bundle mapping per specialty. Starts with top specialties on the marketplace | Defined jointly by Antoine, Othmane, and Clara | As needed |
-
-**Eng handoff:** Notebook with per-NPI procedure profile across Medicare + Medicaid, CPT-to-bundle mapping, peer comparison flags, and cost pattern signals. Schema supports slicing composite score by bundle.
-
----
-
 ### Step 7. Clinical outcomes (Phase 2)
 
 > **Care journey, preventive care, readmissions. Unweighted until employer claims data is live. Not required for initial bar.**
@@ -258,16 +257,16 @@ Phase 2. We can't build it until we have employer claims data flowing, which req
 | Deliverable | Owner |
 |------------|-------|
 | Step 1, safety gate: NPI-level pass/fail from OIG LEIE + state boards (WV done, MA pending) + PECOS informational. NPDB deferred | Othmane + Antoine |
-| Step 5, government quality score (MIPS): QPP score per NPI with three-situation logic. Notebook to eng | Othmane + Antoine |
-| Step 6, utilization & bundle profiling: Medicare Physician & Other Practitioners utilization file scored using claims-quality framework. Medicare-only (Medicaid T-MSIS unavailable). Notebook to eng | Antoine + Othmane |
+| Step 2, government quality score (MIPS): QPP score per NPI with three-situation logic. Notebook to eng | Othmane + Antoine |
+| Step 3, utilization & bundle profiling: Medicare + Medicaid procedure-level data scored using claims-quality framework. Notebook to eng | Antoine + Othmane |
 | NPPES provider identity layer: NPI, specialty, practice address as join key across all scoring dimensions | Othmane |
 
 ### 60 days (by mid-May 2026)
 
 | Deliverable | Owner |
 |------------|-------|
-| Step 2, credentials: ABMS board certification + PECOS cross-reference added to NPPES base. Notebook to eng | Othmane |
-| Step 4, access & availability: onboarding form schema, sample output, scoring rubric | Antoine |
+| Step 4, credentials: ABMS board certification + PECOS cross-reference added to NPPES base. Notebook to eng | Othmane |
+| Step 6, access & availability: onboarding form schema, sample output, scoring rubric | Antoine |
 | Bundle taxonomy defined: CPT-to-bundle mapping per specialty, starting with top marketplace specialties | Antoine + Othmane + Clara |
 | Composite score v1: first full composite combining MVP dimensions + credentials. Weighting validated against sample NPI cohort | Antoine |
 | Eng integration: MVP dimension notebooks productionised. API endpoint serving NPI-level quality data | Eng team |
@@ -277,7 +276,7 @@ Phase 2. We can't build it until we have employer claims data flowing, which req
 
 | Deliverable | Owner |
 |------------|-------|
-| Step 3, patient experience: normalised composite score from Google / Healthgrades / Doximity. Notebook to eng | Antoine |
+| Step 5, patient experience: normalised composite score from Google / Healthgrades / Doximity. Notebook to eng | Antoine |
 | Step 7, clinical outcomes design: schema and methodology for claims-based outcomes scoring. Ready when claims data is live | Antoine + Othmane |
 | Safety gate monitoring: automated refresh cadence for NPDB / PECOS / state boards. Alerting for status changes | Eng team |
 | Score validation: back-test composite scores against known quality signals. Identify edge cases. Adjust weights if needed | Antoine + Clara |
@@ -351,9 +350,8 @@ Each dimension is a separate handoff. We don't bundle them. Eng can productionis
 | NPDB access: query directly or through an authorized agent? | Gates safety gate timeline |
 | ABMS access: API vs. batch verification service? | Cost and turnaround TBD |
 | State board coverage: start with states where we have practices, or solve nationally? | Scope of Step 1 |
-| Review platform rights: Google API limits, Healthgrades/Doximity scraping legality. Partnership? | Step 3 feasibility |
-| MIPS low-volume: neutral signal or slight negative? | Step 5 scoring logic |
+| Review platform rights: Google API limits, Healthgrades/Doximity scraping legality. Partnership? | Step 5 feasibility |
+| MIPS low-volume: neutral signal or slight negative? | Step 2 scoring logic |
 | Composite weights (20/20/20/20/20): validate against employer priorities or ship and adjust? | Composite methodology |
-| Medicaid Provider Spending dataset: currently unavailable on HHS Open Data portal. Medicare-only fallback until then | Step 6 data completeness |
-| Bundle taxonomy granularity: top 3-5 bundles per specialty, or comprehensive from day one? | Step 6 scope |
+| Bundle taxonomy granularity: top 3-5 bundles per specialty, or comprehensive from day one? | Step 3 scope |
 | Safety gate refresh cadence: what interval satisfies the monitoring obligation? | Legal exposure (Hecht v. Cigna) |
