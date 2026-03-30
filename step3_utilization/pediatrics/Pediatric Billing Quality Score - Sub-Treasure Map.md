@@ -3,11 +3,14 @@
 
 ## What This Document Does
 
-The other three docs ask about clinical practice: does this provider screen, vaccinate, follow guidelines? This doc asks about billing behavior: does this provider's charge-to-allowed ratio look normal compared to pediatric peers?
+The other three docs ask about clinical practice: does this provider screen, vaccinate, follow guidelines? This doc asks about billing behavior: do the ratios between this provider's procedures look normal?
 
-For Medicare-coded services, we compare the provider's average charge-to-allowed ratio with the pediatric peer distribution. This is not a clinical standard. It is an integrity and plausibility check. A provider whose charges are wildly out of line with what Medicare allows, either far above or far below peers, may have unusual billing practices worth investigating.
+We check three things:
+1. **Charge-to-allowed ratios** — is their pricing in line with peers?
+2. **Procedure-to-procedure ratios** — do the relationships between their codes make clinical sense? Are there green flags (good practice signals) or red flags (things that shouldn't go together, or go together too often)?
+3. **E/M level distribution** — are they billing visit complexity at a similar level to peers, or skewing high (possible upcoding)?
 
-The metric is simple: `average charge / average allowed`. The standard is the peer distribution.
+The standard is always the peer distribution. Scored against state-level cohorts by default.
 
 
 ---
@@ -16,11 +19,9 @@ The metric is simple: `average charge / average allowed`. The standard is the pe
 
 ---
 
-This score uses one dataset:
+This score uses both CMS datasets:
 
-**CMS Medicare Physician & Other Practitioners (By Provider and Service)**
-
-Source: https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners
+**CMS Medicare Physician & Other Practitioners (By Provider and Service)** — for charge-to-allowed analysis
 
 | Field | What We Use It For |
 |---|---|
@@ -28,13 +29,21 @@ Source: https://data.cms.gov/provider-summary-by-type-of-service/medicare-physic
 | hcpcs_code | Which service |
 | average_submitted_chrg_amt | What the provider charged (their list price) |
 | average_medicare_allowed_amt | What Medicare says the service is worth (the allowed amount) |
-| average_medicare_payment_amt | What Medicare actually paid |
 | number_of_services | Volume (for weighting) |
 | provider_type | Filter to Pediatric Medicine |
 
-The Medicaid Provider Spending file does NOT have charge or allowed amounts at this level of detail. It only has total spending. So this score is Medicare-only.
+**CMS Medicaid Provider Spending** — for procedure ratio analysis
 
-**The pediatric limitation still applies:** Medicare covers few children. But this file captures every service a pediatric provider bills to Medicare, including young adults aging out of pediatric care, dual-eligible patients, and vaccine administration that sometimes touches Medicare. The charge-to-allowed ratio is a billing behavior metric, not a clinical quality metric. Even low Medicare volume reveals pricing patterns.
+| Field | What We Use It For |
+|---|---|
+| servicing_npi | Provider identification |
+| hcpcs_code | Which service |
+| claim_count | Service volume |
+| beneficiary_count | Unique patients |
+
+The charge-to-allowed analysis (Section 1) is Medicare-only because Medicaid does not publish charge-vs-allowed detail. The procedure ratio analysis (Sections 2-4) uses both files combined, giving us full pediatric volume.
+
+**The pediatric Medicare limitation still applies for charge ratios:** Medicare covers few children. But the procedure ratio checks work with Medicaid data too, which is where the real pediatric volume lives.
 
 
 ---
@@ -183,7 +192,246 @@ This layer answers: "is the provider's pricing outlier status driven by one or t
 
 ---
 
-# PART C: BUSINESS LOGIC
+# PART C: PROCEDURE RATIO ANALYSIS (Green Flags and Red Flags)
+
+---
+
+Charge-to-allowed is about pricing. This section is about the relationships between procedures. Certain code ratios reveal practice quality, and certain combinations are warning signs. All of these use HCPCS volumes from both Medicare and Medicaid combined.
+
+
+## 5. E/M Level Distribution (Upcoding Check)
+
+Every office visit is billed at a complexity level. Peers have a typical distribution. A provider who consistently bills at higher complexity than peers may be upcoding.
+
+```
+em_codes = {
+    99211: 'minimal',
+    99212: 'straightforward',
+    99213: 'low',
+    99214: 'moderate',
+    99215: 'high'
+}
+
+For this NPI:
+    em_total = SUM(total_services) WHERE hcpcs_code IN [99211-99215]
+
+    For each level:
+        provider_pct = services for this code / em_total
+
+For peer cohort (same state):
+    peer_median_pct for each level
+```
+
+**What normal looks like in pediatrics:**
+
+| Code | Level | Typical Peer Distribution |
+|---|---|---|
+| 99211 | Minimal (nurse visit) | ~1-3% |
+| 99212 | Straightforward | ~2-5% |
+| 99213 | Low complexity | ~45-55% (the dominant code) |
+| 99214 | Moderate complexity | ~30-40% |
+| 99215 | High complexity | ~3-8% |
+
+99213 should be the most-billed code for a general pediatrician. That is the standard sick visit: ear infection, strep throat, rash, URI.
+
+**Red flag:** Provider's 99214+99215 combined is above the peer p90. This means they bill at higher complexity than 90% of peers. Possible explanations: upcoding, or a genuinely sicker panel (but unlikely for general peds).
+
+**Red flag:** Provider's 99215 alone exceeds 15% of E/M volume. Very high complexity visits should be rare in general pediatrics.
+
+**Green flag:** Provider's distribution closely matches peer median (all levels within 10 percentage points of peer median).
+
+```
+high_complexity_pct = (services_99214 + services_99215) / em_total
+
+peer_p90_high_complexity = 90th percentile of high_complexity_pct across peer cohort
+
+em_distribution_flag = "red"  IF high_complexity_pct > peer_p90_high_complexity
+                      "yellow" IF high_complexity_pct > peer_p75_high_complexity
+                      "green"  IF high_complexity_pct <= peer_p75_high_complexity
+```
+
+
+## 6. Green Flag Ratios (Good Practice Signals)
+
+These ratios indicate a provider is doing things right. High ratios compared to peers are positive signals.
+
+
+### 6A. Screening-to-Visit Ratio
+
+Does the provider screen at a rate proportional to their preventive visit volume?
+
+```
+dev_screening_ratio = services_96110 / (services_99391 + services_99392)
+    -- developmental screens per infant/toddler preventive visit
+    -- AAP says 3 screens in first 30 months, so ideal ratio approaches 0.5-1.0
+
+behavioral_screening_ratio = services_96127 / (services_99393 + services_99394)
+    -- behavioral/emotional screens per school-age/adolescent preventive visit
+    -- depression + ADHD screening, ideal ratio > 0.5
+
+vision_screening_ratio = (services_99173 + services_99177) / (services_99392 + services_99393 + services_99394)
+    -- vision screens per preventive visit ages 1-17
+
+hearing_screening_ratio = services_92551 / (services_99392 + services_99393 + services_99394)
+    -- hearing screens per preventive visit ages 1-17
+```
+
+**Green flag:** Any of these ratios above the peer p75. Provider screens more actively than most peers.
+
+**Neutral:** Between peer p25 and p75.
+
+**Signal (not necessarily red):** Below peer p25. Provider screens less than most peers. Could be legitimate (subspecialist panel, different workflow), but worth noting.
+
+
+### 6B. Immunization Efficiency Ratio
+
+Does the provider give multiple vaccines per visit (efficient, normal for well-child visits)?
+
+```
+vaccines_per_admin_visit = (services_90461) / (services_90460)
+    -- 90460 = first component, 90461 = each additional component
+    -- a ratio of 3-5 means 4-6 total vaccine components per immunization visit
+    -- this is normal for infant well-child visits (multiple vaccines given together)
+```
+
+**Green flag:** Ratio of 3.0+ (provider gives 4+ vaccines per immunization visit, consistent with ACIP schedule bundling).
+
+**Signal:** Ratio below 1.0. Provider gives only 1-2 vaccines per visit, which is unusual and may indicate incomplete immunization at each visit.
+
+
+### 6C. Preventive-to-Sick Visit Ratio
+
+What proportion of this provider's office visits are preventive?
+
+```
+preventive_ratio = (services_99381 + ... + services_99395) /
+                   (services_99381 + ... + services_99395 + services_99211 + ... + services_99215)
+```
+
+**Green flag:** Ratio above peer p75. Provider's practice is more prevention-oriented than most peers.
+
+**Neutral:** Between p25 and p75.
+
+**Signal:** Below peer p25. Practice is overwhelmingly sick visits. Could be a walk-in clinic model, not necessarily bad, but atypical for general pediatrics.
+
+
+## 7. Red Flag Ratios (Warning Signals)
+
+These ratios indicate potential problems: unusual billing patterns, possible complications, or codes that should not appear together at high rates.
+
+
+### 7A. Return Visit Intensity
+
+How many total visits does each patient have per year? Patients coming back unusually often could signal inadequate initial treatment, unnecessary follow-ups, or billing anomalies.
+
+```
+visits_per_beneficiary = total_em_services / total_unique_beneficiaries
+    -- (from Medicare "By Provider" file which has both)
+
+peer_median_visits_per_bene = MEDIAN across peer cohort
+peer_p90_visits_per_bene = 90th percentile
+```
+
+**Red flag:** `visits_per_beneficiary` above peer p90. Provider's patients come back significantly more than peers' patients.
+
+**Neutral:** Between p25 and p75.
+
+Note: high visit intensity can be legitimate (managing complex chronic conditions). But for general pediatrics, most patients should be well-child visits + occasional sick visits. A very high ratio is unusual.
+
+
+### 7B. New-to-Established Patient Ratio
+
+What proportion of visits are new patients vs. established?
+
+```
+new_patient_pct = (services_99201 + ... + services_99205 + services_99381 + ... + services_99385) /
+                  total_em_services
+```
+
+**Red flag (high):** New patient percentage far above peer p90. Could indicate high patient turnover (patients leaving the practice), or a practice that codes established patients as new (billing error or fraud).
+
+**Red flag (very low):** New patient percentage near zero. Could indicate a closed panel or a practice not accepting new patients. Not a billing issue, but a signal about practice accessibility.
+
+
+### 7C. High-Complexity Screening Ratio
+
+Does the provider bill high-complexity visits (99214/99215) at the same rate as peers for visits where screening codes are also billed?
+
+```
+screening_visit_complexity = services_99214_or_99215_on_screening_days /
+                              total_screening_services
+```
+
+This cannot be computed with aggregated data (we do not have same-day linkage). **Reserve for MA APCD or claims-level data.** Document as future red flag check.
+
+
+### 7D. After-Hours Billing Rate
+
+```
+after_hours_pct = services_99051 / total_em_services
+```
+
+**Red flag:** Above peer p90. Unusually high proportion of visits billed as after-hours. Could be legitimate (evening/weekend clinic) or could be inflated to collect the add-on payment.
+
+**Neutral:** Most providers bill 99051 at 0-3% of visits.
+
+
+### 7E. Vaccine Product Without Administration (or Vice Versa)
+
+A vaccine product code (e.g., 90707 for MMR) should always appear with an administration code (90460 or 90471). If a provider bills many product codes but very few admin codes (or vice versa), something is off.
+
+```
+product_codes = SUM(services) for all vaccine product codes (90633-90744, etc.)
+admin_codes = SUM(services) for administration codes (90460, 90461, 90471-90474)
+
+product_to_admin_ratio = product_codes / admin_codes
+```
+
+**Red flag:** Ratio far below 0.5 or above 3.0. These should be roughly proportional (each vaccine product needs an administration). Extreme imbalance suggests billing errors.
+
+**Normal range:** 0.8 to 2.0 (multiple product components per admin event is normal).
+
+
+## 8. Scoring the Ratio Analysis
+
+Each ratio check produces a flag: green, neutral/yellow, or red. We roll them up into a single ratio analysis score.
+
+```
+ratio_checks = [
+    em_distribution_flag,           -- Section 5
+    dev_screening_ratio_flag,       -- Section 6A
+    behavioral_screening_ratio_flag,-- Section 6A
+    vision_screening_ratio_flag,    -- Section 6A
+    hearing_screening_ratio_flag,   -- Section 6A
+    immunization_efficiency_flag,   -- Section 6B
+    preventive_ratio_flag,          -- Section 6C
+    return_visit_flag,              -- Section 7A
+    new_patient_ratio_flag,         -- Section 7B
+    after_hours_flag,               -- Section 7D
+    product_admin_ratio_flag        -- Section 7E
+]
+
+green_count = COUNT WHERE flag = "green"
+red_count = COUNT WHERE flag = "red"
+total_checks = COUNT of all applicable checks (skip those with insufficient data)
+
+ratio_analysis_score = ((green_count * 1.0) + (neutral_count * 0.5) + (red_count * 0.0))
+                       / total_checks * 100
+```
+
+| Score | Interpretation |
+|---|---|
+| 80-100 | Most ratios are green or neutral. Practice patterns look clean. |
+| 60-79 | Mixed. Some green flags, some red. Worth looking at which reds. |
+| 40-59 | Multiple red flags. Billing patterns deviate from peers in several areas. |
+| Below 40 | Significant red flags across multiple ratio checks. Investigate. |
+
+Green flags can offset neutral, but cannot offset red flags in isolation. A provider with 5 greens and 3 reds is different from a provider with 5 greens and 0 reds.
+
+
+---
+
+# PART D: COMPOSITE BILLING QUALITY SCORE
 
 ---
 
@@ -261,52 +509,55 @@ Per-code analysis shows: 99214 at 6.2x peer median (flagged), 90460 at 5.1x peer
 
 ---
 
-# PART D: HOW THIS FITS WITH THE OTHER THREE SCORES
+# PART E: HOW THIS FITS WITH THE OTHER THREE SCORES
 
 ---
 
 
-## 7. The Four Scores Together
+## 11. The Four Scores Together
 
 | Score | Question | Type |
 |---|---|---|
 | **Guideline Concordance** | Does this provider do what AAP says? | Clinical quality |
 | **Peer Comparison** | Does their billing look like a normal pediatrician? | Practice pattern |
 | **Volume Adequacy** | For what they claim to do, is the volume real? | Behavior check |
-| **Billing Quality** | Are their charges in line with peers? | Pricing / integrity check |
+| **Billing Quality** | Are their charges and procedure ratios in line with peers? | Pricing + integrity check |
 
-Billing quality is the integrity layer. It does not measure clinical care. It measures whether the provider's pricing behavior is consistent with their peer market. A provider can score 100 on guideline concordance, peer comparison, and volume adequacy, but 40 on billing quality if their charges are extreme outliers.
+Billing quality is the integrity layer. It checks pricing behavior (charge-to-allowed) AND practice pattern behavior (procedure ratios). A provider can score 100 on the other three scores but get flagged here for upcoding, unusual return visit intensity, or pricing outliers.
 
 | Scenario | Guideline | Peer | Volume | Billing |
 |---|---|---|---|---|
-| Good provider, normal pricing | High | High | High | 100 |
-| Good provider, aggressive pricing | High | High | High | 40-70 |
-| Low-quality provider, normal pricing | Low | Low | Low | 100 |
-| Billing anomaly (potential fraud signal) | Varies | Varies | Varies | 40 |
+| Good provider, normal billing | High | High | High | High |
+| Good provider, aggressive pricing | High | High | High | Low (charge ratio outlier) |
+| Good provider, upcoding E/M levels | High | High | High | Low (red flag on E/M distribution) |
+| Good screener but patients keep returning | High | High | High | Medium (green on screening ratios, red on return visit intensity) |
+| Low-quality provider, clean billing | Low | Low | Low | High |
 
-The billing quality score is not a quality score. It is a plausibility check. It answers: "is there anything unusual about how this provider prices their services?" That context is useful for an employer evaluating whether to direct-contract with a practice.
+The green and red flags in this doc add nuance the other scores miss. A provider with a great peer comparison score (they bill all 25 codes) but whose 96110-to-preventive-visit ratio is near zero is billing the code without doing it proportionally. The volume adequacy doc catches some of this, but the ratio analysis catches the relationships between codes, not just their individual volumes.
 
 
 ---
 
-# PART E: RISKS AND LIMITATIONS
+# PART F: RISKS AND LIMITATIONS
 
 ---
 
 
-## 8. Risks
+## 12. Risks
 
-**This is Medicare data only.** The Medicaid Provider Spending file does not have charge-vs-allowed detail. Pediatric Medicare volume is low. Some providers may have very few Medicare services, making their ratio unstable. We require a minimum of 10 services to score, but even that can be noisy.
+**Charge-to-allowed analysis is Medicare-only.** Medicaid does not publish charge-vs-allowed detail. Pediatric Medicare volume is low. We require >= 10 Medicare services to score the charge ratio. Providers with no Medicare data get scored on procedure ratios only.
 
-**Charge-to-allowed ratio is not inherently good or bad.** A high ratio does not mean a provider is overcharging. It may mean they negotiate high commercial rates and use the same fee schedule for all payers. A low ratio does not mean a provider is generous. It may mean they never updated their fee schedule. The score flags outliers for investigation, not for judgment.
+**Procedure ratios use aggregated data, not same-day linkage.** We cannot confirm that a specific screening happened on the same day as a specific visit. We can only check whether the total volumes are proportional. Some ratio checks (7C: high-complexity screening visits) require claims-level data and are reserved for MA APCD.
 
-**Geographic variation is real and large.** A provider in a high-cost urban market will have a higher ratio than one in a rural low-cost market, even if both are pricing normally for their area. State-level peer grouping helps, but within-state variation (urban vs. rural) exists. Sub-state grouping (ZIP-3 or CBSA) would improve this, but requires larger cohort sizes.
+**E/M distribution varies by practice model.** A pediatrician managing complex chronic conditions (diabetes, severe asthma) may legitimately bill more 99214/99215 than a provider seeing mostly well-child and URI. The upcoding check flags statistical outliers, not clinical judgments. Red flags need investigation, not automatic penalty.
 
-**Per-code analysis depends on sufficient peer volume per code.** If only 5 peers in the state bill a specific HCPCS code, the peer median for that code is unreliable. Require a minimum of 10 peers per code for per-code analysis. Otherwise, skip that code.
+**Return visit intensity depends on panel complexity.** A practice specializing in ADHD management will have higher visits-per-beneficiary than one doing mostly well-child care. Without diagnosis codes, we cannot adjust for panel complexity.
 
-**Peer anchors should be rebuilt annually.** Medicare fee schedules change, provider pricing changes, and market dynamics shift. Recompute the peer distribution each measurement year.
+**Green flags are signals, not guarantees.** A high screening-to-visit ratio means the provider bills screening codes proportionally. It does not confirm the screening was done correctly.
 
-**A score of 40 is not an accusation.** It means the provider's pricing is statistically unusual compared to peers. There may be a perfectly valid explanation. The score's job is to surface the signal, not to diagnose it.
+**Geographic variation affects all ratios.** State Medicaid policy, local referral patterns, and urban/rural differences all shape billing patterns. State-level peer grouping captures most of this. Sub-state grouping would help.
+
+**A red flag is not an accusation.** It means a ratio is statistically unusual compared to peers. There may be a valid explanation. The score surfaces signals for investigation.
 
 
 ---
@@ -316,6 +567,7 @@ The billing quality score is not a quality score. It is a plausibility check. It
 
 | Column | Type | Description |
 |---|---|---|
+| **Identity & Geography** | | |
 | npi | string | National Provider Identifier |
 | provider_name | string | From NPPES |
 | provider_state | string | From NPPES |
@@ -325,17 +577,50 @@ The billing quality score is not a quality score. It is a plausibility check. It
 | geo_group_level | string | "state", "national", or "zip3" — which peer cohort was used |
 | peer_cohort_state | string | State of the peer cohort (or "US" if national) |
 | peer_cohort_size | int | Number of peers in the cohort |
-| total_medicare_services | int | Total Medicare services for this NPI in measurement year |
+| **Charge-to-Allowed (Medicare only)** | | |
+| total_medicare_services | int | Total Medicare services for this NPI |
 | total_charges | float | SUM(avg_charge * services) across all codes |
 | total_allowed | float | SUM(avg_allowed * services) across all codes |
 | charge_to_allowed_ratio | float | total_charges / total_allowed |
-| peer_p10 | float | 10th percentile of peer cohort ratios |
-| peer_p25 | float | 25th percentile |
-| peer_median | float | 50th percentile |
-| peer_p75 | float | 75th percentile |
-| peer_p90 | float | 90th percentile |
-| billing_quality_score | float | 100 (normal), 70 (somewhat unusual), or 40 (outlier) |
-| direction | string | "in_range", "above_peers", or "below_peers" |
-| outlier_code_count | int | Number of HCPCS codes where provider ratio > 2x or < 0.5x peer median (optional) |
-| outlier_code_pct | float | outlier_code_count / total codes billed * 100 (optional) |
-| outlier_code_list | string | Comma-separated HCPCS codes flagged as outliers (optional) |
+| charge_peer_p10 | float | 10th percentile of peer cohort ratios |
+| charge_peer_p25 | float | 25th percentile |
+| charge_peer_median | float | 50th percentile |
+| charge_peer_p75 | float | 75th percentile |
+| charge_peer_p90 | float | 90th percentile |
+| charge_score | float | 100 (p25-p75), 70 (p10-p90), or 40 (outside p90) |
+| charge_direction | string | "in_range", "above_peers", or "below_peers" |
+| outlier_code_count | int | HCPCS codes where charge ratio > 2x or < 0.5x peer median |
+| outlier_code_list | string | Comma-separated outlier HCPCS codes |
+| **E/M Distribution** | | |
+| em_99213_pct | float | % of office visits billed as 99213 |
+| em_99214_pct | float | % of office visits billed as 99214 |
+| em_99215_pct | float | % of office visits billed as 99215 |
+| em_high_complexity_pct | float | (99214 + 99215) / total E/M visits |
+| em_distribution_flag | string | "green", "yellow", or "red" |
+| **Green Flag Ratios** | | |
+| dev_screening_ratio | float | 96110 / (99391 + 99392) |
+| dev_screening_flag | string | "green", "neutral", or "signal" |
+| behavioral_screening_ratio | float | 96127 / (99393 + 99394) |
+| behavioral_screening_flag | string | Flag |
+| vision_screening_ratio | float | (99173 + 99177) / preventive visits ages 1-17 |
+| vision_screening_flag | string | Flag |
+| hearing_screening_ratio | float | 92551 / preventive visits ages 1-17 |
+| hearing_screening_flag | string | Flag |
+| immunization_efficiency_ratio | float | 90461 / 90460 (components per admin visit) |
+| immunization_efficiency_flag | string | Flag |
+| preventive_to_sick_ratio | float | Preventive visits / total E/M visits |
+| preventive_ratio_flag | string | Flag |
+| **Red Flag Ratios** | | |
+| visits_per_beneficiary | float | Total E/M services / unique beneficiaries |
+| return_visit_flag | string | "green", "neutral", or "red" |
+| new_patient_pct | float | New patient visits / total E/M visits |
+| new_patient_flag | string | Flag |
+| after_hours_pct | float | 99051 / total E/M visits |
+| after_hours_flag | string | Flag |
+| product_to_admin_ratio | float | Vaccine product codes / admin codes |
+| product_admin_flag | string | Flag |
+| **Composite** | | |
+| green_flag_count | int | Number of ratio checks flagged green |
+| red_flag_count | int | Number of ratio checks flagged red |
+| ratio_analysis_score | float | Weighted roll-up of all ratio flags (0-100) |
+| billing_quality_composite | float | 0.35 * charge_score + 0.65 * ratio_analysis_score (or ratio only if no Medicare) |
