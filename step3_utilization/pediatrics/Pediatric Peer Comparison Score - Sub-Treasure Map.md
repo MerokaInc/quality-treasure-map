@@ -45,7 +45,22 @@ A peer is any NPI that meets all of these criteria:
 
 For Massachusetts, this should yield roughly 1,500-2,500 active general pediatricians.
 
-**Optional extension:** Build a national peer cohort by removing the state filter. Useful for benchmarking, but state-level is more defensible because practice patterns are shaped by state Medicaid policy.
+
+### Geographic Grouping
+
+Peer cohorts are built at the **state level** by default. Practice patterns vary significantly by state because of differences in Medicaid policy, scope-of-practice laws, demographic mix, and urban/rural distribution. A pediatrician in Massachusetts should be compared to Massachusetts peers, not to a national average.
+
+The pipeline should support grouping by:
+
+| Level | How | When to Use |
+|---|---|---|
+| **State** (default) | `provider_state` from NPPES | Primary scoring. Each provider is ranked against peers in their state. |
+| **National** | All states combined | Secondary benchmark. Useful for cross-state comparison: "how does the MA pediatric workforce compare to TX?" |
+| **Sub-state (future)** | ZIP-3 prefix or CBSA/MSA code from NPPES practice address | When state cohorts are large enough. Urban vs. rural pediatricians have different billing patterns (access to labs, specialists, etc.). Not implemented now, but the data supports it. |
+
+Every score in this doc (code coverage, category coverage, volume concordance) uses the peer cohort as its reference. Changing the geographic grouping changes the peer cohort, which changes the reference code set, the peer medians, and the percentile ranks. The output should always record which geographic level was used.
+
+The reference code set in Section 2 below is based on national data. When scoring at the state level, rebuild the reference set from the state-level peer cohort. If a code falls out of the top 25 in a given state (e.g., a state where few pediatricians do in-office rapid testing), it drops from that state's reference set. The reference set size may vary by state (20-25 codes).
 
 
 ## 2. The Reference Code Set: What Normal Pediatric Practice Looks Like
@@ -216,9 +231,14 @@ peer_composite = (code_coverage * 0.40) + (category_coverage * 0.30) + (volume_c
 | provider_name | string | From NPPES |
 | provider_state | string | From NPPES |
 | provider_zip | string | From NPPES |
+| provider_zip3 | string | First 3 digits of ZIP (sub-state geography) |
+| provider_cbsa | string | Core-Based Statistical Area code (metro/micro area), derived from ZIP |
 | taxonomy_code | string | From NPPES |
 | is_subspecialist | boolean | True if taxonomy is not 208000000X |
-| peer_cohort_size | int | Number of peers in the state-level cohort |
+| geo_group_level | string | "state", "national", or "zip3" — which peer cohort was used |
+| peer_cohort_size | int | Number of peers in the cohort used for scoring |
+| peer_cohort_state | string | State of the peer cohort (or "US" if national) |
+| reference_set_size | int | Number of codes in the state-level reference set (may be <25 in small states) |
 | total_services | int | Total claims for this NPI in measurement year |
 | total_beneficiaries | int | Estimated unique patients |
 | codes_in_reference_set | int | Count of the 25 reference codes this NPI billed (0-25) |

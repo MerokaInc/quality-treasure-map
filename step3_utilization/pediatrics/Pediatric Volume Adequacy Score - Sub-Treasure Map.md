@@ -53,6 +53,19 @@ If `total_visit_volume` < 50 in the measurement year, skip this provider entirel
 Each category has a **floor**: the minimum percentage of total visit volume that constitutes believable, routine practice. Floors are derived from the peer median volume data (PCC 2024 analysis), set at roughly one-third of the peer median rate. The idea: if the peer median for developmental screening is 3% of total volume, the floor is 1%. Anything below that is a trace, not a practice pattern.
 
 
+### Geographic Grouping of Floors
+
+The floors in the table below are national defaults. In production, floors should be computed at the **state level** from the state peer cohort median, because practice patterns vary by state:
+
+| Level | How Floors Are Set | When to Use |
+|---|---|---|
+| **State** (default) | For each category, compute the median rate across all pediatric NPIs in the state. Floor = median / 3. | Primary scoring. A provider in MA is evaluated against MA norms. |
+| **National** | Floors from the table below (national PCC data). | Fallback when state cohort is too small (<50 peers), or for cross-state benchmarking. |
+| **Sub-state (future)** | Compute median rates at ZIP-3 or CBSA level. | Urban vs. rural have different lab/testing patterns. Not implemented now, but the data supports it once cohort sizes are large enough. |
+
+When using state-level floors, the output should record which state peer cohort was used and the cohort size. If a state cohort has fewer than 50 active pediatricians, fall back to national floors.
+
+
 | # | Category | Codes | Peer Median Rate | Floor | What the Floor Means |
 |---|---|---|---|---|---|
 | 1 | Well-child visits | 99391, 99392, 99393, 99394 | ~20% of visits | 8% | Provider is doing preventive care as a real part of their practice, not just occasionally |
@@ -264,6 +277,12 @@ Volume adequacy is the behavior check. It sits between the other two and says: "
 |---|---|---|
 | npi | string | National Provider Identifier |
 | provider_name | string | From NPPES |
+| provider_state | string | From NPPES |
+| provider_zip | string | From NPPES |
+| provider_zip3 | string | First 3 digits of ZIP (sub-state geography) |
+| geo_group_level | string | "state", "national", or "zip3" — which peer cohort set the floors |
+| floor_cohort_state | string | State used for floor computation (or "US" if national) |
+| floor_cohort_size | int | Number of peers in the cohort used to compute floors |
 | total_visit_volume | int | Total E/M visits (sick + preventive) in measurement year |
 | well_child_services | int | Service count for well-child codes |
 | well_child_rate | float | well_child_services / total_visit_volume |

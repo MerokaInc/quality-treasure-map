@@ -283,6 +283,19 @@ The result is one row per NPI per HCPCS code with:
 If an NPI appears in both files, sum the volumes. Medicare and Medicaid claims are additive.
 
 
+### Geographic Grouping for Percentile Scoring
+
+Several measures in this doc use percentile ranking ("rank this provider against all other pediatric providers"). The peer cohort for percentile scoring should be grouped by geography:
+
+| Level | How | When to Use |
+|---|---|---|
+| **State** (default) | All pediatric NPIs (taxonomy 208000000X, >= 100 services) in the same state | Primary scoring. A provider in MA is ranked against MA peers. |
+| **National** | All qualifying pediatric NPIs across all states | Cross-state benchmarking. Useful for answering "how does the MA pediatric workforce compare nationally?" |
+| **Sub-state (future)** | ZIP-3 prefix or CBSA/MSA from NPPES practice address | Urban vs. rural comparison. Not implemented now, but the output schema carries the fields to support it later. |
+
+The peer cohort used for percentile ranks directly affects scores. A provider at the 80th percentile in a high-performing state might be at the 60th nationally. The output records which cohort was used.
+
+
 ---
 
 ### DOMAIN 1: Preventive Care & Well-Child Visits (Adjusted Weight: 40%)
@@ -548,8 +561,13 @@ Following the Step 2 pattern (one row per NPI, structured table, parquet + CSV):
 | provider_name | string | From NPPES |
 | provider_state | string | From NPPES |
 | provider_zip | string | From NPPES |
+| provider_zip3 | string | First 3 digits of ZIP (sub-state geography) |
+| provider_cbsa | string | Core-Based Statistical Area code (metro/micro area), derived from ZIP |
 | taxonomy_code | string | From NPPES |
 | is_subspecialist | boolean | True if taxonomy is not 208000000X |
+| geo_group_level | string | "state", "national", or "zip3" — which peer cohort was used for percentile ranks |
+| percentile_cohort_state | string | State of the peer cohort used for percentile scoring (or "US" if national) |
+| percentile_cohort_size | int | Number of peers in the cohort |
 | total_beneficiaries | int | Estimated total unique patients |
 | total_services | int | Total claim lines across all codes |
 | preventive_visit_ratio | float | Measure 1A metric |
