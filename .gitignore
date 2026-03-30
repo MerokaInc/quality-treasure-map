@@ -1,11 +1,12 @@
-# Large data files - download links in README.md
-LEIE_UPDATED.csv
-PECOS_Enrollment.csv
-wv_md_roster.xlsx
-wv_discipline.xlsx
+# Datasets — too large for git, download links in step READMEs
+step1_safety_gate/datasets/
+step2_government_quality/datasets/
 
 # Executed notebook backup
-step1_safety_gate_executed.ipynb
+step1_safety_gate/step1_safety_gate_executed.ipynb
+
+# Generated reports
+reports/quality-stream-weekly.pptx
 
 # Node
 node_modules/
