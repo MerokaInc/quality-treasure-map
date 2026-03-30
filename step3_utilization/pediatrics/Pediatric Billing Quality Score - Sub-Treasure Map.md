@@ -392,24 +392,292 @@ product_to_admin_ratio = product_codes / admin_codes
 **Normal range:** 0.8 to 2.0 (multiple product components per admin event is normal).
 
 
-## 8. Scoring the Ratio Analysis
+## 8. More Green Flag Ratios
+
+
+### 8A. Fluoride Varnish to Young-Patient Visits
+
+Does the provider apply fluoride at infant/toddler visits?
+
+```
+fluoride_ratio = services_99188 / (services_99391 + services_99392)
+```
+
+**Green flag:** Ratio above peer p75. Provider integrates fluoride into well-child workflow.
+
+**Neutral:** Most pediatricians do not bill 99188 (defer to dentists). If not billed at all, skip this check, do not penalize.
+
+USPSTF recommends fluoride varnish for all children ages 1-5 at primary care visits.
+
+
+### 8B. Lead Screening to Young-Patient Visits
+
+Does the provider screen for lead proportional to their infant/toddler panel?
+
+```
+lead_ratio = services_83655 / (services_99391 + services_99392)
+```
+
+**Green flag:** Ratio above peer p75. Provider actively screens for lead.
+
+**Signal:** Ratio below peer p25 while billing 83655 at all. Provider orders some lead tests but not routinely.
+
+Note: 83655 may be billed by the lab, not the ordering provider. Known limitation.
+
+
+### 8C. Caregiver Assessment to Infant Visits
+
+Does the provider screen caregivers (maternal depression, family stress) at infant visits?
+
+```
+caregiver_ratio = services_96161 / services_99391
+    -- 96161 = caregiver-focused health risk assessment
+    -- 99391 = infant preventive visit
+```
+
+**Green flag:** Ratio above 0.3 and above peer p75. Provider screens caregivers at a meaningful proportion of infant visits.
+
+**Neutral:** 96161 is relatively new and not universally adopted. If not billed, skip.
+
+Bright Futures recommends maternal depression screening (EPDS) at 1, 2, 4, 6 month infant visits.
+
+
+### 8D. Health Risk Assessment to Preventive Visits
+
+Does the provider screen for social determinants of health?
+
+```
+hra_ratio = services_96160 / total_preventive_visits
+    -- 96160 = patient-focused health risk assessment
+```
+
+**Green flag:** Ratio above peer p75. Provider routinely assesses social determinants.
+
+**Neutral:** Between p25 and p75. 96160 adoption varies widely.
+
+
+### 8E. Complexity Add-On Ratio
+
+Does the provider bill G2211 (visit complexity inherent to E/M) proportionally to peers?
+
+```
+complexity_addon_ratio = services_G2211 / total_established_em_visits
+    -- G2211 = add-on for ongoing care coordination complexity
+```
+
+**Green flag:** Ratio between peer p25 and p75. Normal longitudinal care management.
+
+**Red flag:** Ratio above peer p90. Provider bills complexity add-on at an unusually high rate. G2211 has been flagged nationally for overuse since its 2024 introduction.
+
+**Neutral:** Not billed at all. Many practices have not adopted G2211.
+
+
+### 8F. Screening Density per Preventive Visit
+
+How many screening codes does the provider bill per preventive visit?
+
+```
+screening_codes = [96110, 96127, 99173, 99177, 92551, 96160, 96161, 85018]
+
+total_screening_services = SUM(services) WHERE hcpcs_code IN screening_codes
+total_preventive_visits = SUM(services) WHERE hcpcs_code IN [99381-99395]
+
+screening_density = total_screening_services / total_preventive_visits
+```
+
+**Green flag:** Ratio above peer p75. Provider does multiple screenings per well-child visit (expected by Bright Futures: developmental, behavioral, vision, hearing all at certain ages).
+
+**Neutral:** Between p25 and p75.
+
+**Signal:** Below peer p25. Provider does few screenings per visit. The individual screenings may pass volume adequacy, but the per-visit density is low.
+
+A well-run well-child visit at age 2 should include developmental screening (96110), behavioral assessment (96127), and possibly vision/hearing. Screening density of 1.5-3.0 per preventive visit is normal for a practice following Bright Futures.
+
+
+## 9. More Red Flag Ratios
+
+
+### 9A. Single-Code Dominance
+
+Is any one code an unusually large share of the provider's total billing?
+
+```
+For each HCPCS code billed by this NPI:
+    code_pct = services_for_code / total_services
+
+max_code_pct = MAX(code_pct)
+dominant_code = the HCPCS code with the highest code_pct
+```
+
+**Red flag:** `max_code_pct` > 30% AND dominant code is NOT 90460 or 90461 (immunization admin codes are expected to be high-volume). A single non-admin code dominating more than 30% of total billing is unusual for a general pediatric practice.
+
+**Normal:** For most pediatricians, no single code exceeds 15-20% except immunization admin codes.
+
+
+### 9B. Screening Without Preventive Visits
+
+Does the provider bill screening codes without corresponding well-child visit codes? Screenings almost always happen during preventive visits.
+
+```
+has_screening = (services_96110 + services_96127) > 0
+has_preventive = (services_99391 + services_99392 + services_99393 + services_99394) > 0
+
+screening_without_preventive = has_screening AND NOT has_preventive
+```
+
+**Red flag:** Provider bills developmental or behavioral screening codes but zero well-child visit codes. These screenings should happen at preventive visits. Billing them without any preventive visits suggests either miscoding or unusual workflow.
+
+
+### 9C. Well-Child Visits Without Any Screening
+
+The inverse: provider does well-child visits but bills no screening codes at all.
+
+```
+has_preventive = total_preventive_visits > 50
+has_any_screening = (services_96110 + services_96127 + services_99173 +
+                     services_99177 + services_92551) > 0
+
+preventive_without_screening = has_preventive AND NOT has_any_screening
+```
+
+**Red flag:** Provider does 50+ preventive visits per year but zero screening codes of any kind. Bright Futures mandates multiple screenings at well-child visits. Zero billing for any screening is a strong signal of either not screening or not billing for it.
+
+
+### 9D. Infant Practice Without Developmental Screening
+
+Provider sees many infants but never screens for developmental delays.
+
+```
+infant_heavy = services_99391 > 20     -- 20+ infant preventive visits per year
+no_dev_screening = services_96110 = 0
+
+infant_no_screening = infant_heavy AND no_dev_screening
+```
+
+**Red flag:** Provider has a meaningful infant panel and bills zero 96110. AAP recommends developmental screening at 9, 18, and 30 months for all children. This is a strong red flag for a provider with 20+ infant visits.
+
+
+### 9E. Adolescent Practice Without Behavioral Screening
+
+Provider sees many adolescents but never screens for depression or behavioral issues.
+
+```
+adolescent_heavy = services_99394 > 20   -- 20+ adolescent preventive visits per year
+no_behav_screening = services_96127 = 0
+
+adolescent_no_screening = adolescent_heavy AND no_behav_screening
+```
+
+**Red flag:** Provider has a meaningful adolescent panel and bills zero 96127. AAP recommends annual depression screening ages 12-17 (PHQ-A). Strong red flag.
+
+
+### 9F. Immunization Admin Without Vaccine Products
+
+Provider bills immunization administration codes but very few or no vaccine product codes.
+
+```
+admin_services = services_90460 + services_90461 + services_90471
+product_services = SUM(services) for vaccine product codes
+    (90633, 90647, 90648, 90670, 90680, 90681, 90686, 90696,
+     90700, 90707, 90710, 90713, 90715, 90716, 90723, 90734,
+     90744, 90649, 90650, 90651, 90677)
+
+admin_without_products = admin_services > 20 AND product_services < (admin_services * 0.3)
+```
+
+**Red flag:** Provider bills 20+ admin codes but vaccine product volume is less than 30% of admin volume. Either the products are being billed under a different NPI (pharmacy, health department) or there is a billing discrepancy.
+
+Note: This is the flip side of check 7E. Both directions of mismatch are signals.
+
+
+### 9G. E/M Level Trend (Multi-Year, if Available)
+
+Is the provider's E/M complexity increasing year over year faster than peers?
+
+```
+For each year in [2021, 2022, 2023]:
+    high_complexity_pct_year = (services_99214 + services_99215) / total_em_services
+
+complexity_trend = high_complexity_pct_2023 - high_complexity_pct_2021
+peer_median_trend = MEDIAN(complexity_trend) across peer cohort
+```
+
+**Red flag:** Provider's complexity trend is above peer p90. Their E/M billing is escalating faster than peers. Could indicate progressive upcoding.
+
+**Neutral:** Trend within p25-p75 of peers. Some upward drift is normal (CMS documentation changes in 2021 shifted coding patterns nationally).
+
+Note: Requires multi-year data. The Medicaid Provider Spending file covers 2018-2024, so this is computable.
+
+
+### 9H. Visits-to-Beneficiary Ratio by Visit Type
+
+Breaking down return visit intensity by visit type:
+
+```
+preventive_per_bene = total_preventive_visits / unique_beneficiaries_preventive
+sick_per_bene = total_sick_visits / unique_beneficiaries_sick
+```
+
+**Red flag (preventive):** `preventive_per_bene` above peer p90. Patients getting more preventive visits than expected. Could indicate billing multiple preventive visits per year when one is standard (for ages 3+).
+
+**Red flag (sick):** `sick_per_bene` above peer p90 while `preventive_per_bene` is below p25. Patients come back for sick visits but don't get preventive care. Could indicate a walk-in-style practice or inadequate initial treatment.
+
+
+## 10. Cross-Category Consistency Checks
+
+These checks look for logical consistency between categories. They are not about volume but about whether the provider's code mix makes sense as a coherent pediatric practice.
+
+| Check | Logic | Flag |
+|---|---|---|
+| Immunizations but no well-child visits | admin_services > 20 AND total_preventive = 0 | Red: vaccines are normally given at well-child visits |
+| Well-child visits but no immunizations | total_preventive > 50 AND admin_services = 0 | Red: almost all well-child visits include vaccines in pediatrics |
+| Hearing screening but no vision screening | services_92551 > 10 AND (services_99173 + services_99177) = 0 | Yellow: usually done together at same visit |
+| Vision screening but no hearing screening | (services_99173 + services_99177) > 10 AND services_92551 = 0 | Yellow: usually done together |
+| Hemoglobin but no capillary draw (or reverse) | services_85018 > 10 AND services_36416 = 0 | Yellow: hemoglobin usually requires a finger stick. Absence of one suggests the other is billed under a different provider (lab). |
+| High flu vaccine volume but no flu testing | services_90686 > 20 AND services_87804 = 0 | Neutral: not all practices do rapid flu testing. Not a flag, just context. |
+| Caregiver assessment (96161) but no patient assessment (96160) | services_96161 > 10 AND services_96160 = 0 | Yellow: unusual to screen caregivers but not patients |
+
+
+## 11. Summary: All Ratio Checks
+
+| # | Check | Section | Type | Data Source |
+|---|---|---|---|---|
+| 1 | E/M level distribution | 5 | Red flag | Medicare + Medicaid |
+| 2 | Dev screening to visit ratio | 6A | Green flag | Medicare + Medicaid |
+| 3 | Behavioral screening to visit ratio | 6A | Green flag | Medicare + Medicaid |
+| 4 | Vision screening to visit ratio | 6A | Green flag | Medicare + Medicaid |
+| 5 | Hearing screening to visit ratio | 6A | Green flag | Medicare + Medicaid |
+| 6 | Immunization efficiency | 6B | Green flag | Medicare + Medicaid |
+| 7 | Preventive-to-sick ratio | 6C | Green flag | Medicare + Medicaid |
+| 8 | Return visit intensity | 7A | Red flag | Medicare |
+| 9 | New-to-established ratio | 7B | Red flag | Medicare + Medicaid |
+| 10 | After-hours billing rate | 7D | Red flag | Medicare + Medicaid |
+| 11 | Vaccine product-to-admin ratio | 7E | Red flag | Medicare + Medicaid |
+| 12 | Fluoride to young visits | 8A | Green flag | Medicare + Medicaid |
+| 13 | Lead screening to young visits | 8B | Green flag | Medicare + Medicaid |
+| 14 | Caregiver assessment to infant visits | 8C | Green flag | Medicare + Medicaid |
+| 15 | Health risk assessment to preventive visits | 8D | Green flag | Medicare + Medicaid |
+| 16 | G2211 complexity add-on ratio | 8E | Green/Red | Medicare + Medicaid |
+| 17 | Screening density per preventive visit | 8F | Green flag | Medicare + Medicaid |
+| 18 | Single-code dominance | 9A | Red flag | Medicare + Medicaid |
+| 19 | Screening without preventive visits | 9B | Red flag | Medicare + Medicaid |
+| 20 | Preventive visits without any screening | 9C | Red flag | Medicare + Medicaid |
+| 21 | Infant practice without dev screening | 9D | Red flag | Medicare + Medicaid |
+| 22 | Adolescent practice without behavioral screening | 9E | Red flag | Medicare + Medicaid |
+| 23 | Immunization admin without vaccine products | 9F | Red flag | Medicare + Medicaid |
+| 24 | E/M complexity trend (multi-year) | 9G | Red flag | Medicare + Medicaid |
+| 25 | Visits-per-bene by visit type | 9H | Red flag | Medicare |
+| 26-32 | Cross-category consistency (7 checks) | 10 | Yellow/Red | Medicare + Medicaid |
+
+**Total: 32 ratio checks** (11 green flags, 14 red flags, 7 cross-category consistency checks).
+
+
+## 12. Scoring the Ratio Analysis
 
 Each ratio check produces a flag: green, neutral/yellow, or red. We roll them up into a single ratio analysis score.
 
 ```
-ratio_checks = [
-    em_distribution_flag,           -- Section 5
-    dev_screening_ratio_flag,       -- Section 6A
-    behavioral_screening_ratio_flag,-- Section 6A
-    vision_screening_ratio_flag,    -- Section 6A
-    hearing_screening_ratio_flag,   -- Section 6A
-    immunization_efficiency_flag,   -- Section 6B
-    preventive_ratio_flag,          -- Section 6C
-    return_visit_flag,              -- Section 7A
-    new_patient_ratio_flag,         -- Section 7B
-    after_hours_flag,               -- Section 7D
-    product_admin_ratio_flag        -- Section 7E
-]
+ratio_checks = [all 32 checks listed above, excluding those with insufficient data]
 
 green_count = COUNT WHERE flag = "green"
 red_count = COUNT WHERE flag = "red"
@@ -610,6 +878,18 @@ The green and red flags in this doc add nuance the other scores miss. A provider
 | immunization_efficiency_flag | string | Flag |
 | preventive_to_sick_ratio | float | Preventive visits / total E/M visits |
 | preventive_ratio_flag | string | Flag |
+| fluoride_to_young_visit_ratio | float | 99188 / (99391 + 99392) |
+| fluoride_flag | string | Flag |
+| lead_to_young_visit_ratio | float | 83655 / (99391 + 99392) |
+| lead_flag | string | Flag |
+| caregiver_to_infant_ratio | float | 96161 / 99391 |
+| caregiver_flag | string | Flag |
+| hra_to_preventive_ratio | float | 96160 / total preventive visits |
+| hra_flag | string | Flag |
+| g2211_ratio | float | G2211 / total established E/M visits |
+| g2211_flag | string | Flag |
+| screening_density | float | Total screening services / total preventive visits |
+| screening_density_flag | string | Flag |
 | **Red Flag Ratios** | | |
 | visits_per_beneficiary | float | Total E/M services / unique beneficiaries |
 | return_visit_flag | string | "green", "neutral", or "red" |
@@ -619,8 +899,25 @@ The green and red flags in this doc add nuance the other scores miss. A provider
 | after_hours_flag | string | Flag |
 | product_to_admin_ratio | float | Vaccine product codes / admin codes |
 | product_admin_flag | string | Flag |
+| max_single_code_pct | float | Highest single-code % of total services |
+| single_code_dominance_flag | string | Flag |
+| screening_without_preventive | boolean | Screens billed but no well-child visits |
+| preventive_without_screening | boolean | Well-child visits but zero screening codes |
+| infant_no_dev_screening | boolean | 20+ infant visits but zero 96110 |
+| adolescent_no_behav_screening | boolean | 20+ adolescent visits but zero 96127 |
+| admin_without_products | boolean | Immunization admin but low vaccine product volume |
+| em_complexity_trend | float | Change in high-complexity % from earliest to latest year |
+| em_trend_flag | string | Flag (multi-year) |
+| preventive_per_bene | float | Preventive visits / unique preventive beneficiaries |
+| sick_per_bene | float | Sick visits / unique sick beneficiaries |
+| visit_type_flag | string | Flag |
+| **Cross-Category Consistency** | | |
+| consistency_flags | int | Count of cross-category consistency checks that fired (0-7) |
+| consistency_flag_list | string | Comma-separated names of fired consistency checks |
 | **Composite** | | |
+| total_checks_run | int | Number of ratio checks with sufficient data to evaluate |
 | green_flag_count | int | Number of ratio checks flagged green |
+| yellow_flag_count | int | Number flagged yellow |
 | red_flag_count | int | Number of ratio checks flagged red |
 | ratio_analysis_score | float | Weighted roll-up of all ratio flags (0-100) |
 | billing_quality_composite | float | 0.35 * charge_score + 0.65 * ratio_analysis_score (or ratio only if no Medicare) |
