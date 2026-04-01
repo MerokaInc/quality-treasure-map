@@ -113,7 +113,7 @@ Consistent with the guideline concordance document for this specialty:
 
 | Parameter | Value | Rationale |
 |---|---|---|
-| Taxonomy codes | 208VP0014X (Interventional Pain Medicine), 208VP0000X (Pain Medicine), plus pain subspecialty codes under 207L00000X, 208100000X, 2084P0800X | Broad cohort — matches guideline concordance peer definition |
+| Taxonomy codes | 208VP0014X (Interventional Pain Medicine), 208VP0000X (Pain Medicine), 2084P0800X (Psychiatry & Neurology - Pain Medicine), 2081P2900X (PM&R - Pain Medicine) | Broad cohort — matches guideline concordance peer definition |
 | State | Massachusetts | Default geographic scope |
 | Entity type | Type 1 NPI (Individual) | Excludes group/facility NPIs |
 | Minimum presence | Provider appears in at least one CMS file with > 0 services | Must have claims data to compute overlap |
@@ -393,7 +393,7 @@ Flagged as `medicaid_only_unusual`. In pain medicine, this is atypical and warra
 |---|---|---|
 | `neuromodulation_specialist` | >80% of procedural volume in SCS/PNS codes | Score normally. Neuromodulation specialists may have lower overlap because SCS procedures are less common in Medicaid. Do not adjust — the score accurately reflects their payer pattern. |
 | `non_interventional` | <10% of total services are procedural codes | Score normally. Non-interventional providers may have HIGHER overlap than interventional ones because E/M codes are more likely to appear in both files. This is expected. |
-| `anesthesiology_primary` | Taxonomy 207L00000X without pain subspecialty, pain procedures <50% of billing | **Exclude from pain medicine peer cohort** (consistent with guideline concordance document). |
+| ~~`anesthesiology_primary`~~ | ~~Taxonomy 207L00000X~~ | **No longer applicable.** General anesthesiology (207L00000X) is not in the final taxonomy list, so these providers are excluded by default. |
 
 
 ---

@@ -57,11 +57,11 @@ Pain medicine has four relevant taxonomy codes, and none of them cleanly isolate
 | Taxonomy Code | Description | National Count | MA Active Count | Problem |
 |---|---|---|---|---|
 | `2084P0800X` | Psychiatry & Neurology - Pain Medicine | 12,448 | 1,035 | **Parent specialty is psychiatry/neurology.** Many providers under this code practice primarily psychiatry with a pain subspecialty credential. Their billing includes psychotherapy (90833, 90836, 90837), psychiatric evaluations (90792), hospital rounding (99232), and nursing facility care (99308/99309) -- none of which reflect pain medicine practice. Including all of them contaminates the peer cohort with psychiatric billing patterns. |
-| `207L00000X` | Anesthesiology | 8,909 | 886 | **Not a pain taxonomy at all.** This is general anesthesiology. But many pain medicine physicians trained via anesthesiology fellowships and never updated their NPI taxonomy. They practice pain medicine full-time while their NPPES record says "Anesthesiology." Excluding all of them drops real pain providers. |
+| `2081P2900X` | Physical Medicine & Rehabilitation - Pain Medicine | TBD | TBD | PM&R physicians who subspecialize in pain. Their code mix may include rehabilitation services alongside pain procedures. Included as a dedicated pain subspecialty code. |
 | `208VP0014X` | Pain Medicine - Interventional | 2,185 | 22 | Clean pain taxonomy but rare. Only 22 active in MA. |
 | `208VP0000X` | Pain Medicine | 2,131 | 9 | Clean pain taxonomy but very rare. Only 9 active in MA. |
 
-**The taxonomy code is unreliable for pain medicine.** Using it alone either includes non-pain providers (psych/neuro) or excludes real pain providers (anesthesiology-trained).
+**The taxonomy code requires careful filtering for pain medicine.** Some taxonomy codes (e.g., 2084P0800X) include providers who practice primarily psychiatry/neurology with a pain credential. Behavioral filtering ensures the peer cohort reflects actual pain medicine practice.
 
 
 ### The Solution: Behavioral Cohort Definition
@@ -74,7 +74,7 @@ Include any NPI with taxonomy code in:
 - `2084P0800X` (Psychiatry & Neurology - Pain Medicine)
 - `208VP0014X` (Pain Medicine - Interventional)
 - `208VP0000X` (Pain Medicine)
-- `207L00000X` (Anesthesiology)
+- `2081P2900X` (PM&R - Pain Medicine)
 
 **Step 2: Apply the behavioral filter.**
 
@@ -111,10 +111,10 @@ These are the codes used to determine whether a provider is "practicing pain med
 | Group | Medicare Providers Found | Qualify for Pain Cohort | Rate |
 |---|---|---|---|
 | Pure pain taxonomy (208VP*) | 3,123 | 1,466 (interventional) + 759 (mixed) | 47% clearly interventional |
-| Anesthesiology (207L00000X) | 34,482 | 3,590 | 10.4% |
+| PM&R - Pain Medicine (2081P2900X) | TBD | TBD | TBD |
 | Psych/Neuro Pain (2084P0800X) | ~17,600 | TBD -- requires same filter | Expected low qualification rate |
 
-The 10.4% anesthesiology qualification rate is a good sanity check. Roughly 1 in 10 anesthesiologists in the national dataset bills enough pain procedures to qualify. This matches the known ratio of fellowship-trained pain anesthesiologists to general anesthesiologists.
+PM&R - Pain Medicine and Psych/Neuro Pain qualification rates need to be computed from CMS data.
 
 
 ### What About Non-Interventional Pain Providers?
@@ -141,7 +141,7 @@ Massachusetts numbers after behavioral filtering (estimated):
 | Taxonomy | MA Active | Est. After Behavioral Filter |
 |---|---|---|
 | Pain taxonomies (208VP* + 2084P0800X) | 1,066 | ~200-350 (based on national 30-47% qualification rate) |
-| Anesthesiology qualifying as pain | 886 | ~90 (based on 10.4% national rate) |
+| PM&R - Pain Medicine (2081P2900X) | TBD | TBD |
 | **Total MA pain cohort** | **1,952** | **~290-440** |
 
 290-440 is workable for a single combined cohort but breaks down if you try to split by practice type or sub-region. And that's Massachusetts -- smaller states will be far worse.
@@ -623,4 +623,4 @@ A summary of every structural decision that differs from the pediatric peer comp
 | Practice type classification | Not applicable | **interventional / non_interventional / mixed** | Fundamental practice split unique to pain medicine |
 | Subspecialist handling | Flag via taxonomy, exclude | Flag via behavioral classification + thin practice pattern | Taxonomy-based flagging doesn't work here |
 | Cohort size warning | Not needed (large cohorts) | **thin_cohort flag for < 30 providers** | Small specialty requires transparency about statistical power |
-| Anesthesiology crossover | Not applicable | **Behavioral filter: >= 50 pain procedures AND >= 10% ratio** | Anesthesiologists practicing pain medicine must be included |
+| ~~Anesthesiology crossover~~ | Not applicable | **No longer applicable** — 207L00000X removed from taxonomy list | PM&R - Pain Medicine (2081P2900X) replaces anesthesiology in the cohort |
