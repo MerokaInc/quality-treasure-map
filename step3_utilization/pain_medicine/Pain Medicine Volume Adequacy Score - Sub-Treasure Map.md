@@ -20,7 +20,7 @@ Same free CMS data as the other pain medicine docs:
 
 1. **CMS Medicare Physician & Other Practitioners** — NPI + HCPCS + service count + beneficiary count. Primary data source for pain medicine (Medicare-heavy specialty).
 2. **CMS Medicaid Provider Spending** — NPI + HCPCS + service volume + beneficiary count, 2018-2024. Secondary source. Lower pain medicine volume than Medicare but significant for dual-eligible patients.
-3. **NPPES NPI Registry** — provider identification, taxonomy codes 208VP0000X, 208VP0014X, 207L00000X, 2084P0800X.
+3. **NPPES NPI Registry** — provider identification, taxonomy codes 208VP0000X, 208VP0014X, 2084P0800X, 2081P2900X.
 
 Volume adequacy needs only HCPCS code volumes per NPI and total visit volume. No diagnosis codes required. No Rx data required.
 
@@ -47,15 +47,13 @@ Payer source is tracked separately in the output schema so that downstream consu
 | Cohort | Taxonomy Codes | Inclusion Rule |
 |---|---|---|
 | **Core Pain** (default) | 208VP0000X (Pain Medicine), 208VP0014X (Pain Medicine - Interventional) | Always included |
-| **Core Pain** (conditional) | 207L00000X (Anesthesiology) | Included only if pain procedure volume exceeds threshold (see Section 2) |
+| **Core Pain** | 2081P2900X (PM&R - Pain Medicine) | Always included — dedicated pain subspecialty code |
 | **Neuro-Pain** (separate) | 2084P0800X (Psychiatry & Neurology - Pain Medicine) | Always scored in own cohort with different benchmarks |
 
 **Why the split:**
 
-- Anesthesiologists (207L00000X) who primarily do general anesthesia bill nothing like pain medicine providers. Including them unconditionally would distort the peer cohort. The pain procedure volume threshold filters for anesthesiologists who genuinely practice pain management.
+- PM&R - Pain Medicine providers (2081P2900X) are included in the Core Pain cohort as a dedicated pain subspecialty. Their code mix may include rehabilitation services alongside pain procedures, but the subspecialty designation confirms pain medicine practice.
 - Psychiatry & Neurology pain providers (2084P0800X) practice non-interventional pain medicine. Their workflow is medication management and E/M-heavy, not procedural. Scoring them against interventionalists would systematically penalize their legitimate practice pattern.
-
-**Anesthesiology inclusion threshold:** An anesthesiologist is included in the Core Pain cohort if their total pain-specific procedure codes (Categories 1-6 in Section 3) account for >= 20% of their total service volume. Below that threshold, they are excluded from the pain medicine scoring entirely (they are practicing general anesthesia, not pain management).
 
 **Output schema requirement:** Every scored provider gets a `taxonomy_cohort` field ("core_pain" or "neuro_pain") so employers see which peer group a provider was scored against.
 
@@ -440,7 +438,7 @@ Volume adequacy is the behavior check. It sits between peer comparison and billi
 
 **Floors are computed, not clinically validated.** We set floors at one-third of the peer median. This is a reasonable heuristic but not derived from clinical literature. If the peer median for spinal injections is actually lower than expected in MA (e.g., due to prior authorization burden), the floor may be too low. Floors should be inspected by a clinical advisor before production scoring.
 
-**Anesthesiology cohort inclusion threshold (20%) is a design choice.** The threshold for including 207L00000X providers in the Core Pain cohort was set at 20% of total services being pain-specific procedures. This may include some anesthesiologists who dabble in pain management, or exclude some who legitimately split their time. The threshold should be validated against a hand-reviewed sample.
+**PM&R - Pain Medicine (2081P2900X) cohort placement.** These providers are included in the Core Pain cohort by default as a dedicated pain subspecialty. Their code mix may include rehabilitation services that differ from pure interventional pain providers. Monitor whether this creates meaningful distortion in peer benchmarks and consider a separate sub-cohort if needed.
 
 **RFA-to-facet-block ratio is a quality signal, not a hard rule.** Category 3 (RFA) captures a clinically meaningful pattern: diagnostic facet blocks should lead to RFA when diagnostic criteria are met. However, the absence of RFA does not always indicate substandard care — the provider may refer RFA to a colleague, or the patient may decline. The volume adequacy score flags the pattern; clinical interpretation is left to the consumer.
 
