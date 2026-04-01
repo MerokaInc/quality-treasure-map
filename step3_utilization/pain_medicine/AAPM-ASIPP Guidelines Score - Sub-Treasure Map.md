@@ -78,17 +78,16 @@ Source: https://npiregistry.cms.hhs.gov/ (API)
 
 Identifies every pain medicine provider by NPI, taxonomy code, practice address, and organizational affiliation. Free, always available.
 
-**Pain medicine taxonomy codes (a key complexity):**
+**Pain medicine taxonomy codes (final selection):**
 
 | Taxonomy Code | Description | Scope |
 |---|---|---|
 | 208VP0014X | Interventional Pain Medicine | Subspecialty — providers who primarily perform interventional procedures |
 | 208VP0000X | Pain Medicine | General pain medicine — may be interventional, medical, or both |
-| 207L00000X | Anesthesiology | Parent specialty — many pain medicine providers are anesthesiologists with pain fellowship training |
-| 208100000X | Physical Medicine & Rehabilitation | Parent specialty — PM&R physicians who subspecialize in pain |
 | 2084P0800X | Psychiatry & Neurology - Pain Medicine | Neurologists/psychiatrists with pain subspecialty |
+| 2081P2900X | Physical Medicine & Rehabilitation - Pain Medicine | PM&R physicians who subspecialize in pain |
 
-> **ASSUMPTION — NEEDS DECISION:** The peer cohort definition depends on which taxonomy codes we include. See "Peer Cohort Definition" in Part B for the options and trade-offs.
+> **DECIDED:** These four taxonomy codes define the pain medicine peer cohort. See "Peer Cohort Definition" in Part B for rationale.
 
 
 ### What These Three Files Give Us
@@ -206,7 +205,7 @@ Pain medicine is not like pediatrics, where one taxonomy code (208000000X) captu
 
 | Filter | Value |
 |---|---|
-| Taxonomy codes | 208VP0014X, 208VP0000X, and pain-subspecialty codes under 207L00000X, 208100000X, 2084P0800X |
+| Taxonomy codes | 208VP0014X, 208VP0000X, 2084P0800X, 2081P2900X |
 | State | Massachusetts |
 | Entity type | Type 1 (Individual) |
 | Minimum volume | TBD |
@@ -214,13 +213,15 @@ Pain medicine is not like pediatrics, where one taxonomy code (208000000X) captu
 - **Pro:** Larger cohort. More likely to reach the 30-50 provider minimum at the state level.
 - **Con:** Mixes interventional and non-interventional pain providers. A non-interventional pain physician (primarily medication management) will have a fundamentally different billing pattern than an interventional pain specialist. Comparing them directly is clinically questionable.
 
+**✓ DECISION: Option B selected.** Final taxonomy codes: 208VP0014X, 208VP0000X, 2084P0800X, 2081P2900X.
+
 **Option C: Stratified cohort — Score interventional and non-interventional separately**
 
 - **Pro:** Clinically appropriate. Compares like with like.
 - **Con:** Two smaller cohorts. Both may fall below minimum thresholds in Massachusetts.
 - **Complexity:** Requires defining a rule to classify providers as interventional vs. non-interventional (could use taxonomy code OR a billing-based rule, e.g., >X% of claims are procedural codes).
 
-> **ASSUMPTION (pending decision):** This document proceeds with **Option B (broad cohort) with a billing-based stratification flag** — all pain medicine taxonomy codes are included, but each provider gets an `interventional_flag` based on whether >40% of their total services are procedural (injection/block/implant) codes. Guideline concordance scoring uses this flag to apply appropriate benchmarks. **This assumption should be validated against the actual Massachusetts provider counts before implementation.**
+> **DECISION:** We are using **Option B (broad cohort) with a billing-based stratification flag** — the five selected pain medicine taxonomy codes (208VP0014X, 208VP0000X, 2084P0800X, 2081P2900X) are included, and each provider gets an `interventional_flag` based on whether >40% of their total services are procedural (injection/block/implant) codes. Guideline concordance scoring uses this flag to apply appropriate benchmarks.
 
 
 ### Massachusetts State Cohort Parameters
@@ -260,7 +261,6 @@ Based on the scorability analysis in Part A, we define **four clinical domains**
 | 62380 | Endoscopic decompression |
 | 63650 | Spinal cord stimulator trial lead placement |
 | 63685 | Spinal cord stimulator permanent implant |
-| 64999 | Unlisted nervous system procedure (used for some newer interventional techniques) |
 
 **Image guidance codes:**
 
@@ -268,20 +268,25 @@ Based on the scorability analysis in Part A, we define **four clinical domains**
 |---|---|
 | 77003 | Fluoroscopic guidance for needle placement |
 | 77012 | CT guidance for needle placement |
-| 76942 | Ultrasound guidance for needle placement |
+
+> **Note:** Ultrasound guidance (76942) is **excluded** for spine procedures. For spine interventions specifically, ultrasound is generally considered inferior to fluoroscopy or CT — some guidelines do not endorse it for certain injections at all. Counting 76942 as equivalent to 77003/77012 would overcount "guideline-concordant" procedures and potentially reward lower-standard practice.
 
 **Scoring logic:**
 
 ```
-image_guided_procedures = count of services where an interventional spine code
-                          AND an image guidance code are billed by the same NPI
+if total_interventional_procedures < 10:
+  score = null  # Insufficient volume — do not score this domain
+else:
+  image_guided_procedures = count of services where an interventional spine code
+                            AND an image guidance code (77003 or 77012 only)
+                            are billed by the same NPI
 
-total_interventional_procedures = count of all interventional spine code services
-                                  billed by the NPI
+  total_interventional_procedures = count of all interventional spine code services
+                                    billed by the NPI
 
-image_guidance_rate = image_guided_procedures / total_interventional_procedures
+  image_guidance_rate = image_guided_procedures / total_interventional_procedures
 
-score = percentile_rank(image_guidance_rate, peer_cohort) * 100
+  score = percentile_rank(image_guidance_rate, peer_cohort) * 100
 ```
 
 **Limitations and assumptions:**
@@ -290,10 +295,12 @@ score = percentile_rank(image_guidance_rate, peer_cohort) * 100
 |---|---|
 | Image guidance may be billed separately by the facility | Provider's rate would appear artificially low even if guidance was used. **This is the biggest confounder.** Facility-based providers may have guidance billed under the facility NPI, not the physician NPI. |
 | Some procedures have guidance bundled into the code | Newer CPT codes (e.g., 64490-64495 as revised) may include imaging guidance in the primary code. The image guidance code would not be separately billable. |
-| Ultrasound-guided procedures are legitimate | Not all interventional procedures require fluoroscopy. Peripheral nerve blocks under ultrasound guidance (76942) are clinically appropriate. The score should count all guidance modalities. |
+| Ultrasound guidance excluded for spine | 76942 is not counted as guideline-concordant guidance for spine procedures. This is a deliberate decision — ultrasound is generally considered inferior to fluoroscopy/CT for spine interventions. |
+| Low-volume instability | Providers with very few interventional procedures have volatile rates. A minimum of 10 interventional procedures is required to score this domain. |
+| 64999 excluded | Unlisted procedure codes are a catch-all with no reliable way to determine whether image guidance was clinically indicated. Excluded to avoid inflating the denominator with unclassifiable procedures. |
 | Place of service matters | Office (11) vs. ASC (24) vs. hospital outpatient (22) affects who bills the guidance component. |
 
-> **ASSUMPTION:** We count 77003, 77012, AND 76942 as image guidance. We acknowledge that facility-billed guidance will cause undercounting for some providers. A future refinement could incorporate place-of-service data to adjust expectations (lower guidance co-billing rate expected for facility-based providers).
+> **DECISIONS:** (1) Only 77003 (fluoroscopy) and 77012 (CT) count as image guidance — 76942 (ultrasound) is excluded for spine procedures as clinically contested. (2) Minimum 10 interventional procedures required to score this domain — below that, the rate is too volatile. (3) 64999 (unlisted procedure) is excluded from the procedure denominator as too noisy. We acknowledge that facility-billed guidance will cause undercounting for some providers. A future refinement could incorporate place-of-service data to adjust expectations (lower guidance co-billing rate expected for facility-based providers).
 
 
 ### Domain 2: Diagnostic-Before-Therapeutic Practice Pattern
@@ -507,7 +514,7 @@ Pain medicine subspecialists who should be flagged and potentially scored separa
 |---|---|---|
 | `neuromodulation_specialist` | >80% of procedural volume in SCS/PNS codes | Neutral score for Domain 4 (diversity). Score all other domains normally. |
 | `non_interventional` | <10% of total services are procedural codes | Score only Domain 3. Domains 1, 2, 4 get neutral (50). Flag composite as `low_confidence`. |
-| `anesthesiology_primary` | Taxonomy 207L00000X without pain subspecialty designation, but billing pain-related procedure codes | **Exclude from pain medicine cohort** unless pain-specific procedures constitute >50% of their billing. These may be general anesthesiologists doing occasional pain procedures. |
+| ~~`anesthesiology_primary`~~ | ~~Taxonomy 207L00000X~~ | **No longer applicable.** General anesthesiology (207L00000X) is not in the final taxonomy list, so these providers are excluded by default. |
 
 > **ASSUMPTION:** The subspecialist detection rules above are heuristic. The thresholds (80%, 10%, 50%) should be validated against the actual distribution of MA providers before implementation.
 
@@ -658,7 +665,7 @@ The following decisions were made with assumptions that should be validated by a
 
 | # | Question | Current Assumption | Why It Matters |
 |---|---|---|---|
-| 1 | Which taxonomy codes define the pain medicine peer cohort? | Broad (all pain taxonomy codes) with billing-based stratification | Determines who is compared to whom. Wrong cohort = meaningless percentile ranks. |
+| 1 | ~~Which taxonomy codes define the pain medicine peer cohort?~~ | **RESOLVED.** Option B selected: 208VP0014X, 208VP0000X, 2084P0800X, 2081P2900X with billing-based stratification. | Determines who is compared to whom. Wrong cohort = meaningless percentile ranks. |
 | 2 | What is the expected diagnostic-to-therapeutic ratio for facet interventions? | >= 1.5-2.0 based on dual block recommendation | If the clinical standard is single diagnostic block (not dual), the expected ratio drops to ~1.0. |
 | 3 | Should the 40% procedural threshold for `interventional_flag` be higher or lower? | 40% of total services | Determines which providers are scored on interventional guideline domains. |
 | 4 | Are there other legitimate subspecializations beyond neuromodulation that should get neutral diversity scores? | Only neuromodulation flagged | Intrathecal pump specialists, regenerative medicine specialists, etc. may also be highly concentrated. |
