@@ -94,31 +94,21 @@ All four taxonomy codes remain in the **marketplace roster** (providers are list
 | Cohort | Taxonomy Codes | Description | Scoring Approach |
 |---|---|---|---|
 | **Cohort A** (Primary) | `208VP0000X` + `208VP0014X` | Dedicated pain medicine — interventional and non-interventional | Primary quality scoring cohort. All ratios, green/red flags, and peer benchmarks in this document are calibrated against Cohort A. Scored against AAPM/ASIPP clinical benchmarks. |
-| **Cohort B** | `207L00000X` with pain-indicating HCPCS volume | Anesthesiology-pain hybrid — anesthesiologists who bill significant pain procedure volume | Scored **against each other**, not against dedicated pain providers. Their overall code mix includes anesthesia services that would distort Cohort A benchmarks. Filter: provider must bill >=20 pain-specific procedure codes (64XXX series, 62321-62324, 27096) to qualify for Cohort B. Otherwise they are general anesthesiologists and are excluded from pain scoring. |
+| **Cohort B** | `2081P2900X` | PM&R - Pain Medicine — physical medicine & rehabilitation physicians who subspecialize in pain | Scored **against each other**, not against dedicated pain providers. Their code mix may include rehabilitation services that would distort Cohort A benchmarks. Expect a blend of E/M visits, procedural interventions, and rehab-oriented services. |
 | **Cohort C** | `2084P0800X` | Pain psychiatry/neurology — behavioral pain management | Scored separately or flagged as a **different care model entirely**. Expect: high E/M proportion, minimal procedures, no injection/ablation codes. The procedural ratio checks in this document (Sections 6A-6D) are largely inapplicable. Cohort C providers are scored on E/M distribution, drug testing ratios, and charge-to-allowed only. |
 
 ### Why Three Cohorts
 
-Scoring a psychiatry-trained pain provider against an interventional pain provider would penalize the psychiatrist for not doing injections (they shouldn't be) and reward them for high E/M proportion (that's their entire practice). Scoring an anesthesiologist-pain hybrid against a dedicated pain provider would dilute the peer distribution with anesthesia codes that have nothing to do with pain management. Separate cohorts ensure "normal" means normal for that provider type.
+Scoring a psychiatry-trained pain provider against an interventional pain provider would penalize the psychiatrist for not doing injections (they shouldn't be) and reward them for high E/M proportion (that's their entire practice). Scoring a PM&R-pain provider against a dedicated pain provider would dilute the peer distribution with rehabilitation codes that have nothing to do with pain management. Separate cohorts ensure "normal" means normal for that provider type.
 
 ### Cohort B Filtering Logic
 
 ```
-For each NPI with taxonomy_code = '207L00000X':
-
-    pain_procedure_volume = SUM(services) WHERE hcpcs_code IN [
-        64400-64495,    -- nerve blocks, facet joints
-        64633-64636,    -- radiofrequency ablation
-        62321-62324,    -- epidural injections
-        64479-64484,    -- transforaminal epidurals
-        27096           -- SI joint injection
-    ]
-
-    IF pain_procedure_volume >= 20:
-        assign to Cohort B (anesthesiology-pain hybrid)
-    ELSE:
-        exclude from pain quality scoring (general anesthesiologist)
+For each NPI with taxonomy_code = '2081P2900X':
+    assign to Cohort B (PM&R - Pain Medicine)
 ```
+
+> **Note:** Unlike the previous anesthesiology-hybrid approach, no volume-based filtering is needed. The `2081P2900X` taxonomy code is a pain medicine subspecialty designation — providers self-select into this code, so all are included.
 
 ### Geographic Grouping
 
@@ -902,7 +892,7 @@ The urine drug screening ratios captured in Section 7A are a **partial proxy** f
 
 **No diagnosis codes.** Medicaid file has no ICD-10. We cannot determine whether procedures are being performed for appropriate diagnoses. A facet joint injection for low back pain is appropriate; the same injection for a condition not affecting the facet joints is not. We cannot distinguish these.
 
-**Subspecialist variation.** Interventional pain (heavy procedures), anesthesiology-pain hybrids, and non-interventional pain (medication management, psychology-adjacent) have fundamentally different billing patterns. This is addressed by the three-cohort model (see Peer Cohort Definition), but within each cohort there is still variation. Cohort B (anesthesiology-pain hybrid) in particular may be heterogeneous.
+**Subspecialist variation.** Interventional pain (heavy procedures), PM&R-pain providers, and non-interventional pain (medication management, psychology-adjacent) have fundamentally different billing patterns. This is addressed by the three-cohort model (see Peer Cohort Definition), but within each cohort there is still variation. Cohort B (PM&R - Pain Medicine) in particular may be heterogeneous given the breadth of PM&R training.
 
 **Geographic variation within Massachusetts.** Boston academic medical centers, suburban pain practices, and rural providers operate in very different markets. State-level peer grouping is the default; sub-state grouping (ZIP-3 or CBSA) would improve accuracy.
 
