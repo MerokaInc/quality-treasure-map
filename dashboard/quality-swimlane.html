@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meroka Quality System — Actor Swimlane</title>
+<style>
+  :root {
+    --bg: #f8f9fb; --dark: #1a1a2e;
+    --employer: #0d47a1; --employer-bg: #e3f2fd; --employer-row: rgba(227,242,253,0.25);
+    --patient: #e65100; --patient-bg: #fff3e0; --patient-row: rgba(255,243,224,0.25);
+    --provider: #1b5e20; --provider-bg: #e8f5e9; --provider-row: rgba(232,245,233,0.25);
+    --practice: #33691e; --practice-bg: #f1f8e9; --practice-row: rgba(241,248,233,0.25);
+    --meroka: #283593; --meroka-bg: #e8eaf6; --meroka-row: rgba(232,234,246,0.25);
+    --broker: #4a148c; --broker-bg: #f3e5f5; --broker-row: rgba(243,229,245,0.25);
+    --p1: #37474f; --p2: #0d47a1; --p3: #2e7d32; --p4: #bf360c; --p5: #4a148c;
+    --arrow: #78909c; --cross-arrow: #90a4ae;
+    --col-w: 210px; --col-gap: 30px; --cols: 23;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:#263238; }
+
+  .topbar {
+    position:fixed; top:0; left:0; right:0; z-index:300;
+    height:50px; background:var(--dark); display:flex; align-items:center; padding:0 28px;
+    box-shadow:0 2px 12px rgba(0,0,0,0.2);
+  }
+  .topbar h1 { color:#fff; font-size:14px; font-weight:700; letter-spacing:1px; }
+  .topbar span { color:#8a9bb0; font-size:12px; margin-left:14px; }
+
+  .legend {
+    position:fixed; top:50px; left:0; right:0; z-index:290;
+    background:#fff; border-bottom:1px solid #e0e0e0;
+    padding:7px 28px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;
+    font-size:10px; color:#546e7a; font-weight:500;
+  }
+  .legend-group { display:flex; gap:10px; align-items:center; }
+  .legend-item { display:flex; align-items:center; gap:4px; }
+  .legend-swatch { width:18px; height:12px; border-radius:3px; border:1px solid rgba(0,0,0,0.12); }
+  .legend-sep { width:1px; height:18px; background:#e0e0e0; margin:0 4px; }
+  .phase-chip { font-size:9px; font-weight:700; padding:2px 7px; border-radius:3px; color:#fff; }
+
+  .swimlane-wrapper { margin-top:91px; overflow-x:auto; }
+
+  .swimlane {
+    display:grid; grid-template-columns:120px 1fr;
+    width:max-content; min-width:100vw; position:relative;
+  }
+
+  /* Column header row */
+  .col-headers {
+    grid-column: 2; display:grid;
+    grid-template-columns: repeat(var(--cols), var(--col-w));
+    column-gap: var(--col-gap);
+    padding: 8px 20px;
+    border-bottom: 2px solid #cfd8dc;
+    background: #eceff1;
+  }
+  .col-header {
+    font-size:8px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px;
+    color:#78909c; text-align:center; padding:4px 0;
+    white-space:nowrap; overflow:hidden;
+  }
+  .col-headers-label {
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700; color:#78909c; text-transform:uppercase; letter-spacing:1px;
+    border-right:2px solid #ccc; border-bottom:2px solid #cfd8dc; background:#eceff1;
+  }
+
+  .actor-label {
+    position:sticky; left:0; z-index:100;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:12px 6px; text-align:center;
+    font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.7px; line-height:1.3;
+    border-right:2px solid #ccc; border-bottom:1px solid #ddd;
+  }
+  .actor-label .icon { font-size:22px; margin-bottom:4px; }
+  .actor-label.employer{background:var(--employer-bg);color:var(--employer)}
+  .actor-label.patient{background:var(--patient-bg);color:var(--patient)}
+  .actor-label.provider{background:var(--provider-bg);color:var(--provider)}
+  .actor-label.practice{background:var(--practice-bg);color:var(--practice)}
+  .actor-label.meroka{background:var(--meroka-bg);color:var(--meroka)}
+  .actor-label.broker{background:var(--broker-bg);color:var(--broker)}
+
+  .actor-content {
+    display:grid;
+    grid-template-columns: repeat(var(--cols), var(--col-w));
+    column-gap: var(--col-gap);
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom:1px solid #ddd;
+    position:relative;
+    min-height: 90px;
+  }
+  .actor-content.employer{background:var(--employer-row)}
+  .actor-content.patient{background:var(--patient-row)}
+  .actor-content.provider{background:var(--provider-row)}
+  .actor-content.practice{background:var(--practice-row)}
+  .actor-content.meroka{background:var(--meroka-row)}
+  .actor-content.broker{background:var(--broker-row)}
+
+  .arrow-svg {
+    position:absolute; top:0; left:0; width:100%; height:100%;
+    pointer-events:none; z-index:2;
+  }
+
+  .card {
+    width:var(--col-w); border-radius:6px; padding:7px 9px;
+    font-size:10px; line-height:1.4;
+    box-shadow:0 1px 6px rgba(0,0,0,0.06);
+    position:relative; z-index:5;
+    transition:transform 0.1s,box-shadow 0.1s;
+  }
+  .card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,0.12);z-index:10}
+  .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+  .card-type{font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px}
+  .card-phase{font-size:7px;font-weight:700;padding:1px 5px;border-radius:2px;color:#fff}
+  .card-phase.p1{background:var(--p1)}.card-phase.p2{background:var(--p2)}
+  .card-phase.p3{background:var(--p3)}.card-phase.p4{background:var(--p4)}
+  .card-phase.p5{background:var(--p5)}
+  .card-title{font-weight:600;font-size:11px;margin-bottom:2px}
+  .card-body{color:#546e7a;font-size:9.5px;line-height:1.35}
+  .card-ref{margin-top:3px;font-size:8px;font-weight:600;opacity:0.4}
+  .card.action{background:#fff;border:1.5px solid #cfd8dc;border-left:3px solid #78909c}
+  .card.action .card-type{color:#546e7a}
+  .card.decision{background:#fffde7;border:1.5px solid #ffe082;border-left:3px solid #ffa000}
+  .card.decision .card-type{color:#e65100}
+  .card.artifact{background:#e8eaf6;border:1.5px solid #9fa8da;border-left:3px solid #5c6bc0}
+  .card.artifact .card-type{color:#283593}
+  .card.impact{background:#fce4ec;border:1.5px solid #ef9a9a;border-left:3px solid #e53935}
+  .card.impact .card-type{color:#b71c1c}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>MEROKA</h1>
+  <span>Quality System &mdash; Stakeholder Swimlane &nbsp;(scroll right &rarr;)</span>
+</div>
+<div class="legend">
+  <div class="legend-group"><strong style="color:#37474f">Cards:</strong>
+    <div class="legend-item"><div class="legend-swatch" style="background:#fff;border-left:3px solid #78909c"></div>Action</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#fffde7;border-left:3px solid #ffa000"></div>Decision</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#e8eaf6;border-left:3px solid #5c6bc0"></div>Artifact</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#fce4ec;border-left:3px solid #e53935"></div>Impact</div>
+  </div><div class="legend-sep"></div>
+  <div class="legend-group"><strong style="color:#37474f">Phases:</strong>
+    <span class="phase-chip" style="background:var(--p1)">P1 Score</span>
+    <span class="phase-chip" style="background:var(--p2)">P2 Deliver</span>
+    <span class="phase-chip" style="background:var(--p3)">P3 Growth</span>
+    <span class="phase-chip" style="background:var(--p4)">P4 Trust</span>
+    <span class="phase-chip" style="background:var(--p5)">P5 Marketplace</span>
+  </div><div class="legend-sep"></div>
+  <div class="legend-group"><strong style="color:#37474f">Arrows:</strong>
+    <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polygon points="32,3 38,6 32,9" fill="var(--arrow)"/></svg><span>sequence</span>
+    <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="var(--cross-arrow)" stroke-width="1.5" stroke-dasharray="5,4"/><polygon points="32,3 38,6 32,9" fill="var(--cross-arrow)"/></svg><span>cross-lane</span>
+  </div>
+</div>
+
+<div class="swimlane-wrapper">
+<div class="swimlane" id="swimlane">
+
+<!-- COLUMN HEADERS (timeline) -->
+<div class="col-headers-label">Timeline</div>
+<div class="col-headers">
+  <div class="col-header">Onboard</div>
+  <div class="col-header">Safety Gate</div>
+  <div class="col-header">Score</div>
+  <div class="col-header">Validate</div>
+  <div class="col-header">Browse</div>
+  <div class="col-header">Methodology</div>
+  <div class="col-header">Explain</div>
+  <div class="col-header">Ops</div>
+  <div class="col-header">Improve</div>
+  <div class="col-header">Act / Update</div>
+  <div class="col-header">Enrich</div>
+  <div class="col-header">Trajectory</div>
+  <div class="col-header">Lifecycle</div>
+  <div class="col-header">Disputes</div>
+  <div class="col-header">Anomaly</div>
+  <div class="col-header">ERISA</div>
+  <div class="col-header">Audit</div>
+  <div class="col-header">Search</div>
+  <div class="col-header">Network</div>
+  <div class="col-header">Negotiate</div>
+  <div class="col-header">Reports</div>
+  <div class="col-header">Renew</div>
+  <div class="col-header">Impact</div>
+</div>
+
+<!-- EMPLOYERS -->
+<div class="actor-label employer"><span class="icon">&#127970;</span>Employers</div>
+<div class="actor-content employer">
+  <svg class="arrow-svg"></svg>
+  <div class="card action" id="e-browse" style="grid-column:5"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p2">P2</span></div><div class="card-title">Browse provider quality</div><div class="card-body">Composite + bundle view. Peer comparison. Confidence.</div><div class="card-ref">B1</div></div>
+  <div class="card artifact" id="e-erisa" style="grid-column:16"><div class="card-header"><span class="card-type">Artifact</span><span class="card-phase p4">P4</span></div><div class="card-title">ERISA documentation</div><div class="card-body">Quality assessment, prudence mapping, monitoring. Audit-ready.</div><div class="card-ref">E3</div></div>
+  <div class="card action" id="e-search" style="grid-column:18"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p5">P5</span></div><div class="card-title">Search quality + bundle + geo</div><div class="card-body">"Strong maternity in southern WV." Anti-leaderboard.</div><div class="card-ref">F1</div></div>
+  <div class="card action" id="e-network" style="grid-column:19"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p5">P5</span></div><div class="card-title">Build provider network</div><div class="card-body">Portfolio view, gap analysis, scenario modeling</div><div class="card-ref">F2</div></div>
+  <div class="card decision" id="e-negotiate" style="grid-column:20"><div class="card-header"><span class="card-type">Decision</span><span class="card-phase p5">P5</span></div><div class="card-title">Select &amp; negotiate</div><div class="card-body">Quality + cost inform pricing.</div><div class="card-ref">F2 &middot; F3</div></div>
+  <div class="card artifact" id="e-reports" style="grid-column:21"><div class="card-header"><span class="card-type">Artifact</span><span class="card-phase p5">P5</span></div><div class="card-title">Quarterly quality reports</div><div class="card-body">Trends, scorecards, anomalies, disputes</div><div class="card-ref">F4</div></div>
+  <div class="card decision" id="e-renew" style="grid-column:22"><div class="card-header"><span class="card-type">Decision</span><span class="card-phase p5">P5</span></div><div class="card-title">Renew or adjust?</div><div class="card-body">Annual review. Add, remove, renegotiate.</div><div class="card-ref">F4</div></div>
+  <div class="card impact" id="e-payless" style="grid-column:23"><div class="card-header"><span class="card-type">Impact</span><span class="card-phase p5">P5</span></div><div class="card-title">Pay less for better care</div><div class="card-body">Direct contracts bypass payors.</div></div>
+</div>
+
+<!-- PATIENTS -->
+<div class="actor-label patient"><span class="icon">&#129489;</span>Patients</div>
+<div class="actor-content patient">
+  <svg class="arrow-svg"></svg>
+  <div class="card impact" id="pt-directed" style="grid-column:5"><div class="card-header"><span class="card-type">Impact</span><span class="card-phase p2">P2</span></div><div class="card-title">Directed to quality providers</div><div class="card-body">Network = vetted, assessed providers</div></div>
+  <div class="card action" id="pt-reviews" style="grid-column:10"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p3">P3</span></div><div class="card-title">Leave reviews</div><div class="card-body">Google, Healthgrades feed Step 5</div><div class="card-ref">Step 5</div></div>
+  <div class="card impact" id="pt-better" style="grid-column:12"><div class="card-header"><span class="card-type">Impact</span><span class="card-phase p3">P3</span></div><div class="card-title">Better care experience</div><div class="card-body">Provider improvement &rarr; better outcomes</div></div>
+  <div class="card impact" id="pt-protected" style="grid-column:14"><div class="card-header"><span class="card-type">Impact</span><span class="card-phase p4">P4</span></div><div class="card-title">Protected by due diligence</div><div class="card-body">ERISA = vetted providers</div><div class="card-ref">E3</div></div>
+  <div class="card impact" id="pt-cost" style="grid-column:22"><div class="card-header"><span class="card-type">Impact</span><span class="card-phase p5">P5</span></div><div class="card-title">Lower out-of-pocket</div><div class="card-body">Employer savings flow to plan</div></div>
+  <div class="card action" id="pt-claims" style="grid-column:23"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p5">P5</span></div><div class="card-title">Generate claims data</div><div class="card-body">Feeds outcomes scoring (Step 7)</div><div class="card-ref">Step 7</div></div>
+</div>
+
+<!-- PRACTICES -->
+<div class="actor-label practice"><span class="icon">&#127973;</span>Practices</div>
+<div class="actor-content practice">
+  <svg class="arrow-svg"></svg>
+  <div class="card action" id="pr-onboard" style="grid-column:1"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p1">P1</span></div><div class="card-title">Onboard to marketplace</div><div class="card-body">Roster, hours, telehealth, languages</div><div class="card-ref">Step 6</div></div>
+  <div class="card action" id="pr-view" style="grid-column:6"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p2">P2</span></div><div class="card-title">View quality summary</div><div class="card-body">Aggregate quality across providers</div><div class="card-ref">B2</div></div>
+  <div class="card decision" id="pr-invest" style="grid-column:9"><div class="card-header"><span class="card-type">Decision</span><span class="card-phase p3">P3</span></div><div class="card-title">Invest in QI?</div><div class="card-body">Training, billing review, process?</div></div>
+  <div class="card action" id="pr-update" style="grid-column:10"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p3">P3</span></div><div class="card-title">Update access data</div><div class="card-body">Hours, telehealth. Score updates.</div><div class="card-ref">C4</div></div>
+  <div class="card action" id="pr-lifecycle" style="grid-column:13"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p4">P4</span></div><div class="card-title">Respond to lifecycle</div><div class="card-body">If flagged/suspended, must address</div><div class="card-ref">D2</div></div>
+  <div class="card action" id="pr-dispute" style="grid-column:14"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p4">P4</span></div><div class="card-title">Support disputes</div><div class="card-body">Context: leave, practice changes</div><div class="card-ref">E2</div></div>
+  <div class="card decision" id="pr-contract" style="grid-column:20"><div class="card-header"><span class="card-type">Decision</span><span class="card-phase p5">P5</span></div><div class="card-title">Accept contract terms</div><div class="card-body">Quality-informed pricing</div><div class="card-ref">F3</div></div>
+  <div class="card impact" id="pr-earn" style="grid-column:23"><div class="card-header"><span class="card-type">Impact</span><span class="card-phase p5">P5</span></div><div class="card-title">Earn more without payors</div><div class="card-body">Direct contracting = more revenue</div></div>
+</div>
+
+<!-- PROVIDERS -->
+<div class="actor-label provider"><span class="icon">&#129658;</span>Providers</div>
+<div class="actor-content provider">
+  <svg class="arrow-svg"></svg>
+  <div class="card action" id="pv-exist" style="grid-column:1"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p1">P1</span></div><div class="card-title">Exist in public data</div><div class="card-body">NPI in NPPES, billing in CMS</div><div class="card-ref">Passive</div></div>
+  <div class="card action" id="pv-profile" style="grid-column:6"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p2">P2</span></div><div class="card-title">View quality profile</div><div class="card-body">Breakdown, benchmarks, provenance</div><div class="card-ref">B2</div></div>
+  <div class="card action" id="pv-explain" style="grid-column:7"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p2">P2</span></div><div class="card-title">Read explanations</div><div class="card-body">"Billing 62 — 99215 at 3x peers"</div><div class="card-ref">C1</div></div>
+  <div class="card action" id="pv-path" style="grid-column:9"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p3">P3</span></div><div class="card-title">Follow improvement path</div><div class="card-body">"Board cert: 45 &rarr; ~85"</div><div class="card-ref">C2</div></div>
+  <div class="card action" id="pv-act" style="grid-column:10"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p3">P3</span></div><div class="card-title">Take actions</div><div class="card-body">Cert, billing, screenings, telehealth</div></div>
+  <div class="card action" id="pv-enrich" style="grid-column:11"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p3">P3</span></div><div class="card-title">Submit enrichment</div><div class="card-body">Certs, training. Verified first.</div><div class="card-ref">C4</div></div>
+  <div class="card artifact" id="pv-trajectory" style="grid-column:12"><div class="card-header"><span class="card-type">Artifact</span><span class="card-phase p3">P3</span></div><div class="card-title">Score trajectory</div><div class="card-body">55 &rarr; 72 over 2 years</div><div class="card-ref">C3</div></div>
+  <div class="card action" id="pv-dispute" style="grid-column:14"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p4">P4</span></div><div class="card-title">File dispute</div><div class="card-body">Data error, methodology, context</div><div class="card-ref">E2</div></div>
+  <div class="card impact" id="pv-fair" style="grid-column:16"><div class="card-header"><span class="card-type">Impact</span><span class="card-phase p4">P4</span></div><div class="card-title">Fair transparent system</div><div class="card-body">Methodology, disputes, audit trail</div></div>
+  <div class="card impact" id="pv-revenue" style="grid-column:23"><div class="card-header"><span class="card-type">Impact</span><span class="card-phase p5">P5</span></div><div class="card-title">Quality = revenue</div><div class="card-body">Scores &rarr; contracts &rarr; growth</div></div>
+</div>
+
+<!-- MEROKA -->
+<div class="actor-label meroka"><span class="icon">&#9670;</span>Meroka</div>
+<div class="actor-content meroka">
+  <svg class="arrow-svg"></svg>
+  <div class="card action" id="m-pull" style="grid-column:1"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p1">P1</span></div><div class="card-title">Pull 9 data sources</div><div class="card-body">OIG, NPPES, MIPS, Medicare, Medicaid</div><div class="card-ref">D1</div></div>
+  <div class="card action" id="m-gate" style="grid-column:2"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p1">P1</span></div><div class="card-title">Run safety gate</div><div class="card-body">Pass/fail. Exclusions, sanctions.</div><div class="card-ref">Step 1</div></div>
+  <div class="card action" id="m-score" style="grid-column:3"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p1">P1</span></div><div class="card-title">Compute scores</div><div class="card-body">MIPS + utilization, 14 specialties</div><div class="card-ref">Steps 2-3</div></div>
+  <div class="card decision" id="m-validate" style="grid-column:4"><div class="card-header"><span class="card-type">Decision</span><span class="card-phase p1">P1</span></div><div class="card-title">Validate scores</div><div class="card-body">Face validity, sensitivity, edges</div><div class="card-ref">D4</div></div>
+  <div class="card artifact" id="m-methodology" style="grid-column:6"><div class="card-header"><span class="card-type">Artifact</span><span class="card-phase p2">P2</span></div><div class="card-title">Publish methodology</div><div class="card-body">Tiers, limitations, "can't measure"</div><div class="card-ref">E1</div></div>
+  <div class="card action" id="m-explain" style="grid-column:7"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p2">P2</span></div><div class="card-title">Generate explanations</div><div class="card-body">Per-provider narratives + hints</div><div class="card-ref">C1</div></div>
+  <div class="card action" id="m-ops" style="grid-column:8"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p2">P2</span></div><div class="card-title">Monitor ops dashboard</div><div class="card-body">Coverage, pipeline, anomalies</div><div class="card-ref">B3</div></div>
+  <div class="card action" id="m-verify" style="grid-column:11"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p3">P3</span></div><div class="card-title">Verify enrichments</div><div class="card-body">ABMS lookup. SLA: 5 days.</div><div class="card-ref">C4</div></div>
+  <div class="card action" id="m-lifecycle" style="grid-column:13"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p4">P4</span></div><div class="card-title">Manage lifecycle</div><div class="card-body">pending &rarr; active &rarr; flagged &rarr; removed</div><div class="card-ref">D2</div></div>
+  <div class="card action" id="m-disputes" style="grid-column:14"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p4">P4</span></div><div class="card-title">Resolve disputes</div><div class="card-body">Verify, review, document</div><div class="card-ref">E2</div></div>
+  <div class="card action" id="m-anomaly" style="grid-column:15"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p4">P4</span></div><div class="card-title">Detect anomalies</div><div class="card-body">11 rules. Severity routing.</div><div class="card-ref">D3</div></div>
+  <div class="card action" id="m-erisa" style="grid-column:16"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p4">P4</span></div><div class="card-title">Produce ERISA packages</div><div class="card-body">Assessment, prudence, monitoring</div><div class="card-ref">E3</div></div>
+  <div class="card artifact" id="m-audit" style="grid-column:17"><div class="card-header"><span class="card-type">Artifact</span><span class="card-phase p4">P4</span></div><div class="card-title">Audit trail</div><div class="card-body">24 event types. 6-yr retention.</div><div class="card-ref">E4</div></div>
+  <div class="card action" id="m-refresh" style="grid-column:19"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p5">P5</span></div><div class="card-title">Refresh on cadence</div><div class="card-body">Monthly/weekly/quarterly/annually</div><div class="card-ref">D1</div></div>
+  <div class="card action" id="m-report" style="grid-column:21"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p5">P5</span></div><div class="card-title">Generate reports</div><div class="card-body">Quarterly, alerts, annual</div><div class="card-ref">F4</div></div>
+</div>
+
+<!-- BROKERS -->
+<div class="actor-label broker"><span class="icon">&#128188;</span>Brokers</div>
+<div class="actor-content broker">
+  <svg class="arrow-svg"></svg>
+  <div class="card action" id="b-eval" style="grid-column:6"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p2">P2</span></div><div class="card-title">Evaluate methodology</div><div class="card-body">Compare to traditional credentialing</div><div class="card-ref">E1</div></div>
+  <div class="card decision" id="b-recommend" style="grid-column:7"><div class="card-header"><span class="card-type">Decision</span><span class="card-phase p2">P2</span></div><div class="card-title">Recommend Meroka?</div><div class="card-body">Evidence strong enough?</div></div>
+  <div class="card action" id="b-erisa" style="grid-column:16"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p4">P4</span></div><div class="card-title">Review ERISA docs</div><div class="card-body">Validate fiduciary evidence</div><div class="card-ref">E3</div></div>
+  <div class="card artifact" id="b-compliance" style="grid-column:17"><div class="card-header"><span class="card-type">Artifact</span><span class="card-phase p4">P4</span></div><div class="card-title">Compliance recommendation</div><div class="card-body">"Meroka satisfies ERISA"</div></div>
+  <div class="card action" id="b-advise" style="grid-column:19"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p5">P5</span></div><div class="card-title">Advise on network</div><div class="card-body">Guide selections. Benchmark.</div><div class="card-ref">F2</div></div>
+  <div class="card action" id="b-negotiate" style="grid-column:20"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p5">P5</span></div><div class="card-title">Facilitate negotiations</div><div class="card-body">Quality + cost structure terms</div><div class="card-ref">F3</div></div>
+  <div class="card action" id="b-review" style="grid-column:21"><div class="card-header"><span class="card-type">Action</span><span class="card-phase p5">P5</span></div><div class="card-title">Review reports</div><div class="card-body">Advise adjustments. Renewals.</div><div class="card-ref">F4</div></div>
+</div>
+
+<!-- Cross-lane arrows inside swimlane so they scroll with content -->
+<svg id="crossArrows" style="position:absolute;top:0;left:0;pointer-events:none;z-index:60"></svg>
+
+</div><!-- swimlane -->
+</div><!-- wrapper -->
+
+<script>
+// Draw inline arrows within each actor row (between sequential cards)
+function drawInlineArrows() {
+  document.querySelectorAll('.actor-content').forEach(row => {
+    const svgEl = row.querySelector('.arrow-svg');
+    if (!svgEl) return;
+    const cards = Array.from(row.querySelectorAll('.card'));
+    if (cards.length < 2) return;
+
+    // Sort cards by their actual left position
+    cards.sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left);
+
+    svgEl.setAttribute('width', row.scrollWidth);
+    svgEl.setAttribute('height', row.scrollHeight);
+    const rR = row.getBoundingClientRect();
+    let html = '';
+
+    for (let i = 0; i < cards.length - 1; i++) {
+      const aR = cards[i].getBoundingClientRect();
+      const bR = cards[i+1].getBoundingClientRect();
+      const x1 = aR.right - rR.left + 4;
+      const y1 = aR.top + aR.height/2 - rR.top;
+      const x2 = bR.left - rR.left - 8;
+      const y2 = bR.top + bR.height/2 - rR.top;
+
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--arrow)" stroke-width="1.5" opacity="0.35"/>`;
+      html += `<polygon points="${x2},${y2-3.5} ${x2+7},${y2} ${x2},${y2+3.5}" fill="var(--arrow)" opacity="0.35"/>`;
+    }
+    svgEl.innerHTML = html;
+  });
+}
+
+// Draw cross-lane arrows (straight broken dashed lines)
+function drawCrossArrows() {
+  const svg = document.getElementById('crossArrows');
+  const container = document.getElementById('swimlane');
+  const cR = container.getBoundingClientRect();
+  svg.style.width = container.scrollWidth + 'px';
+  svg.style.height = container.scrollHeight + 'px';
+  svg.setAttribute('viewBox', `0 0 ${container.scrollWidth} ${container.scrollHeight}`);
+
+  let html = `<defs><marker id="cah" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0,0 7,2.5 0,5" fill="var(--cross-arrow)" opacity="0.55"/></marker></defs>`;
+
+  const pairs = [
+    ['m-validate','e-browse'],['m-methodology','b-eval'],['m-explain','pv-explain'],
+    ['pv-enrich','m-verify'],['pv-dispute','m-disputes'],['e-negotiate','pr-contract'],
+    ['m-report','e-reports'],['m-erisa','e-erisa'],['b-advise','e-network'],
+    ['pt-reviews','pv-trajectory'],['m-lifecycle','pr-lifecycle'],['b-compliance','e-erisa'],
+  ];
+
+  pairs.forEach(([fId,tId]) => {
+    const f = document.getElementById(fId);
+    const t = document.getElementById(tId);
+    if (!f||!t) return;
+    const fR = f.getBoundingClientRect();
+    const tR = t.getBoundingClientRect();
+    const down = fR.top < tR.top;
+
+    const x1 = fR.left + fR.width/2 - cR.left;
+    const y1 = (down ? fR.bottom+4 : fR.top-4) - cR.top;
+    const x2 = tR.left + tR.width/2 - cR.left;
+    const y2 = (down ? tR.top-4 : tR.bottom+4) - cR.top;
+    const midY = (y1+y2)/2;
+
+    html += `<path d="M${x1},${y1} L${x1},${midY} L${x2},${midY} L${x2},${y2}"
+      stroke="var(--cross-arrow)" stroke-width="1.5" fill="none"
+      stroke-dasharray="6,4" opacity="0.4" marker-end="url(#cah)"/>`;
+  });
+  svg.innerHTML = html;
+}
+
+function drawAll() { drawInlineArrows(); drawCrossArrows(); }
+window.addEventListener('load', () => setTimeout(drawAll, 200));
+window.addEventListener('resize', drawAll);
+let raf=null;
+function scheduleRedraw(){if(!raf)raf=requestAnimationFrame(()=>{drawAll();raf=null;})}
+window.addEventListener('scroll', scheduleRedraw);
+document.querySelector('.swimlane-wrapper').addEventListener('scroll', scheduleRedraw);
+</script>
+</body>
+</html>
