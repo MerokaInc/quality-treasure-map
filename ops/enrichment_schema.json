@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quality-system/schemas/enrichment/v1.0.0",
+  "title": "Quality System Provider Enrichment Submission",
+  "description": "A provider-initiated enrichment submission. Covers all submittable data types, tracks verification status and lifecycle, and links to audit trail events. See ops/provider_enrichment.md for the full process specification.",
+  "type": "object",
+  "required": [
+    "enrichment_id",
+    "npi",
+    "submitted_at",
+    "data_type",
+    "submitted_data",
+    "status",
+    "verification_method",
+    "verified_at",
+    "verified_by",
+    "rejection_reason",
+    "score_impact",
+    "audit_event_ids"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "enrichment_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique identifier for this enrichment submission (UUID v4)."
+    },
+    "npi": {
+      "type": "string",
+      "pattern": "^[0-9]{10}$",
+      "description": "10-digit National Provider Identifier of the provider submitting the enrichment."
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 date-time (UTC) when the provider submitted the enrichment."
+    },
+    "data_type": {
+      "type": "string",
+      "enum": [
+        "board_certification",
+        "specialty_training",
+        "qi_program_participation",
+        "patient_satisfaction_survey",
+        "telehealth_availability",
+        "office_hours",
+        "languages_spoken",
+        "new_patient_wait_time",
+        "practice_accreditation"
+      ],
+      "description": "The type of data being submitted. Determines the verification method, SLA, and score impact. See ops/provider_enrichment.md §1 for the full data type table."
+    },
+    "submitted_data": {
+      "type": "object",
+      "description": "The data payload for this enrichment submission. Shape varies by data_type. All fields are provider-supplied and treated as unverified until status transitions to 'verified'. Examples: for 'board_certification', include certification_body and specialty; for 'telehealth_availability', include a boolean is_available and platform names; for 'languages_spoken', include an array of BCP-47 language tags.",
+      "minProperties": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "pending_verification",
+        "verified",
+        "rejected",
+        "expired"
+      ],
+      "description": "Current lifecycle status of the enrichment submission. Transitions: submitted → pending_verification → verified or rejected. verified → expired when data becomes stale. Self-attested types may immediately reflect in scores while status is 'submitted'. See ops/provider_enrichment.md §3 and §5 for full transition rules."
+    },
+    "verification_method": {
+      "type": ["string", "null"],
+      "description": "The method used to verify this enrichment. Null until verification is attempted. Examples: 'ABMS lookup', 'certificate review', 'program verification', 'self-attestation', 'accreditation body verification'. See ops/provider_enrichment.md §1 for the verification method per data type."
+    },
+    "verified_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 date-time (UTC) when verification was completed and the status transitioned to 'verified'. Null for all other statuses. Stored in score provenance for verified data types."
+    },
+    "verified_by": {
+      "type": ["string", "null"],
+      "description": "User ID or system identifier of who performed or confirmed verification (e.g., 'user:mjones' for a manual review, 'system:abms-lookup' for an automated lookup). Null until verified. For self-attested types, use 'system:self-attestation'."
+    },
+    "rejection_reason": {
+      "type": ["string", "null"],
+      "description": "Human-readable explanation of why the enrichment was rejected. Null unless status is 'rejected'. Communicated to the provider in the rejection notification. Should be specific enough for the provider to understand what evidence was insufficient and how to resubmit."
+    },
+    "score_impact": {
+      "type": ["object", "null"],
+      "description": "Score change produced by this enrichment, if any. Null if the data type has no direct score impact (informational types), if verification has not yet completed, or if the enrichment was rejected. Populated when a score_computed audit event is generated for this enrichment.",
+      "required": ["dimension", "previous_score", "new_score"],
+      "additionalProperties": false,
+      "properties": {
+        "dimension": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The scoring dimension that was updated (e.g., 'credentials', 'patient_experience', 'access'). Must match a valid dimension in the scoring system."
+        },
+        "previous_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "The dimension score immediately before this enrichment was applied."
+        },
+        "new_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "The dimension score after this enrichment was applied."
+        }
+      }
+    },
+    "audit_event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "uniqueItems": true,
+      "description": "Ordered list of audit event UUIDs (from ops/audit_trail_schema.json) linked to this enrichment submission. Includes events of type: enrichment_submitted, enrichment_verified or enrichment_rejected, and any score_computed events triggered by the enrichment. Enables full reconstruction of the enrichment history from the audit trail."
+    }
+  },
+  "examples": [
+    {
+      "enrichment_id": "c3d4e5f6-1a2b-4c3d-8e9f-000000000001",
+      "npi": "1234567890",
+      "submitted_at": "2026-04-09T09:00:00Z",
+      "data_type": "board_certification",
+      "submitted_data": {
+        "certification_body": "ABIM",
+        "specialty": "Internal Medicine",
+        "certification_date": "2021-06-15",
+        "expiration_date": "2031-06-15",
+        "certificate_document_ref": "doc:cert-abim-1234567890-2021"
+      },
+      "status": "verified",
+      "verification_method": "ABMS lookup",
+      "verified_at": "2026-04-11T14:30:00Z",
+      "verified_by": "system:abms-lookup",
+      "rejection_reason": null,
+      "score_impact": {
+        "dimension": "credentials",
+        "previous_score": 61.5,
+        "new_score": 78.2
+      },
+      "audit_event_ids": [
+        "d4e5f6a7-0000-4000-8000-000000000001",
+        "d4e5f6a7-0000-4000-8000-000000000002",
+        "d4e5f6a7-0000-4000-8000-000000000003"
+      ]
+    },
+    {
+      "enrichment_id": "b2c3d4e5-9f8e-4a7b-6c5d-000000000002",
+      "npi": "0987654321",
+      "submitted_at": "2026-04-09T11:15:00Z",
+      "data_type": "telehealth_availability",
+      "submitted_data": {
+        "is_available": true,
+        "platforms": ["Zoom for Healthcare", "Epic MyChart Video"],
+        "states_covered": ["CA", "NV", "AZ"]
+      },
+      "status": "submitted",
+      "verification_method": "self-attestation",
+      "verified_at": null,
+      "verified_by": "system:self-attestation",
+      "rejection_reason": null,
+      "score_impact": {
+        "dimension": "access",
+        "previous_score": 55.0,
+        "new_score": 62.5
+      },
+      "audit_event_ids": [
+        "e5f6a7b8-0000-4000-8000-000000000001",
+        "e5f6a7b8-0000-4000-8000-000000000002"
+      ]
+    },
+    {
+      "enrichment_id": "a1b2c3d4-8e7d-4f6e-5b4c-000000000003",
+      "npi": "1122334455",
+      "submitted_at": "2026-04-07T08:00:00Z",
+      "data_type": "patient_satisfaction_survey",
+      "submitted_data": {
+        "survey_vendor": "Press Ganey",
+        "report_period": "2025-Q4",
+        "overall_score": 91.4,
+        "response_count": 312,
+        "report_document_ref": "doc:pg-report-1122334455-2025q4"
+      },
+      "status": "rejected",
+      "verification_method": "survey report verification",
+      "verified_at": null,
+      "verified_by": "user:pchen",
+      "rejection_reason": "The submitted report could not be authenticated. The document reference number does not match Press Ganey's records for this NPI. Please resubmit with the official report PDF downloaded directly from the Press Ganey portal.",
+      "score_impact": null,
+      "audit_event_ids": [
+        "f6a7b8c9-0000-4000-8000-000000000001",
+        "f6a7b8c9-0000-4000-8000-000000000002"
+      ]
+    }
+  ]
+}
