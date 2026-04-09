@@ -1,0 +1,93 @@
+{
+  "npi": "1234567890",
+  "provider_name": "Dr. Sarah Chen",
+  "specialty": "OB-GYN",
+  "generated_at": "2026-04-07T10:00:00Z",
+  "explanations": [
+    {
+      "dimension": "safety_gate",
+      "summary": "You passed the safety gate.",
+      "detail": "No active sanctions, exclusions, or disciplinary actions were found in federal or state records. We check the OIG exclusion list, SAM.gov, and state medical board databases. This check is repeated periodically; you will be notified if anything changes.",
+      "structural_caveat": null,
+      "controllable": false,
+      "improvement_hint": null
+    },
+    {
+      "dimension": "mips",
+      "summary": "The federal government assessed your quality through the MIPS program. Your MIPS score is 78.4, placing you at the 71st percentile among scored providers in West Virginia.",
+      "detail": "MIPS (Merit-based Incentive Payment System) is CMS's primary quality measurement program for Medicare providers. Your score of 78.4 reflects performance across quality measures, promoting interoperability, improvement activities, and cost. The West Virginia average MIPS score for OB-GYN is 64.2.",
+      "structural_caveat": "MIPS only covers Medicare fee-for-service. If your patients are primarily commercially insured, this data gap is expected and does not reflect your quality.",
+      "controllable": true,
+      "improvement_hint": "Consider participating in a MIPS Value Pathway (MVP) relevant to your specialty to build a scored quality record with CMS."
+    },
+    {
+      "dimension": "practice_pattern",
+      "sub_dimension": "guideline_adherence",
+      "summary": "Your measurable guideline adherence score is 74.",
+      "detail": "This measures 62% of ACOG guidelines that are detectable from billing data. Prenatal care and well-woman visits is your strongest area. Postpartum depression screening has the most room for improvement.",
+      "structural_caveat": "Practice pattern scores are based on 2023 Medicare and Medicaid billing data. They measure what you bill for, not clinical outcomes. Only 62% of clinical guidelines are measurable this way.",
+      "controllable": true,
+      "improvement_hint": "Review your Postpartum depression screening protocols against ACOG guidelines — small documentation or coding changes can meaningfully improve this score."
+    },
+    {
+      "dimension": "practice_pattern",
+      "sub_dimension": "peer_comparison",
+      "summary": "Your billing pattern matches 41 of 55 codes typical for OB-GYN in West Virginia.",
+      "detail": "Code coverage: 74.5%. Your code mix aligns well with regional peers for routine obstetric care; some gaps exist in gynecologic oncology referral codes and advanced ultrasound procedures.",
+      "structural_caveat": "Practice pattern scores are based on 2023 Medicare and Medicaid billing data. They measure what you bill for, not clinical outcomes. Only 62% of clinical guidelines are measurable this way.",
+      "controllable": true,
+      "improvement_hint": "Closing the gap on the 14 missing reference codes for OB-GYN would improve your peer comparison score."
+    },
+    {
+      "dimension": "practice_pattern",
+      "sub_dimension": "volume_adequacy",
+      "summary": "7 of 9 service categories meet the minimum volume threshold.",
+      "detail": "Colposcopy and hysteroscopy categories are below the 20-case annual minimum. These categories are flagged as low-volume for scoring purposes.",
+      "structural_caveat": "Practice pattern scores are based on 2023 Medicare and Medicaid billing data. They measure what you bill for, not clinical outcomes. Only 62% of clinical guidelines are measurable this way.",
+      "controllable": true,
+      "improvement_hint": null
+    },
+    {
+      "dimension": "practice_pattern",
+      "sub_dimension": "payer_presence",
+      "summary": "You appear in both Medicare and Medicaid claims data.",
+      "detail": "Category overlap: 88%. Your payer mix is consistent with a full-service OB-GYN practice in a rural West Virginia community.",
+      "structural_caveat": "Practice pattern scores are based on 2023 Medicare and Medicaid billing data. They measure what you bill for, not clinical outcomes. Only 62% of clinical guidelines are measurable this way.",
+      "controllable": false,
+      "improvement_hint": null
+    },
+    {
+      "dimension": "practice_pattern",
+      "sub_dimension": "billing_quality",
+      "summary": "Your charge ratio is within expected range (score: 82).",
+      "detail": "14 billing patterns look normal, 2 are flagged. The top flag is a higher-than-average rate of 99215 (complex office visits) relative to peers in Princeton, WV — this may reflect documentation of complex obstetric patients but warrants review.",
+      "structural_caveat": "Practice pattern scores are based on 2023 Medicare and Medicaid billing data. They measure what you bill for, not clinical outcomes. Only 62% of clinical guidelines are measurable this way.",
+      "controllable": true,
+      "improvement_hint": null
+    },
+    {
+      "dimension": "credentials",
+      "summary": "You are board certified by the American Board of Obstetrics and Gynecology (ABOG) in Obstetrics and Gynecology, active through December 2028.",
+      "detail": "Board certification is the primary credential signal. Certification by the American Board of Obstetrics and Gynecology (ABOG) requires passing a rigorous exam and meeting ongoing maintenance-of-certification requirements. Your certification in Obstetrics and Gynecology is current and verified.",
+      "structural_caveat": null,
+      "controllable": true,
+      "improvement_hint": null
+    },
+    {
+      "dimension": "patient_experience",
+      "summary": "Your average rating is 4.6 across 38 reviews (Healthgrades, Zocdoc, Google).",
+      "detail": "This places you at the 84th percentile for OB-GYN in West Virginia. Reviews are aggregated from Healthgrades, Zocdoc, Google. Sentiment analysis of written reviews is included where available.",
+      "structural_caveat": null,
+      "controllable": true,
+      "improvement_hint": null
+    },
+    {
+      "dimension": "access",
+      "summary": "Your access score reflects: accepts new patients, telehealth available, evening hours on Tuesdays and Thursdays, 14 insurance plans accepted, Spanish language services available.",
+      "detail": "These are based on information your practice reported during onboarding. Access factors include appointment availability, telehealth options, insurance accepted, and languages spoken.",
+      "structural_caveat": "Access data is self-reported and has not been independently verified.",
+      "controllable": true,
+      "improvement_hint": null
+    }
+  ]
+}
