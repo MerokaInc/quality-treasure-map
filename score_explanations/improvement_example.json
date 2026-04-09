@@ -1,0 +1,181 @@
+{
+  "npi": "1234567890",
+  "provider_name": "Dr. Sarah Chen",
+  "specialty": "OB-GYN",
+  "composite_score": 78,
+  "generated_at": "2026-04-09T10:00:00Z",
+  "input_scores": {
+    "mips": {
+      "tier": "tier1",
+      "score": 78.4,
+      "mips_score": 78.4,
+      "percentile": 71,
+      "state": "West Virginia",
+      "specialty": "OB-GYN",
+      "state_avg": 64.2
+    },
+    "practice_pattern": [
+      {
+        "sub_dimension": "guideline_adherence",
+        "score": 74,
+        "pct_scorable": 62,
+        "guideline_body": "ACOG",
+        "strong_area": "Prenatal care and well-woman visits",
+        "weak_area": "Postpartum depression screening",
+        "data_year": "2023",
+        "pct_guidelines": 62
+      },
+      {
+        "sub_dimension": "peer_comparison",
+        "score": 76,
+        "code_count": 41,
+        "reference_count": 55,
+        "coverage": 74.5,
+        "specialty": "OB-GYN",
+        "state": "West Virginia",
+        "interpretation": "Your code mix aligns well with regional peers for routine obstetric care; some gaps exist in gynecologic oncology referral codes and advanced ultrasound procedures",
+        "data_year": "2023",
+        "pct_guidelines": 62
+      },
+      {
+        "sub_dimension": "volume_adequacy",
+        "score": 78,
+        "ok_count": 7,
+        "detected_count": 9,
+        "flagged_categories": "Colposcopy, Hysteroscopy",
+        "flagged_list": "Colposcopy, Hysteroscopy",
+        "data_year": "2023",
+        "pct_guidelines": 62
+      },
+      {
+        "sub_dimension": "payer_presence",
+        "score": 88,
+        "payer_description": "both Medicare and Medicaid claims data",
+        "overlap": 88,
+        "structural": false,
+        "caveat_if_single_payer": "Your payer mix is consistent with a full-service OB-GYN practice in a rural West Virginia community",
+        "data_year": "2023",
+        "pct_guidelines": 62
+      },
+      {
+        "sub_dimension": "billing_quality",
+        "score": 82,
+        "green_count": 14,
+        "red_count": 2,
+        "charge_position": "within expected range",
+        "charge_score": 82,
+        "top_flag": "higher-than-average rate of 99215 (complex office visits) relative to peers",
+        "top_red_flag_detail": "The top flag is a higher-than-average rate of 99215 (complex office visits) relative to peers in Princeton, WV — this may reflect documentation of complex obstetric patients but warrants review",
+        "data_year": "2023",
+        "pct_guidelines": 62
+      }
+    ],
+    "credentials": {
+      "certified": true,
+      "score": 90,
+      "board": "American Board of Obstetrics and Gynecology (ABOG)",
+      "specialty": "Obstetrics and Gynecology",
+      "expiration": "2026-11-30"
+    },
+    "patient_experience": {
+      "score": 87,
+      "review_count": 7,
+      "min_threshold": 10,
+      "rating": 4.6,
+      "platforms": "Healthgrades, Zocdoc, Google",
+      "percentile": 84,
+      "state": "West Virginia",
+      "specialty": "OB-GYN"
+    },
+    "access": {
+      "score": 72,
+      "telehealth": false,
+      "wait_days": 11,
+      "extended_hours": true,
+      "features_list": "accepts new patients, evening hours on Tuesdays and Thursdays, 14 insurance plans accepted, Spanish language services available"
+    }
+  },
+  "improvement_path": [
+    {
+      "rank": 1,
+      "dimension": "practice_pattern_billing_quality",
+      "current_score": 82,
+      "potential_score": 85,
+      "impact": 4.5,
+      "action": "Your billing has 2 flagged pattern(s). The most common flag is: higher-than-average rate of 99215 (complex office visits) relative to peers. Review these with your billing team — resolving flagged patterns improves your billing quality score.",
+      "feasibility": "moderate",
+      "actionable": true,
+      "category": "billing"
+    },
+    {
+      "rank": 2,
+      "dimension": "credentials",
+      "current_score": 90,
+      "potential_score": 90,
+      "impact": 4.0,
+      "action": "Renew your board certification before it expires. Your current certification expires within 12 months; allowing it to lapse will drop your credentials score significantly.",
+      "feasibility": "moderate",
+      "actionable": true,
+      "category": "credentials"
+    },
+    {
+      "rank": 3,
+      "dimension": "access",
+      "current_score": 72,
+      "potential_score": 80,
+      "impact": 3.5,
+      "action": "Adding telehealth to your practice would improve your access score. Telehealth is one of the highest-weighted access factors. Even limited availability (e.g., follow-ups only) earns credit.",
+      "feasibility": "moderate",
+      "actionable": true,
+      "category": "access"
+    },
+    {
+      "rank": 4,
+      "dimension": "practice_pattern_volume_adequacy",
+      "current_score": 78,
+      "potential_score": 80,
+      "impact": 3.0,
+      "action": "The following service categories are below minimum volume thresholds: Colposcopy, Hysteroscopy. If you perform these services, verify they are being billed under your NPI rather than a facility or group billing number.",
+      "feasibility": "quick",
+      "actionable": true,
+      "category": "billing"
+    },
+    {
+      "rank": 5,
+      "dimension": "patient_experience",
+      "current_score": 87,
+      "potential_score": 87,
+      "impact": 2.0,
+      "action": "You currently have 7 reviews, which is below the confidence threshold. Encouraging patients to leave reviews on Healthgrades or Zocdoc increases score confidence weighting — more reviews means your score carries more weight in the composite.",
+      "feasibility": "quick",
+      "actionable": true,
+      "category": "documentation"
+    },
+    {
+      "rank": 6,
+      "dimension": "mips",
+      "current_score": null,
+      "potential_score": null,
+      "impact": 0.0,
+      "action": "Only an indirect quality signal is available via your hospital affiliation. A direct MIPS score would carry more weight, but that requires reaching the Medicare volume threshold (~200 patients/year). This is a structural limitation for commercially-focused practices.",
+      "feasibility": "long_horizon",
+      "actionable": false,
+      "category": "documentation",
+      "_note": "Included for completeness even though tier1 MIPS data exists for this provider in the explanation output — this recommendation would apply if the practice had tier2 data instead. Shown here as the structural non-actionable example."
+    }
+  ],
+  "summary": {
+    "quick_wins": [
+      "Verify colposcopy and hysteroscopy are billed under your NPI (billing/volume fix, days to weeks)",
+      "Invite patients to leave reviews to raise confidence weighting (days to weeks)"
+    ],
+    "moderate_horizon": [
+      "Resolve 2 flagged billing patterns with your billing team (weeks to months)",
+      "Renew ABOG board certification before November 2026 expiration (months)",
+      "Add telehealth capability, even for follow-ups only (months)"
+    ],
+    "structural_non_actionable": [
+      "MIPS tier / hospital signal only — structural, no action required"
+    ]
+  }
+}
