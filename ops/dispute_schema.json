@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quality-system/schemas/dispute/v1.0.0",
+  "title": "Quality System Dispute Record",
+  "description": "A dispute filed by a provider against their quality score. Covers all dispute types (data_error, methodology_disagreement, context_claim), tracks workflow status, SLA timestamps, resolution outcome, and links to the audit trail. See ops/dispute_resolution_process.md for the full process specification.",
+  "type": "object",
+  "required": [
+    "dispute_id",
+    "npi",
+    "submitted_at",
+    "dispute_type",
+    "dimension",
+    "provider_claim",
+    "current_score",
+    "status",
+    "assigned_to",
+    "acknowledged_at",
+    "resolved_at",
+    "resolution",
+    "resolution_explanation",
+    "new_score",
+    "escalated_at",
+    "escalation_reason",
+    "audit_event_ids"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "dispute_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique identifier for this dispute record (UUID v4)."
+    },
+    "npi": {
+      "type": "string",
+      "pattern": "^[0-9]{10}$",
+      "description": "10-digit National Provider Identifier of the provider filing the dispute."
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 date-time (UTC) when the provider submitted the dispute."
+    },
+    "dispute_type": {
+      "type": "string",
+      "enum": ["data_error", "methodology_disagreement", "context_claim"],
+      "description": "Classification of the dispute. Determines the investigation procedure and SLA. See ops/dispute_resolution_process.md §1 for definitions."
+    },
+    "dimension": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The scoring dimension the dispute concerns (e.g., 'safety', 'utilization', 'credentials'). Must match a valid dimension in the scoring system."
+    },
+    "provider_claim": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Free-text description of the provider's dispute, in their own words. Captured at submission and never modified."
+    },
+    "current_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "The score value at the time the dispute was submitted. Used as the baseline for comparison if the score is later corrected."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["submitted", "acknowledged", "investigating", "resolved", "escalated", "final"],
+      "description": "Current lifecycle status of the dispute. Transitions: submitted → acknowledged → investigating → resolved → (escalated → final) or final. See ops/dispute_resolution_process.md §2 for transition rules."
+    },
+    "assigned_to": {
+      "type": ["string", "null"],
+      "description": "User ID of the reviewer currently assigned to this dispute (e.g., 'user:jsmith'). Null until triage is complete. For escalations, reflects the senior reviewer."
+    },
+    "acknowledged_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 date-time (UTC) when the dispute was acknowledged. Null until acknowledgment occurs. SLA: within 1 business day of submitted_at."
+    },
+    "resolved_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 date-time (UTC) when the initial resolution decision was reached. Null until resolved. Does not update on escalation — use escalated_at and the final audit event for that timeline."
+    },
+    "resolution": {
+      "type": ["string", "null"],
+      "enum": [
+        "corrected",
+        "methodology_noted",
+        "context_documented",
+        "no_change",
+        "final_no_change",
+        "final_corrected",
+        null
+      ],
+      "description": "The resolution outcome. Null while the dispute is open. 'corrected' and 'final_corrected' are the only outcomes that result in a score change (new_score will be populated). See ops/dispute_resolution_process.md §5 for outcome definitions."
+    },
+    "resolution_explanation": {
+      "type": ["string", "null"],
+      "description": "Human-readable explanation of the resolution decision, written for the provider. Null while the dispute is open. Required before status transitions to 'resolved' or 'final'."
+    },
+    "new_score": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 100,
+      "description": "The recalculated score after correction. Only populated when resolution is 'corrected' or 'final_corrected'. Null for all other outcomes, including context_documented (score is intentionally unchanged)."
+    },
+    "escalated_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 date-time (UTC) when the provider requested escalation. Null if no escalation occurred. Must fall within 10 business days of resolved_at."
+    },
+    "escalation_reason": {
+      "type": ["string", "null"],
+      "description": "Free-text reason the provider provided when requesting escalation. Null if no escalation occurred."
+    },
+    "audit_event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "uniqueItems": true,
+      "description": "Ordered list of audit event UUIDs (from ops/audit_trail_schema.json) linked to this dispute. Includes events of type: dispute_submitted, dispute_acknowledged, dispute_resolved, dispute_escalated, and any score_computed events triggered by a correction. Enables full reconstruction of the dispute history from the audit trail."
+    }
+  },
+  "examples": [
+    {
+      "dispute_id": "f7a3c2d1-9e84-4b2f-a561-3d8e7f091234",
+      "npi": "1234567890",
+      "submitted_at": "2026-04-09T10:00:00Z",
+      "dispute_type": "data_error",
+      "dimension": "credentials",
+      "provider_claim": "Your data shows I am not board certified in internal medicine, but I received my certification in 2021. I have attached my certificate.",
+      "current_score": 61.5,
+      "status": "resolved",
+      "assigned_to": "user:mjones",
+      "acknowledged_at": "2026-04-09T14:22:00Z",
+      "resolved_at": "2026-04-15T16:45:00Z",
+      "resolution": "corrected",
+      "resolution_explanation": "We verified your board certification with ABIM. Our source data was missing this credential due to a processing delay in the 2026-Q1 import. Your score has been recalculated to reflect your correct credentials.",
+      "new_score": 78.2,
+      "escalated_at": null,
+      "escalation_reason": null,
+      "audit_event_ids": [
+        "a1b2c3d4-0000-4000-8000-000000000001",
+        "a1b2c3d4-0000-4000-8000-000000000002",
+        "a1b2c3d4-0000-4000-8000-000000000003",
+        "a1b2c3d4-0000-4000-8000-000000000004"
+      ]
+    },
+    {
+      "dispute_id": "e6b4a1c0-7d93-4e1a-b450-2c7d6e980123",
+      "npi": "0987654321",
+      "submitted_at": "2026-03-20T09:15:00Z",
+      "dispute_type": "context_claim",
+      "dimension": "utilization",
+      "provider_claim": "My volume dropped significantly in Q3 2025 because I was on medical leave for 10 weeks following surgery. This is not representative of my normal practice.",
+      "current_score": 44.0,
+      "status": "final",
+      "assigned_to": "user:pchen",
+      "acknowledged_at": "2026-03-20T17:00:00Z",
+      "resolved_at": "2026-03-24T11:30:00Z",
+      "resolution": "final_no_change",
+      "resolution_explanation": "We have documented your medical leave context and added the context_available flag to your utilization score. The score itself reflects the data on file and does not change, but employers viewing your profile will see that context is available. After escalation review, the senior reviewer upheld this decision.",
+      "new_score": null,
+      "escalated_at": "2026-04-01T08:45:00Z",
+      "escalation_reason": "I believe the score should be adjusted, not just flagged. The leave significantly distorts my annual volume figures.",
+      "audit_event_ids": [
+        "b2c3d4e5-0000-4000-8000-000000000001",
+        "b2c3d4e5-0000-4000-8000-000000000002",
+        "b2c3d4e5-0000-4000-8000-000000000003",
+        "b2c3d4e5-0000-4000-8000-000000000004",
+        "b2c3d4e5-0000-4000-8000-000000000005"
+      ]
+    }
+  ]
+}
