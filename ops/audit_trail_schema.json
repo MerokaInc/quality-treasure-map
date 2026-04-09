@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quality-system/schemas/audit-trail-event/v1.0.0",
+  "title": "Quality System Audit Event",
+  "description": "Immutable audit event record for every scoring decision, data refresh, status change, dispute, and methodology update in the quality scoring system.",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "timestamp",
+    "actor",
+    "npi",
+    "payload"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique identifier for this audit event (UUID v4)."
+    },
+    "event_type": {
+      "type": "string",
+      "description": "The classification of the event. Determines the expected shape of the payload object.",
+      "enum": [
+        "score_computed",
+        "score_published",
+        "score_held_stale",
+        "data_refresh_started",
+        "data_refresh_succeeded",
+        "data_refresh_failed",
+        "data_refresh_quarantined",
+        "provider_status_changed",
+        "provider_onboarded",
+        "provider_flagged",
+        "provider_suspended",
+        "provider_removed",
+        "provider_reinstated",
+        "dispute_submitted",
+        "dispute_acknowledged",
+        "dispute_resolved",
+        "dispute_escalated",
+        "methodology_changed",
+        "enrichment_submitted",
+        "enrichment_verified",
+        "enrichment_rejected",
+        "anomaly_detected",
+        "anomaly_reviewed",
+        "validation_run_completed"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 date-time (UTC) at which the event occurred. Set by the system at event creation; never client-supplied."
+    },
+    "actor": {
+      "type": "string",
+      "description": "Who triggered the event. Use the literal string 'system' for automated pipeline actions; use the authenticated user ID (e.g., 'user:jsmith') for manual actions.",
+      "minLength": 1
+    },
+    "npi": {
+      "type": ["string", "null"],
+      "description": "10-digit National Provider Identifier this event pertains to. Null for system-wide events (e.g., methodology_changed, data_refresh_* events that are not NPI-scoped).",
+      "pattern": "^[0-9]{10}$"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-type-specific data. The expected keys vary by event_type. See audit_trail_schema.md for per-type payload definitions and examples.",
+      "minProperties": 1
+    }
+  },
+  "examples": [
+    {
+      "event_id": "b3d2e1f0-1234-4abc-8def-9876543210ab",
+      "event_type": "score_computed",
+      "timestamp": "2026-04-09T14:32:00Z",
+      "actor": "system",
+      "npi": "1234567890",
+      "payload": {
+        "dimension": "safety",
+        "score": 87.4,
+        "confidence_tier": "high",
+        "methodology_version": "v3.1.0",
+        "source_versions": {
+          "cms_quality": "2026-Q1",
+          "nppes": "2026-03-15"
+        },
+        "sub_scores": {
+          "malpractice": 92.0,
+          "adverse_events": 83.5,
+          "board_actions": 90.0
+        }
+      }
+    },
+    {
+      "event_id": "c4e3f2a1-5678-4bcd-9ef0-abcdef012345",
+      "event_type": "dispute_submitted",
+      "timestamp": "2026-04-09T16:00:00Z",
+      "actor": "user:jsmith",
+      "npi": "1234567890",
+      "payload": {
+        "dispute_type": "score_correction",
+        "dimension": "safety",
+        "provider_claim": "Malpractice case listed was dismissed and should not count.",
+        "current_score": 87.4,
+        "evidence_attached": true
+      }
+    }
+  ]
+}
