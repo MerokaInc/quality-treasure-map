@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quality-system/schemas/score-snapshot/v1.0.0",
+  "title": "Score Snapshot",
+  "description": "An immutable, versioned record of a single dimension score for one NPI in one refresh cycle. Append-only — never overwritten. Produced at Stage 3 (Score) of the data refresh pipeline and written to the score store at Stage 4 (Store).",
+  "type": "object",
+  "required": [
+    "npi",
+    "dimension",
+    "score",
+    "confidence_tier",
+    "sub_scores",
+    "source_versions",
+    "methodology_version",
+    "scored_at",
+    "refresh_cycle_id",
+    "trend",
+    "change_from_prior",
+    "change_attributions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "npi": {
+      "type": "string",
+      "pattern": "^[0-9]{10}$",
+      "description": "10-digit National Provider Identifier. Primary key for the provider."
+    },
+    "dimension": {
+      "type": "string",
+      "description": "The scoring dimension this snapshot covers. Standard values: safety, quality, utilization, experience, cost, composite. Bundle-level rows use the format bundle:<specialty_slug> (e.g., bundle:cardiology).",
+      "minLength": 1
+    },
+    "score": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Computed score on a 0–100 scale. Null if the dimension could not be scored in this refresh cycle (e.g., source unavailable, scoring stage failure)."
+    },
+    "confidence_tier": {
+      "type": ["integer", "null"],
+      "enum": [1, 2, 3, null],
+      "description": "Confidence in the score based on data completeness and recency. 1 = high, 2 = medium, 3 = low. Null when score is null."
+    },
+    "sub_scores": {
+      "type": ["object", "null"],
+      "description": "Dictionary of component scores that roll up into the top-level score. Keys are sub-score names (strings); values are numbers (0–100) or null. Null at the top level when sub-score decomposition is not applicable for this dimension.",
+      "additionalProperties": {
+        "type": ["number", "null"],
+        "minimum": 0,
+        "maximum": 100
+      }
+    },
+    "source_versions": {
+      "type": "object",
+      "description": "Dictionary mapping each source_id used in computing this score to the artifact path or datestamp of the specific file ingested (e.g., {\"oig_leie\": \"2026-04-01\", \"nppes\": \"2026-04-06\"}). At least one source must be present.",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "methodology_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the scoring methodology applied to produce this snapshot (e.g., 2.1.0). Must match a tagged release in the methodology documentation."
+    },
+    "scored_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC datetime at which the score was computed (pipeline Stage 3 completion). Set by the system; never client-supplied."
+    },
+    "refresh_cycle_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for the pipeline run that produced this snapshot (e.g., 2026-Q2, 2026-Q2-correction). Used to group all NPI × dimension snapshots from the same run."
+    },
+    "trend": {
+      "type": ["string", "null"],
+      "enum": ["improving", "stable", "declining", "new", "insufficient_data", null],
+      "description": "Trend category computed over the last N refresh cycles (default 4). improving: score increased ≥5 pts; stable: change <5 pts; declining: score decreased ≥5 pts; new: fewer than 2 scored snapshots available; insufficient_data: dimension was unscored in the most recent cycle. Null if trend computation has not yet been run for this snapshot."
+    },
+    "change_from_prior": {
+      "type": ["number", "null"],
+      "description": "Signed numeric delta between this snapshot's score and the prior cycle's score for the same NPI × dimension. Positive = improvement, negative = decline. Null if there is no prior scored snapshot or if the current score is null."
+    },
+    "change_attributions": {
+      "type": "array",
+      "description": "List of zero or more causes explaining the score change since the prior cycle. Empty array when change_from_prior is 0 or null.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "new_cms_data",
+          "methodology_update",
+          "peer_cohort_shift",
+          "provider_action",
+          "data_correction",
+          "source_unavailable"
+        ]
+      },
+      "uniqueItems": true
+    }
+  },
+  "examples": [
+    {
+      "npi": "1234567890",
+      "dimension": "safety",
+      "score": 87.4,
+      "confidence_tier": 1,
+      "sub_scores": {
+        "malpractice": 92.0,
+        "adverse_events": 83.5,
+        "board_actions": 90.0
+      },
+      "source_versions": {
+        "oig_leie": "2026-04-01",
+        "nppes": "2026-04-06",
+        "state_boards": "2026-04-08"
+      },
+      "methodology_version": "2.1.0",
+      "scored_at": "2026-04-09T14:32:00Z",
+      "refresh_cycle_id": "2026-Q2",
+      "trend": "improving",
+      "change_from_prior": 5.2,
+      "change_attributions": ["new_cms_data", "provider_action"]
+    },
+    {
+      "npi": "9876543210",
+      "dimension": "utilization",
+      "score": null,
+      "confidence_tier": null,
+      "sub_scores": null,
+      "source_versions": {
+        "medicaid_tmsis": "2026-02-01"
+      },
+      "methodology_version": "2.1.0",
+      "scored_at": "2026-04-09T15:00:00Z",
+      "refresh_cycle_id": "2026-Q2",
+      "trend": "insufficient_data",
+      "change_from_prior": null,
+      "change_attributions": ["source_unavailable"]
+    },
+    {
+      "npi": "1111111111",
+      "dimension": "composite",
+      "score": 74.0,
+      "confidence_tier": 2,
+      "sub_scores": null,
+      "source_versions": {
+        "cms_qpp_mips": "2025-07-01",
+        "medicare_utilization": "2025-11-01",
+        "oig_leie": "2026-04-01",
+        "nppes": "2026-04-06"
+      },
+      "methodology_version": "2.1.0",
+      "scored_at": "2026-04-09T16:45:00Z",
+      "refresh_cycle_id": "2026-Q2",
+      "trend": "stable",
+      "change_from_prior": 1.3,
+      "change_attributions": []
+    }
+  ]
+}
