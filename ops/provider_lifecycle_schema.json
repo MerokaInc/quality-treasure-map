@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quality-system/schemas/provider-lifecycle/v1.0.0",
+  "title": "Provider Lifecycle Record",
+  "description": "Per-provider lifecycle state record tracking current status, flag details, review assignment, employer network membership, and full transition history. Every transition appends to transition_history and emits an audit event (event_type: provider_status_changed) per ops/audit_trail_schema.json.",
+  "type": "object",
+  "required": [
+    "npi",
+    "current_status",
+    "status_since",
+    "previous_status",
+    "flag_reason",
+    "flag_details",
+    "review_assigned_to",
+    "review_due_date",
+    "employer_networks",
+    "transition_history"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "npi": {
+      "type": "string",
+      "pattern": "^[0-9]{10}$",
+      "description": "10-digit National Provider Identifier. Immutable after creation."
+    },
+    "current_status": {
+      "type": "string",
+      "enum": ["pending_review", "active", "flagged", "suspended", "removed"],
+      "description": "The provider's current lifecycle status."
+    },
+    "status_since": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC datetime when the current status was entered. Updated on every transition."
+    },
+    "previous_status": {
+      "type": ["string", "null"],
+      "enum": ["pending_review", "active", "flagged", "suspended", "removed", null],
+      "description": "The status immediately before the current one. Null if this is the provider's first status (i.e., pending_review at onboarding)."
+    },
+    "flag_reason": {
+      "type": ["string", "null"],
+      "description": "Short human-readable reason for the current flag or suspension. Non-null only when current_status is 'flagged' or 'suspended'. Null otherwise.",
+      "maxLength": 500
+    },
+    "flag_details": {
+      "type": ["object", "null"],
+      "description": "Structured details about the flag or suspension trigger. Shape varies by trigger type. Null when current_status is not 'flagged' or 'suspended'.",
+      "properties": {
+        "trigger_type": {
+          "type": "string",
+          "enum": [
+            "safety_gate_alert",
+            "score_drop",
+            "anomaly_detected",
+            "dispute_filed",
+            "human_review",
+            "sla_breach",
+            "unresolved_suspension",
+            "voluntary_removal",
+            "safety_gate_failure"
+          ],
+          "description": "The category of event that caused the flag or suspension."
+        },
+        "score_drop_delta": {
+          "type": ["number", "null"],
+          "description": "Points dropped in the triggering scoring cycle. Populated when trigger_type is 'score_drop'."
+        },
+        "anomaly_event_id": {
+          "type": ["string", "null"],
+          "format": "uuid",
+          "description": "Audit event ID of the anomaly_detected event that triggered this flag. Populated when trigger_type is 'anomaly_detected'."
+        },
+        "dispute_id": {
+          "type": ["string", "null"],
+          "format": "uuid",
+          "description": "Identifier of the dispute that triggered this flag. Populated when trigger_type is 'dispute_filed'."
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "description": "Free-text notes from the reviewer or system.",
+          "maxLength": 2000
+        }
+      },
+      "additionalProperties": false
+    },
+    "review_assigned_to": {
+      "type": ["string", "null"],
+      "description": "User ID (e.g., 'user:jsmith') of the ops team member assigned to review this provider. Null when no active review is in progress.",
+      "minLength": 1
+    },
+    "review_due_date": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 UTC datetime by which the assigned review must be completed per the applicable SLA. Null when no active review is in progress."
+    },
+    "employer_networks": {
+      "type": "array",
+      "description": "List of employer IDs whose networks include this provider. Used to route employer notifications on status transitions.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "transition_history": {
+      "type": "array",
+      "description": "Append-only ordered list of all status transitions this provider has undergone, from oldest to most recent. Never modified after insertion.",
+      "items": {
+        "$ref": "#/$defs/transition_event"
+      }
+    }
+  },
+  "$defs": {
+    "transition_event": {
+      "type": "object",
+      "title": "Lifecycle Transition Event",
+      "description": "A single status transition. Immutable after creation. Each entry corresponds to exactly one audit trail event.",
+      "required": [
+        "from_status",
+        "to_status",
+        "timestamp",
+        "trigger",
+        "actor",
+        "audit_event_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "from_status": {
+          "type": ["string", "null"],
+          "enum": ["pending_review", "active", "flagged", "suspended", "removed", null],
+          "description": "The status before this transition. Null for the initial onboarding entry."
+        },
+        "to_status": {
+          "type": "string",
+          "enum": ["pending_review", "active", "flagged", "suspended", "removed"],
+          "description": "The status entered by this transition."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 UTC datetime when this transition occurred. Set by the system; never client-supplied."
+        },
+        "trigger": {
+          "type": "string",
+          "description": "Human-readable description of what caused this transition (e.g., 'safety_gate_pass', 'score_drop_24pts', 'dispute_resolved_favorable', 'sla_breach_day30').",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "actor": {
+          "type": "string",
+          "description": "Who executed the transition. Use 'system' for automated transitions; use authenticated user ID (e.g., 'user:jsmith') for manual transitions.",
+          "minLength": 1
+        },
+        "audit_event_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID of the corresponding provider_status_changed event in the audit trail (ops/audit_trail_schema.json). Enables cross-referencing between lifecycle record and audit log."
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "npi": "1234567890",
+      "current_status": "flagged",
+      "status_since": "2026-04-09T10:00:00Z",
+      "previous_status": "active",
+      "flag_reason": "Score dropped 24 points in Q1 2026 refresh cycle",
+      "flag_details": {
+        "trigger_type": "score_drop",
+        "score_drop_delta": 24,
+        "anomaly_event_id": null,
+        "dispute_id": null,
+        "notes": "Drop primarily driven by new adverse event data from CMS Q1 release."
+      },
+      "review_assigned_to": "user:jsmith",
+      "review_due_date": "2026-04-23T23:59:59Z",
+      "employer_networks": ["emp:acme-corp", "emp:healthco"],
+      "transition_history": [
+        {
+          "from_status": null,
+          "to_status": "pending_review",
+          "timestamp": "2026-01-05T08:00:00Z",
+          "trigger": "provider_onboarded",
+          "actor": "system",
+          "audit_event_id": "a1b2c3d4-0001-4000-8000-000000000001"
+        },
+        {
+          "from_status": "pending_review",
+          "to_status": "active",
+          "timestamp": "2026-01-10T14:30:00Z",
+          "trigger": "safety_gate_pass_initial_scores_computed",
+          "actor": "system",
+          "audit_event_id": "a1b2c3d4-0002-4000-8000-000000000002"
+        },
+        {
+          "from_status": "active",
+          "to_status": "flagged",
+          "timestamp": "2026-04-09T10:00:00Z",
+          "trigger": "score_drop_24pts_Q1_2026_refresh",
+          "actor": "system",
+          "audit_event_id": "a1b2c3d4-0003-4000-8000-000000000003"
+        }
+      ]
+    }
+  ]
+}
