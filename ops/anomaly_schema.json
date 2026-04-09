@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quality-system/schemas/anomaly/v1.0.0",
+  "title": "Quality System Anomaly Record",
+  "description": "A single detected anomaly produced by the anomaly detection pipeline after each D1 data refresh. Every record corresponds to an anomaly_detected event in the audit trail.",
+  "type": "object",
+  "required": [
+    "anomaly_id",
+    "detected_at",
+    "anomaly_type",
+    "severity",
+    "description",
+    "refresh_cycle_id",
+    "reviewed",
+    "audit_event_id"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "anomaly_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique identifier for this anomaly record (UUID v4)."
+    },
+    "detected_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 date-time (UTC) at which the anomaly was detected by the pipeline."
+    },
+    "anomaly_type": {
+      "type": "string",
+      "description": "Classification of the anomaly. Determines which detection check produced it and which fields are expected to be populated.",
+      "enum": [
+        "score_swing",
+        "score_extreme_swing",
+        "safety_gate_change",
+        "data_disappearance",
+        "data_appearance",
+        "npi_mismatch",
+        "duplicate_detection",
+        "cohort_shift",
+        "cohort_extreme_shift",
+        "source_stale",
+        "source_record_count_change"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "description": "Severity level at time of detection. May be escalated after initial detection (e.g., source_stale warning→critical at 2x cadence).",
+      "enum": [
+        "info",
+        "warning",
+        "critical"
+      ]
+    },
+    "npi": {
+      "type": ["string", "null"],
+      "description": "10-digit National Provider Identifier this anomaly pertains to. Null for system-wide or source-level anomalies (e.g., source_stale, source_record_count_change, cohort_shift).",
+      "pattern": "^[0-9]{10}$"
+    },
+    "dimension": {
+      "type": ["string", "null"],
+      "description": "Scoring dimension affected (e.g., safety, quality, utilization, experience, cost, composite, or bundle:<specialty_slug>). Null for anomalies not tied to a specific dimension."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the anomaly, including the observed values and why the condition was flagged.",
+      "minLength": 1
+    },
+    "current_value": {
+      "type": ["number", "string", "null"],
+      "description": "The current (new) value that triggered the anomaly. For score anomalies: the new score (number). For source anomalies: record count or status string. Null if not applicable."
+    },
+    "previous_value": {
+      "type": ["number", "string", "null"],
+      "description": "The prior value from the previous cycle or pull. For score anomalies: the prior score (number). For source anomalies: prior record count or status string. Null if no prior value exists (e.g., data_appearance)."
+    },
+    "source_id": {
+      "type": ["string", "null"],
+      "description": "The source registry ID of the data source involved, if applicable (e.g., nppes, oig_leie). Null for anomalies not tied to a specific source."
+    },
+    "refresh_cycle_id": {
+      "type": "string",
+      "description": "The pipeline run identifier that produced this anomaly. Matches the refresh_cycle_id in the score snapshot store and audit trail.",
+      "minLength": 1
+    },
+    "reviewed": {
+      "type": "boolean",
+      "description": "Whether this anomaly has been reviewed by an ops team member. Set to false at creation; updated to true when a resolution is recorded."
+    },
+    "reviewed_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 date-time (UTC) at which the review was completed. Null if not yet reviewed."
+    },
+    "reviewed_by": {
+      "type": ["string", "null"],
+      "description": "Authenticated user ID of the ops team member who reviewed the anomaly (e.g., user:jsmith). Null if not yet reviewed."
+    },
+    "resolution": {
+      "type": ["string", "null"],
+      "description": "Outcome of the review. Null if not yet reviewed.",
+      "enum": [
+        "confirmed_real",
+        "data_issue",
+        "methodology_issue",
+        "false_positive",
+        null
+      ]
+    },
+    "resolution_notes": {
+      "type": ["string", "null"],
+      "description": "Free-text notes from the reviewer explaining the resolution decision, any corrective actions taken, or threshold tuning recommendations. Null if not yet reviewed or no notes provided."
+    },
+    "audit_event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of the anomaly_detected audit trail event (audit_trail_schema.json) that was written when this anomaly record was created."
+    }
+  },
+  "examples": [
+    {
+      "anomaly_id": "a1b2c3d4-0001-4abc-8def-111111111111",
+      "detected_at": "2026-04-09T15:00:00Z",
+      "anomaly_type": "score_extreme_swing",
+      "severity": "critical",
+      "npi": "1234567890",
+      "dimension": "safety",
+      "description": "Provider safety score dropped 43.2 points (from 88.1 to 44.9) between the 2026-Q1 and 2026-Q2 refresh cycles.",
+      "current_value": 44.9,
+      "previous_value": 88.1,
+      "source_id": null,
+      "refresh_cycle_id": "2026-Q2",
+      "reviewed": false,
+      "reviewed_at": null,
+      "reviewed_by": null,
+      "resolution": null,
+      "resolution_notes": null,
+      "audit_event_id": "e5f6a7b8-0002-4bcd-9ef0-222222222222"
+    },
+    {
+      "anomaly_id": "c3d4e5f6-0003-4cde-af01-333333333333",
+      "detected_at": "2026-04-09T15:02:00Z",
+      "anomaly_type": "source_stale",
+      "severity": "warning",
+      "npi": null,
+      "dimension": null,
+      "description": "Source oig_leie has not been refreshed in 32 days, exceeding its expected 30-day cadence.",
+      "current_value": 32,
+      "previous_value": 30,
+      "source_id": "oig_leie",
+      "refresh_cycle_id": "2026-Q2",
+      "reviewed": true,
+      "reviewed_at": "2026-04-10T09:15:00Z",
+      "reviewed_by": "user:othmane",
+      "resolution": "data_issue",
+      "resolution_notes": "OIG LEIE site was undergoing maintenance. Pull completed manually on 2026-04-10. No score impact; within acceptable window.",
+      "audit_event_id": "f7a8b9c0-0004-4def-b012-444444444444"
+    }
+  ]
+}
