@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employer Quality View — MEROKA</title>
+<style>
+  :root {
+    --sidebar-bg: #1a1a2e;
+    --topbar-bg: #1a1a2e;
+    --body-bg: #f8f9fb;
+    --card-bg: #ffffff;
+    --border: #e5e7eb;
+    --text-primary: #1a1a2e;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --accent: #6366f1;
+    --accent-soft: #eef2ff;
+    --accent-mid: #818cf8;
+    --green: #15803d;
+    --green-soft: #dcfce7;
+    --green-mid: #22c55e;
+    --yellow: #92400e;
+    --yellow-soft: #fef3c7;
+    --yellow-mid: #d97706;
+    --orange: #9a3412;
+    --orange-soft: #ffedd5;
+    --orange-mid: #ea580c;
+    --red: #dc2626;
+    --red-soft: #fee2e2;
+    --red-mid: #ef4444;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.07);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--body-bg);
+    color: var(--text-primary);
+    line-height: 1.5;
+    font-size: 14px;
+  }
+
+  /* ---- Prototype Banner ---- */
+  .proto-banner {
+    background: #1e1b4b;
+    border-bottom: 2px solid #4f46e5;
+    padding: 8px 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #a5b4fc;
+  }
+  .proto-banner .proto-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #818cf8;
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .proto-banner span { color: #6366f1; margin: 0 4px; }
+
+  /* ---- Layout ---- */
+  .app { display: flex; min-height: 100vh; flex-direction: column; }
+
+  /* ---- Topbar ---- */
+  .topbar {
+    background: var(--topbar-bg);
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    gap: 20px;
+  }
+  .topbar-brand {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+  .topbar-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(255,255,255,0.12);
+  }
+  .topbar-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #9ca3af;
+  }
+  .topbar-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
+    background: rgba(99,102,241,0.2);
+    color: #a5b4fc;
+    border: 1px solid rgba(99,102,241,0.3);
+  }
+  .topbar-spacer { flex: 1; }
+  .topbar-back {
+    font-size: 12px;
+    color: #6b7280;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+  }
+  .topbar-back:hover { color: #c7d2fe; background: rgba(255,255,255,0.06); }
+  .topbar-date {
+    font-size: 11px;
+    color: #4b5563;
+    font-weight: 500;
+  }
+
+  /* ---- Content wrapper ---- */
+  .content {
+    flex: 1;
+    max-width: 1140px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 36px 40px 80px;
+  }
+
+  /* ---- Page header ---- */
+  .page-header { margin-bottom: 32px; }
+  .page-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .page-header .subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .page-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .page-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .btn {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { border-color: #c7d2fe; color: var(--accent); background: var(--accent-soft); }
+  .btn.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn.primary:hover { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+
+  /* ---- Section headers ---- */
+  .section-header {
+    margin-bottom: 16px;
+    margin-top: 44px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-header:first-of-type { margin-top: 0; }
+  .section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+  }
+  .section-header .section-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+  .section-header .section-count {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: #f3f4f6;
+    color: var(--text-secondary);
+  }
+
+  /* ---- Cards ---- */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  /* ---- Table wrap ---- */
+  .table-wrap {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table thead th {
+    background: #f8fafc;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text-muted);
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .data-table thead th.sortable {
+    cursor: default;
+  }
+  .data-table thead th.sorted {
+    color: var(--accent);
+  }
+  .data-table thead th .sort-arrow {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 9px;
+    color: var(--accent);
+  }
+  .data-table tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.1s;
+  }
+  .data-table tbody tr:last-child { border-bottom: none; }
+  .data-table tbody tr:hover { background: #fafbff; }
+  .data-table tbody tr.selected { background: #f5f3ff; }
+  .data-table td {
+    padding: 13px 16px;
+    vertical-align: middle;
+  }
+  .data-table td.provider-name {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .data-table td.provider-name .provider-specialty {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  /* ---- Score bar ---- */
+  .score-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .score-num {
+    font-size: 15px;
+    font-weight: 700;
+    min-width: 30px;
+    color: var(--text-primary);
+  }
+  .score-bar-track {
+    flex: 1;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 100px;
+    overflow: hidden;
+    min-width: 60px;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.3s ease;
+  }
+  .score-bar-fill.tier-high   { background: #22c55e; }
+  .score-bar-fill.tier-good   { background: #86efac; }
+  .score-bar-fill.tier-mid    { background: #d97706; }
+  .score-bar-fill.tier-low    { background: #f87171; }
+
+  /* ---- Confidence badge ---- */
+  .conf-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .conf-badge.high     { background: var(--green-soft); color: var(--green); }
+  .conf-badge.moderate { background: var(--yellow-soft); color: #92400e; }
+  .conf-badge.low      { background: #f3f4f6; color: #6b7280; }
+  .conf-badge.self-rep { background: var(--orange-soft); color: var(--orange); }
+  .conf-badge.gov      { background: var(--accent-soft); color: #4f46e5; }
+
+  /* ---- Score dot ---- */
+  .score-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+  .score-dot.green  { background: #22c55e; }
+  .score-dot.yellow { background: #f59e0b; }
+  .score-dot.red    { background: #f87171; }
+
+  /* ---- Detail panel ---- */
+  .detail-panel {
+    background: var(--card-bg);
+    border: 1.5px solid #c7d2fe;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+  .detail-header {
+    background: linear-gradient(135deg, #f5f3ff 0%, #eef2ff 100%);
+    border-bottom: 1px solid #ddd6fe;
+    padding: 24px 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .detail-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .detail-provider-info { flex: 1; min-width: 0; }
+  .detail-provider-info h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+  .detail-provider-info .detail-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .detail-meta-sep {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #d1d5db;
+  }
+  .detail-score-block {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .detail-score-block .composite-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .detail-score-block .composite-num {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .composite-bar-track {
+    height: 8px;
+    width: 120px;
+    background: #ddd6fe;
+    border-radius: 100px;
+    overflow: hidden;
+    margin-left: auto;
+  }
+  .composite-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, #6366f1, #818cf8);
+  }
+  .detail-freshness {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .detail-body { padding: 28px; }
+
+  /* ---- Dimension grid ---- */
+  .dim-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 800px) {
+    .dim-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .dim-card {
+    background: #f8f9fb;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .dim-card.pass-card {
+    background: #f0fdf4;
+    border-color: #86efac;
+  }
+  .dim-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .dim-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text-muted);
+  }
+  .dim-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+  .dim-value.pass {
+    font-size: 18px;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dim-value.pass .checkmark {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--green-soft);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--green);
+  }
+  .dim-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .dim-bar-track {
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .dim-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+  }
+  .dim-bar-fill.blue   { background: #6366f1; }
+  .dim-bar-fill.green  { background: #22c55e; }
+  .dim-bar-fill.yellow { background: #f59e0b; }
+  .dim-bar-fill.teal   { background: #0d9488; }
+
+  /* ---- Bundle chart ---- */
+  .bundle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .bundle-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .bundle-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .bundle-score-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .bundle-score-num {
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text-primary);
+  }
+  .bundle-score-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+  .bundle-bar-track {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .bundle-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+  }
+  .bundle-bar-fill.purple { background: linear-gradient(90deg, #6366f1, #a78bfa); }
+  .bundle-bar-fill.teal   { background: linear-gradient(90deg, #0d9488, #5eead4); }
+  .bundle-bar-fill.blue   { background: linear-gradient(90deg, #0ea5e9, #7dd3fc); }
+  .bundle-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ---- Peer context ---- */
+  .peer-context {
+    background: var(--accent-soft);
+    border: 1px solid #ddd6fe;
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .peer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #3730a3;
+  }
+  .peer-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .peer-row strong { font-weight: 700; }
+  .peer-row .peer-stat {
+    font-size: 11px;
+    background: #e0e7ff;
+    color: #4f46e5;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-left: auto;
+  }
+
+  /* ---- Data confidence strip ---- */
+  .confidence-strip {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .conf-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8f9fb;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+  .conf-row .conf-dimension {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 160px;
+  }
+  .conf-row .conf-desc {
+    color: var(--text-secondary);
+    flex: 1;
+  }
+
+  /* ---- Sub-section label ---- */
+  .sub-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sub-label:first-of-type { margin-top: 0; }
+  .sub-label-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ---- Comparison strip ---- */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .compare-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .compare-card.selected-card {
+    border-color: #c7d2fe;
+    box-shadow: 0 0 0 2px rgba(99,102,241,0.15), var(--shadow-md);
+  }
+  .compare-header {
+    padding: 16px 18px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .compare-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .compare-avatar.av-purple { background: linear-gradient(135deg, #6366f1, #818cf8); }
+  .compare-avatar.av-teal   { background: linear-gradient(135deg, #0d9488, #2dd4bf); }
+  .compare-avatar.av-blue   { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+  .compare-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+  .compare-loc {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .compare-selected-tag {
+    margin-left: auto;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 7px;
+    border-radius: 100px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid #c7d2fe;
+    white-space: nowrap;
+  }
+  .compare-body { padding: 16px 18px; }
+  .compare-composite {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .compare-composite-num {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .compare-composite-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .compare-conf-badge { margin-top: 4px; }
+  .compare-bundles { display: flex; flex-direction: column; gap: 7px; }
+  .compare-bundle-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .compare-bundle-name {
+    color: var(--text-secondary);
+    min-width: 130px;
+    font-size: 11px;
+  }
+  .compare-bundle-score {
+    font-weight: 700;
+    font-size: 12px;
+    min-width: 28px;
+    color: var(--text-primary);
+  }
+  .compare-mini-bar {
+    flex: 1;
+    height: 5px;
+    background: #f3f4f6;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .compare-mini-fill {
+    height: 100%;
+    border-radius: 100px;
+  }
+  .compare-mini-fill.cv-purple { background: #818cf8; }
+  .compare-mini-fill.cv-teal   { background: #2dd4bf; }
+  .compare-mini-fill.cv-blue   { background: #38bdf8; }
+  .compare-footer {
+    border-top: 1px solid var(--border);
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ---- Info note ---- */
+  .info-note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: 10px 14px;
+    background: #f8fafc;
+    border-left: 3px solid #c7d2fe;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 20px;
+  }
+
+  /* ---- Search / filter bar ---- */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 100px;
+    border: 1.5px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    cursor: default;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .filter-pill.active {
+    background: var(--accent-soft);
+    border-color: #c7d2fe;
+    color: var(--accent);
+  }
+  .filter-sep {
+    flex: 1;
+  }
+  .sort-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* ---- Tier pill in table ---- */
+  .tier-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .tier-pill.t1 { background: #dcfce7; color: #15803d; }
+  .tier-pill.t2 { background: #fef3c7; color: #92400e; }
+  .tier-pill.t3 { background: #fee2e2; color: #dc2626; }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 720px) {
+    .content { padding: 24px 16px 60px; }
+    .dim-grid { grid-template-columns: 1fr; }
+    .bundle-grid { grid-template-columns: 1fr; }
+    .comparison-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Prototype Banner -->
+<div class="proto-banner">
+  <div class="proto-dot"></div>
+  PROTOTYPE<span>—</span>Employer Quality View Reference Design<span>—</span>Not for distribution
+</div>
+
+<div class="app">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-brand">MEROKA</div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-title">Employer Quality View</div>
+    <div class="topbar-badge">Employer Portal</div>
+    <div class="topbar-spacer"></div>
+    <a href="../index.html" class="topbar-back">&#8592; Back to Treasure Map</a>
+    <div class="topbar-date">April 2026</div>
+  </div>
+
+  <!-- Main content -->
+  <div class="content">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div class="page-header-row">
+        <div>
+          <h1>Provider Quality Search</h1>
+          <div class="subtitle">OB-GYN — West Virginia &nbsp;&bull;&nbsp; Showing 6 providers &nbsp;&bull;&nbsp; Sorted by composite score</div>
+        </div>
+        <div class="page-controls">
+          <button class="btn">&#9013; Export CSV</button>
+          <button class="btn primary">&#43; Add to Plan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================
+         SECTION 1: Provider List View
+    ================================================================ -->
+    <div class="section-header">
+      <div class="section-icon" style="background:#eef2ff;">&#128203;</div>
+      <h2>Provider List</h2>
+      <div class="section-count">6 providers</div>
+      <div class="section-desc">Click a row to see full detail</div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-pill active">OB-GYN &#10005;</div>
+      <div class="filter-pill active">West Virginia &#10005;</div>
+      <div class="filter-pill">+ Add filter</div>
+      <div class="filter-sep"></div>
+      <div class="sort-label">Sorted by: <strong>Composite Score &#9660;</strong></div>
+    </div>
+
+    <div class="table-wrap" style="margin-bottom: 44px;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Location</th>
+            <th class="sortable sorted">Composite Score <span class="sort-arrow">&#9660;</span></th>
+            <th>Confidence</th>
+            <th>Safety</th>
+            <th>MIPS Tier</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Row 1 — Selected -->
+          <tr class="selected">
+            <td class="provider-name">
+              Dr. Sarah Chen
+              <div class="provider-specialty">OB-GYN</div>
+            </td>
+            <td style="color:var(--text-secondary);">Princeton, WV</td>
+            <td>
+              <div class="score-bar-wrap">
+                <div class="score-num">78</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill tier-high" style="width:78%"></div>
+                </div>
+                <span class="score-dot green"></span>
+              </div>
+            </td>
+            <td><span class="conf-badge high">High</span></td>
+            <td><span style="color:var(--green);font-weight:700;font-size:13px;">&#10003; Pass</span></td>
+            <td><span class="tier-pill t1">Tier 1</span></td>
+            <td><span style="font-size:11px;color:var(--accent);font-weight:600;cursor:default;">Viewing &#8594;</span></td>
+          </tr>
+          <!-- Row 2 -->
+          <tr>
+            <td class="provider-name">
+              Dr. Marcus Webb
+              <div class="provider-specialty">OB-GYN</div>
+            </td>
+            <td style="color:var(--text-secondary);">Charleston, WV</td>
+            <td>
+              <div class="score-bar-wrap">
+                <div class="score-num">74</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill tier-high" style="width:74%"></div>
+                </div>
+                <span class="score-dot green"></span>
+              </div>
+            </td>
+            <td><span class="conf-badge high">High</span></td>
+            <td><span style="color:var(--green);font-weight:700;font-size:13px;">&#10003; Pass</span></td>
+            <td><span class="tier-pill t1">Tier 1</span></td>
+            <td></td>
+          </tr>
+          <!-- Row 3 -->
+          <tr>
+            <td class="provider-name">
+              Dr. Aisha Koroma
+              <div class="provider-specialty">OB-GYN</div>
+            </td>
+            <td style="color:var(--text-secondary);">Huntington, WV</td>
+            <td>
+              <div class="score-bar-wrap">
+                <div class="score-num">69</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill tier-good" style="width:69%"></div>
+                </div>
+                <span class="score-dot yellow"></span>
+              </div>
+            </td>
+            <td><span class="conf-badge moderate">Moderate</span></td>
+            <td><span style="color:var(--green);font-weight:700;font-size:13px;">&#10003; Pass</span></td>
+            <td><span class="tier-pill t2">Tier 2</span></td>
+            <td></td>
+          </tr>
+          <!-- Row 4 -->
+          <tr>
+            <td class="provider-name">
+              Dr. Rachel Torres
+              <div class="provider-specialty">OB-GYN</div>
+            </td>
+            <td style="color:var(--text-secondary);">Morgantown, WV</td>
+            <td>
+              <div class="score-bar-wrap">
+                <div class="score-num">66</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill tier-good" style="width:66%"></div>
+                </div>
+                <span class="score-dot yellow"></span>
+              </div>
+            </td>
+            <td><span class="conf-badge moderate">Moderate</span></td>
+            <td><span style="color:var(--green);font-weight:700;font-size:13px;">&#10003; Pass</span></td>
+            <td><span class="tier-pill t2">Tier 2</span></td>
+            <td></td>
+          </tr>
+          <!-- Row 5 -->
+          <tr>
+            <td class="provider-name">
+              Dr. James Prater
+              <div class="provider-specialty">OB-GYN</div>
+            </td>
+            <td style="color:var(--text-secondary);">Beckley, WV</td>
+            <td>
+              <div class="score-bar-wrap">
+                <div class="score-num">58</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill tier-mid" style="width:58%"></div>
+                </div>
+                <span class="score-dot yellow"></span>
+              </div>
+            </td>
+            <td><span class="conf-badge low">Low</span></td>
+            <td><span style="color:var(--green);font-weight:700;font-size:13px;">&#10003; Pass</span></td>
+            <td><span class="tier-pill t2">Tier 2</span></td>
+            <td></td>
+          </tr>
+          <!-- Row 6 -->
+          <tr>
+            <td class="provider-name">
+              Dr. Linda Nguyen
+              <div class="provider-specialty">OB-GYN</div>
+            </td>
+            <td style="color:var(--text-secondary);">Parkersburg, WV</td>
+            <td>
+              <div class="score-bar-wrap">
+                <div class="score-num">51</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill tier-mid" style="width:51%"></div>
+                </div>
+                <span class="score-dot red"></span>
+              </div>
+            </td>
+            <td><span class="conf-badge low">Low</span></td>
+            <td><span style="color:#d97706;font-weight:700;font-size:13px;">&#9888; Review</span></td>
+            <td><span class="tier-pill t3">Tier 3</span></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- ================================================================
+         SECTION 2: Provider Detail View
+    ================================================================ -->
+    <div class="section-header">
+      <div class="section-icon" style="background:#f0fdf4;">&#128269;</div>
+      <h2>Provider Detail</h2>
+      <div class="section-desc">Expanded view — Dr. Sarah Chen</div>
+    </div>
+
+    <div class="detail-panel" style="margin-bottom:44px;">
+
+      <!-- Detail header -->
+      <div class="detail-header">
+        <div class="detail-avatar">SC</div>
+        <div class="detail-provider-info">
+          <h2>Dr. Sarah Chen</h2>
+          <div class="detail-meta">
+            <span>OB-GYN</span>
+            <div class="detail-meta-sep"></div>
+            <span>Princeton Medical Group, Princeton WV</span>
+            <div class="detail-meta-sep"></div>
+            <span>NPI: 1234567890</span>
+            <div class="detail-meta-sep"></div>
+            <span style="color:var(--green);font-weight:600;">Board Certified</span>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="conf-badge gov" style="font-size:10px;">Telehealth &#10003;</span>
+            <span class="conf-badge high" style="font-size:10px;">Extended Hours &#10003;</span>
+            <span class="conf-badge moderate" style="font-size:10px;">Wait: 8 days</span>
+            <span class="conf-badge" style="background:#f3f4f6;color:#374151;font-size:10px;">127 reviews</span>
+          </div>
+        </div>
+        <div class="detail-score-block">
+          <div class="composite-label">Composite Score</div>
+          <div class="composite-num">78</div>
+          <div class="composite-bar-track">
+            <div class="composite-bar-fill" style="width:78%"></div>
+          </div>
+          <div class="detail-freshness">Updated March 2026<br>Based on CMS PY2023 data</div>
+        </div>
+      </div>
+
+      <!-- Detail body -->
+      <div class="detail-body">
+
+        <!-- Dimension breakdown -->
+        <div class="sub-label">Dimension Breakdown <div class="sub-label-line"></div></div>
+
+        <div class="dim-grid">
+
+          <!-- Safety Gate -->
+          <div class="dim-card pass-card">
+            <div class="dim-top">
+              <div class="dim-label">Safety Gate</div>
+              <span class="conf-badge high" style="font-size:9px;">Required</span>
+            </div>
+            <div class="dim-value pass">
+              <span class="checkmark">&#10003;</span>Pass
+            </div>
+            <div class="dim-sub">No exclusions, active license, no adverse CMS actions</div>
+          </div>
+
+          <!-- MIPS -->
+          <div class="dim-card">
+            <div class="dim-top">
+              <div class="dim-label">Government Quality (MIPS)</div>
+              <span class="conf-badge gov" style="font-size:9px;">Gov Assessed</span>
+            </div>
+            <div class="dim-value">91.4</div>
+            <div class="dim-bar-track"><div class="dim-bar-fill blue" style="width:91.4%"></div></div>
+            <div class="dim-sub">Tier 1 &mdash; CMS PY2023. Exceptional performance.</div>
+          </div>
+
+          <!-- Practice Pattern -->
+          <div class="dim-card">
+            <div class="dim-top">
+              <div class="dim-label">Practice Pattern Analysis</div>
+              <span class="conf-badge moderate" style="font-size:9px;">Moderate</span>
+            </div>
+            <div class="dim-value">72</div>
+            <div class="dim-bar-track"><div class="dim-bar-fill yellow" style="width:72%"></div></div>
+            <div class="dim-sub">Based on Medicare billing data (B/D claims)</div>
+          </div>
+
+          <!-- Credentials -->
+          <div class="dim-card">
+            <div class="dim-top">
+              <div class="dim-label">Credentials</div>
+              <span class="conf-badge high" style="font-size:9px;">Verified</span>
+            </div>
+            <div class="dim-value">85</div>
+            <div class="dim-bar-track"><div class="dim-bar-fill green" style="width:85%"></div></div>
+            <div class="dim-sub">Board certified (ABOG), active license, no sanctions</div>
+          </div>
+
+          <!-- Patient Experience -->
+          <div class="dim-card">
+            <div class="dim-top">
+              <div class="dim-label">Patient Experience</div>
+              <span class="conf-badge moderate" style="font-size:9px;">127 reviews</span>
+            </div>
+            <div class="dim-value" style="font-size:20px;">4.6 <span style="font-size:14px;font-weight:500;color:var(--text-muted);">/ 5.0</span></div>
+            <div class="dim-bar-track"><div class="dim-bar-fill teal" style="width:92%"></div></div>
+            <div class="dim-sub">Multi-source aggregate (Google, Healthgrades, direct)</div>
+          </div>
+
+          <!-- Access -->
+          <div class="dim-card">
+            <div class="dim-top">
+              <div class="dim-label">Access &amp; Availability</div>
+              <span class="conf-badge self-rep" style="font-size:9px;">Self-reported</span>
+            </div>
+            <div class="dim-value" style="font-size:18px;color:var(--text-primary);">Good</div>
+            <div class="dim-bar-track"><div class="dim-bar-fill blue" style="width:74%"></div></div>
+            <div class="dim-sub">Telehealth &#10003; &nbsp; Wait: 8 days &nbsp; Extended hours &#10003;</div>
+          </div>
+
+        </div><!-- /dim-grid -->
+
+        <!-- Bundle-level scores -->
+        <div class="sub-label">Bundle-Level Scores <div class="sub-label-line"></div></div>
+        <div class="info-note">Bundle scores reflect Dr. Chen's quality and practice patterns within each care pathway. This is the primary lens employers use to match coverage design to provider performance.</div>
+
+        <div class="bundle-grid">
+
+          <div class="bundle-card">
+            <div class="bundle-name">&#129373; Maternity Bundle</div>
+            <div class="bundle-score-row">
+              <div class="bundle-score-num">71</div>
+              <div class="bundle-score-label">/ 100</div>
+            </div>
+            <div class="bundle-bar-track">
+              <div class="bundle-bar-fill purple" style="width:71%"></div>
+            </div>
+            <div class="bundle-sub">Prenatal, delivery, postpartum. C-section rate within expected range. Moderate data volume.</div>
+          </div>
+
+          <div class="bundle-card">
+            <div class="bundle-name">&#128137; GYN Surgery Bundle</div>
+            <div class="bundle-score-row">
+              <div class="bundle-score-num">83</div>
+              <div class="bundle-score-label">/ 100</div>
+            </div>
+            <div class="bundle-bar-track">
+              <div class="bundle-bar-fill teal" style="width:83%"></div>
+            </div>
+            <div class="bundle-sub">Hysterectomy, fibroid procedures, laparoscopy. Strong outcomes, low readmission rate.</div>
+          </div>
+
+          <div class="bundle-card">
+            <div class="bundle-name">&#128203; Preventive / Screening Bundle</div>
+            <div class="bundle-score-row">
+              <div class="bundle-score-num">76</div>
+              <div class="bundle-score-label">/ 100</div>
+            </div>
+            <div class="bundle-bar-track">
+              <div class="bundle-bar-fill blue" style="width:76%"></div>
+            </div>
+            <div class="bundle-sub">Pap, mammography, STI screening adherence. Above state median screening rates.</div>
+          </div>
+
+        </div><!-- /bundle-grid -->
+
+        <!-- Peer comparison context -->
+        <div class="sub-label">Peer Comparison Context <div class="sub-label-line"></div></div>
+
+        <div class="peer-context">
+          <div class="peer-row">
+            <span class="peer-icon">&#127941;</span>
+            <span>Overall percentile among OB-GYNs in West Virginia</span>
+            <span class="peer-stat">Top 22%</span>
+          </div>
+          <div class="peer-row">
+            <span class="peer-icon">&#128200;</span>
+            <span>Practice pattern score vs. state median <strong>(72 vs 65)</strong> — above median</span>
+            <span class="peer-stat">+7 pts</span>
+          </div>
+          <div class="peer-row">
+            <span class="peer-icon">&#9733;</span>
+            <span>Patient experience vs. state median <strong>(4.6 vs 4.1)</strong></span>
+            <span class="peer-stat">+0.5 stars</span>
+          </div>
+          <div class="peer-row">
+            <span class="peer-icon">&#127973;</span>
+            <span>GYN Surgery bundle score vs. state median <strong>(83 vs 71)</strong></span>
+            <span class="peer-stat">+12 pts</span>
+          </div>
+        </div>
+
+        <!-- Confidence indicators -->
+        <div class="sub-label">Data Confidence Indicators <div class="sub-label-line"></div></div>
+
+        <div class="confidence-strip">
+          <div class="conf-row">
+            <span class="conf-badge gov">Gov Assessed</span>
+            <span class="conf-dimension">MIPS / Government Quality</span>
+            <span class="conf-desc">CMS-issued performance score. Highest evidentiary value. PY2023 final data.</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-badge high">Verified</span>
+            <span class="conf-dimension">Credentials &amp; Safety Gate</span>
+            <span class="conf-desc">NPDB, state licensing boards, CMS exclusions list. Refreshed monthly.</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-badge moderate">Moderate</span>
+            <span class="conf-dimension">Practice Pattern Analysis</span>
+            <span class="conf-desc">Derived from Medicare Part B/D billing data. Sufficient volume (n&gt;30 episodes). Not all-payer.</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-badge moderate">Moderate</span>
+            <span class="conf-dimension">Patient Experience</span>
+            <span class="conf-desc">127 reviews across aggregated sources. Meets 50-review minimum threshold.</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-badge self-rep">Self-reported</span>
+            <span class="conf-dimension">Access &amp; Availability</span>
+            <span class="conf-desc">Telehealth status, hours, and wait time sourced from practice attestation. Unverified.</span>
+          </div>
+        </div>
+
+      </div><!-- /detail-body -->
+    </div><!-- /detail-panel -->
+
+
+    <!-- ================================================================
+         SECTION 3: Provider Comparison Strip
+    ================================================================ -->
+    <div class="section-header">
+      <div class="section-icon" style="background:#f0fdfa;">&#9878;</div>
+      <h2>Provider Comparison</h2>
+      <div class="section-desc">Side-by-side view of top 3 providers</div>
+    </div>
+
+    <div class="comparison-grid">
+
+      <!-- Card 1 — Dr. Sarah Chen (selected) -->
+      <div class="compare-card selected-card">
+        <div class="compare-header">
+          <div class="compare-avatar av-purple">SC</div>
+          <div>
+            <div class="compare-name">Dr. Sarah Chen</div>
+            <div class="compare-loc">Princeton, WV</div>
+          </div>
+          <div class="compare-selected-tag">Viewing</div>
+        </div>
+        <div class="compare-body">
+          <div class="compare-composite">
+            <div>
+              <div class="compare-composite-num">78</div>
+              <div class="compare-composite-sub">Composite Score</div>
+            </div>
+            <div class="compare-conf-badge">
+              <span class="conf-badge high">High confidence</span>
+            </div>
+          </div>
+          <div class="compare-bundles">
+            <div class="compare-bundle-row">
+              <div class="compare-bundle-name">Maternity Bundle</div>
+              <div class="compare-bundle-score">71</div>
+              <div class="compare-mini-bar"><div class="compare-mini-fill cv-purple" style="width:71%"></div></div>
+            </div>
+            <div class="compare-bundle-row">
+              <div class="compare-bundle-name">GYN Surgery Bundle</div>
+              <div class="compare-bundle-score">83</div>
+              <div class="compare-mini-bar"><div class="compare-mini-fill cv-purple" style="width:83%"></div></div>
+            </div>
+            <div class="compare-bundle-row">
+              <div class="compare-bundle-name">Preventive Bundle</div>
+              <div class="compare-bundle-score">76</div>
+              <div class="compare-mini-bar"><div class="compare-mini-fill cv-purple" style="width:76%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="compare-footer">
+          <span class="score-dot green"></span>
+          Top 22% in WV &nbsp;&bull;&nbsp; MIPS Tier 1
+        </div>
+      </div>
+
+      <!-- Card 2 — Dr. Marcus Webb -->
+      <div class="compare-card">
+        <div class="compare-header">
+          <div class="compare-avatar av-teal">MW</div>
+          <div>
+            <div class="compare-name">Dr. Marcus Webb</div>
+            <div class="compare-loc">Charleston, WV</div>
+          </div>
+        </div>
+        <div class="compare-body">
+          <div class="compare-composite">
+            <div>
+              <div class="compare-composite-num">74</div>
+              <div class="compare-composite-sub">Composite Score</div>
+            </div>
+            <div class="compare-conf-badge">
+              <span class="conf-badge high">High confidence</span>
+            </div>
+          </div>
+          <div class="compare-bundles">
+            <div class="compare-bundle-row">
+              <div class="compare-bundle-name">Maternity Bundle</div>
+              <div class="compare-bundle-score">78</div>
+              <div class="compare-mini-bar"><div class="compare-mini-fill cv-teal" style="width:78%"></div></div>
+            </div>
+            <div class="compare-bundle-row">
+              <div class="compare-bundle-name">GYN Surgery Bundle</div>
+              <div class="compare-bundle-score">70</div>
+              <div class="compare-mini-bar"><div class="compare-mini-fill cv-teal" style="width:70%"></div></div>
+            </div>
+            <div class="compare-bundle-row">
+              <div class="compare-bundle-name">Preventive Bundle</div>
+              <div class="compare-bundle-score">74</div>
+              <div class="compare-mini-bar"><div class="compare-mini-fill cv-teal" style="width:74%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="compare-footer">
+          <span class="score-dot green"></span>
+          Top 29% in WV &nbsp;&bull;&nbsp; MIPS Tier 1
+        </div>
+      </div>
+
+      <!-- Card 3 — Dr. Aisha Koroma -->
+      <div class="compare-card">
+        <div class="compare-header">
+          <div class="compare-avatar av-blue">AK</div>
+          <div>
+            <div class="compare-name">Dr. Aisha Koroma</div>
+            <div class="compare-loc">Huntington, WV</div>
+          </div>
+        </div>
+        <div class="compare-body">
+          <div class="compare-composite">
+            <div>
+              <div class="compare-composite-num">69</div>
+              <div class="compare-composite-sub">Composite Score</div>
+            </div>
+            <div class="compare-conf-badge">
+              <span class="conf-badge moderate">Moderate confidence</span>
+            </div>
+          </div>
+          <div class="compare-bundles">
+            <div class="compare-bundle-row">
+              <div class="compare-bundle-name">Maternity Bundle</div>
+              <div class="compare-bundle-score">65</div>
+              <div class="compare-mini-bar"><div class="compare-mini-fill cv-blue" style="width:65%"></div></div>
+            </div>
+            <div class="compare-bundle-row">
+              <div class="compare-bundle-name">GYN Surgery Bundle</div>
+              <div class="compare-bundle-score">72</div>
+              <div class="compare-mini-bar"><div class="compare-mini-fill cv-blue" style="width:72%"></div></div>
+            </div>
+            <div class="compare-bundle-row">
+              <div class="compare-bundle-name">Preventive Bundle</div>
+              <div class="compare-bundle-score">68</div>
+              <div class="compare-mini-bar"><div class="compare-mini-fill cv-blue" style="width:68%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="compare-footer">
+          <span class="score-dot yellow"></span>
+          Top 41% in WV &nbsp;&bull;&nbsp; MIPS Tier 2
+        </div>
+      </div>
+
+    </div><!-- /comparison-grid -->
+
+    <!-- Data freshness footer note -->
+    <div style="margin-top:28px;padding:12px 16px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-md);display:flex;align-items:center;gap:12px;">
+      <span style="font-size:16px;">&#128197;</span>
+      <div style="font-size:12px;color:var(--text-secondary);">
+        <strong style="color:var(--text-primary);">Data Freshness:</strong>
+        Scores last updated <strong>March 2026</strong>. Government quality data based on <strong>CMS PY2023</strong>.
+        Credential verification refreshed monthly. Access data refreshed at provider attestation (last: Feb 2026).
+        Practice pattern analysis uses trailing 24-month Medicare claims through Dec 2023.
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+</body>
+</html>
